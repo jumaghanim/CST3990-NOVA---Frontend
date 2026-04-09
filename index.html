@@ -1174,7 +1174,7 @@ new Vue({
         }
 
         try {
-            const response = await fetch(`${API_URL}/products`);
+            const response = await fetch("http://localhost:3000/api/products");
             const products = await response.json();
             this.allProducts = products;
             console.log("Loaded products:", this.allProducts.map(p => p.name));
@@ -1583,7 +1583,7 @@ new Vue({
             const p = document.getElementById('reg-phone').value;
             const d = document.getElementById('reg-dob').value;
             const pass = document.getElementById('reg-pass').value;
-           
+            const API_URL = "http://localhost:3000/api";
 
             if (!n || !e || !p || !d || !pass) {
                 return this.showToast('Please fill all fields', 'error');
@@ -1622,7 +1622,7 @@ new Vue({
         async handleSignin() {
             const e = document.getElementById('login-email').value;
             const p = document.getElementById('login-pass').value;
-            
+            const API_URL = "http://localhost:3000/api";
 
             if (!e || !p) {
                 return this.showToast('Please enter email and password', 'error');
@@ -1655,7 +1655,7 @@ new Vue({
             const email = document.getElementById('forgot-email').value;
             const newPass = document.getElementById('forgot-new-pass').value;
             const confirmPass = document.getElementById('forgot-confirm-pass').value;
-           
+            const API_URL = "http://localhost:3000/api";
 
             if (!email || !newPass || !confirmPass) {
                 return this.showToast('Please fill all fields', 'error');
@@ -1707,7 +1707,7 @@ new Vue({
             }
 
             try {
-                const res = await fetch(`${API_URL}/contact`, {
+                const res = await fetch("http://localhost:3000/api/contact", {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -2160,7 +2160,7 @@ async placeOrder() {
         this.isProcessingOrder = true;
         this.processingStage = 'processing';
 
-       const response = await fetch(`${API_URL}/orders`, {
+        const response = await fetch("http://localhost:3000/api/orders", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
