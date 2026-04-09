@@ -139,7 +139,7 @@
             <div class="promo-grid">
                 <div class="promo-banner">
                     <div class="overlay">
-                        <div class="promo-chip">Launch Week</div>
+                        <div class="promo-chip"></div>
                         <h3>Trade in. Upgrade. Go premium.</h3>
                         <p>Bring the retail landing page to life with bold visuals, flagship devices, and cinematic presentation.</p>
                         <div class="hero-actions">
@@ -241,6 +241,33 @@
             </div>
         </section>
 
+        <!-- Coming Soon Section -->
+        <section class="content-wrap coming-soon-section" id="coming-soon">
+            <div class="section-head">
+                <div>
+                    <h2>Coming Soon</h2>
+                    <p>Next launch arriving soon at NOVA.</p>
+                </div>
+            </div>
+
+            <div class="coming-soon-grid">
+                <div class="coming-soon-card">
+                    <div class="coming-soon-image-wrap">
+                        <img src="pics/macbookneon.png" alt="MacBook Neon">
+                        <span class="coming-badge">Coming Soon</span>
+                    </div>
+
+                    <div class="coming-soon-info">
+                        <h3>MacBook Neon</h3>
+                        <p>Ultra-modern design with powerful performance and a bold premium finish.</p>
+                        <p class="launch-date">
+                            This product will launch on <strong>20 June 2026</strong>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <footer class="footer">
             <div class="footer-row">
                 <div>© 2026 NOVA. Premium tech retail experience.</div>
@@ -248,6 +275,8 @@
             </div>
         </footer>
     </div>
+
+    
 
     <!-- ========================= -->
     <!-- LOGIN VIEW -->
@@ -748,7 +777,6 @@
 
                         <div class="payment-section-title">Payment Details</div>
 
-                        <!-- FIXED: Added missing cardName input -->
                         <div class="form-group">
                             <input type="text" v-model="checkoutForm.cardName" placeholder="Name on Card">
                             <span class="error-text" v-if="checkoutErrors.cardName">{{ checkoutErrors.cardName }}</span>
