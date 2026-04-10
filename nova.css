@@ -3014,3 +3014,415 @@ body.contact-active{
   transform: translateY(-3px) scale(1.01);
   box-shadow: 0 20px 38px rgba(125,211,252,0.26);
 }
+
+/* =========================================================
+   RESPONSIVE FIXED LAYOUT
+   Paste this at the END of your CSS
+   Remove older repeated mobile media queries if possible
+   ========================================================= */
+
+/* ---------- Large laptops / smaller desktops ---------- */
+@media (max-width: 1200px) {
+  .hero-card,
+  .config-wrapper,
+  .checkout-container {
+    gap: 24px;
+  }
+
+  .hero-card {
+    grid-template-columns: 1.2fr 0.8fr;
+  }
+
+  .product-showcase,
+  .products-grid,
+  .visual-grid {
+    gap: 20px;
+  }
+
+  .bill-meta-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* ---------- Tablets ---------- */
+@media (max-width: 1024px) {
+  .content-wrap,
+  .hero-content,
+  .nav-content,
+  .checkout-container,
+  .bill-receipt,
+  .footer-row,
+  .all-products-section {
+    width: min(100% - 32px, var(--container));
+  }
+
+  .hero-card,
+  .promo-grid,
+  .config-wrapper,
+  .checkout-container {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-main {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+
+  .hero-side {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: unset;
+  }
+
+  .hero-products-strip,
+  .visual-grid,
+  .product-showcase,
+  .products-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .gallery-strip {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .bill-meta-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .sticky-image-container {
+    position: static;
+    top: auto;
+  }
+
+  .zoom-wrapper {
+    min-height: 420px;
+  }
+
+  .header-container nav {
+    border-radius: 24px;
+  }
+}
+
+/* ---------- Mobile nav + general ---------- */
+@media (max-width: 768px) {
+  #back-btn {
+    top: 14px;
+    left: 14px;
+    padding: 10px 14px;
+    font-size: 0.9rem;
+  }
+
+  .header-container {
+    padding: 16px 14px 8px;
+  }
+
+  .header-container nav,
+  .nav-content {
+    border-radius: 22px;
+    padding: 12px;
+  }
+
+  .nav-content {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .nav-left {
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .nav-brand,
+  .nova-logo {
+    width: 100%;
+    text-align: center;
+    margin-right: 0;
+  }
+
+  .nav-item,
+  .nav-link {
+    justify-content: center;
+  }
+
+  .dropdown-menu {
+    left: 50%;
+    transform: translateX(-50%) translateY(12px);
+    min-width: 220px;
+  }
+
+  .navbar .nav-item:hover .dropdown-menu {
+    transform: translateX(-50%) translateY(0);
+  }
+
+  .hero-shell {
+    min-height: auto;
+    padding: 12px 0 30px;
+  }
+
+  .hero-card {
+    padding: 20px;
+    border-radius: 24px;
+  }
+
+  .hero-copy {
+    padding: 0;
+  }
+
+  .hero-copy h2,
+  .hero-section h2 {
+    font-size: clamp(2rem, 8vw, 3rem);
+    line-height: 1.02;
+  }
+
+  .hero-copy p,
+  .hero-section p {
+    font-size: 0.96rem;
+  }
+
+  .hero-actions {
+    flex-direction: column;
+  }
+
+  .btn-primary,
+  .btn-secondary,
+  .main-btn,
+  .contact-btn,
+  .buy-btn,
+  .place-order-btn,
+  .bill-home-btn,
+  .logout-btn {
+    width: 100%;
+  }
+
+  .hero-visual {
+    min-height: 300px;
+  }
+
+  .hero-visual img {
+    max-height: 340px;
+  }
+
+  .hero-side {
+    grid-template-columns: 1fr;
+  }
+
+  .image-panel {
+    min-height: 220px;
+  }
+
+  .hero-products-strip,
+  .visual-grid,
+  .product-showcase,
+  .products-grid,
+  .gallery-strip,
+  .specs-grid,
+  .selection-group {
+    grid-template-columns: 1fr;
+  }
+
+  .gallery-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .card-row {
+    grid-template-columns: 1fr;
+  }
+
+  .checkout-item {
+    grid-template-columns: 72px 1fr;
+    gap: 12px;
+  }
+
+  .checkout-item-img {
+    width: 72px;
+    height: 72px;
+  }
+
+  .checkout-price,
+  .remove-btn {
+    grid-column: 2;
+    justify-self: start;
+    text-align: left;
+  }
+
+  .bill-header,
+  .bill-footer,
+  .pickup-toggle-row,
+  .section-head,
+  .footer-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .bill-meta-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .bill-table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .nova-ai-window {
+    right: 12px;
+    left: 12px;
+    bottom: 84px;
+    width: auto;
+    height: 70vh;
+  }
+
+  .nova-ai-trigger {
+    right: 14px;
+    bottom: 14px;
+  }
+
+  #toast-container {
+    top: 12px;
+    right: 12px;
+    left: 12px;
+  }
+
+  .toast {
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+  }
+}
+
+/* ---------- Small phones ---------- */
+@media (max-width: 480px) {
+  .content-wrap,
+  .hero-content,
+  .nav-content,
+  .checkout-container,
+  .bill-receipt,
+  .footer-row,
+  .all-products-section {
+    width: min(100% - 20px, var(--container));
+  }
+
+  #brand-name {
+    font-size: 2rem;
+    letter-spacing: 0.18rem;
+  }
+
+  #tagline {
+    font-size: 0.82rem;
+    padding: 0 6px;
+  }
+
+  .hero-card,
+  .product-card,
+  .visual-card,
+  .checkout-form-section,
+  .checkout-summary-section,
+  .bill-receipt,
+  .config-options,
+  .card,
+  .profile-card,
+  .contact-card {
+    padding: 18px;
+    border-radius: 20px;
+  }
+
+  .card,
+  .profile-card,
+  .contact-card {
+    width: 100%;
+  }
+
+  .form {
+    padding: 18px;
+  }
+
+  .form h2,
+  .profile-card h3,
+  .contact-card h2,
+  .checkout-title,
+  .product-title {
+    font-size: 1.6rem;
+  }
+
+  .hero-copy h2,
+  .hero-section h2 {
+    font-size: 1.9rem;
+  }
+
+  .hero-section {
+    min-height: 72vh;
+    padding: 90px 14px 30px;
+  }
+
+  .hero-content {
+    width: 100%;
+  }
+
+  .zoom-wrapper {
+    min-height: 280px;
+    padding: 14px;
+  }
+
+  .details-img {
+    max-height: 260px;
+  }
+
+  .gallery-container {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .gallery-card {
+    min-height: 100px;
+  }
+
+  .gallery-card img {
+    height: 80px;
+  }
+
+  .product-top {
+    min-height: 180px;
+  }
+
+  .product-top img,
+  .product-card-img {
+    max-height: 180px;
+  }
+
+  .address-label-group {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .address-label-btn {
+    width: 100%;
+  }
+
+  .pickup-toggle-row {
+    align-items: flex-start;
+  }
+
+  .bill-header h1 {
+    font-size: 1.6rem;
+    letter-spacing: 0.08rem;
+  }
+
+  .bill-total-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .bill-total-row strong {
+    font-size: 1.3rem;
+  }
+
+  .cart-icon-wrapper {
+    width: 46px;
+    height: 46px;
+  }
+
+  .nova-ai-window {
+    height: 68vh;
+  }
+}
