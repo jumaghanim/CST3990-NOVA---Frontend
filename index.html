@@ -1,2200 +1,1082 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Nova | Premium Tech Retail</title>
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Nova | Premium Tech Retail</title>
 
-    <!-- CSS -->
-    <link rel="stylesheet" href="nova.css">
+        <!-- CSS -->
+        <link rel="stylesheet" href="nova.css">
 
-    <!-- Icons / Libraries -->
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="https://cdn.jsdelivr.net/npm/vue@2.7.16/dist/vue.js"></script>
-    <script src="https://js.stripe.com/v3/"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-</head>
-<body id="main-body">
-<div id="app">
-    <!-- Premium Background Effects -->
-    <canvas id="star-canvas"></canvas>
+        <!-- Icons / Libraries -->
+        <script src="https://unpkg.com/lucide@latest"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.7.16/dist/vue.js"></script>
+        <script src="https://js.stripe.com/v3/"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    </head>
+    <body id="main-body">
+    <div id="app">
+        <!-- Premium Background Effects -->
+        <canvas id="star-canvas"></canvas>
 
-    <div class="bg-gradient"></div>
-    <div class="bg-grid"></div>
-    <div class="bg-noise"></div>
+        <div class="bg-gradient"></div>
+        <div class="bg-grid"></div>
+        <div class="bg-noise"></div>
 
-    <div class="page-glow"></div>
-    <div id="toast-container"></div>
+        <div class="page-glow"></div>
+        <div id="toast-container"></div>
 
-    <!-- Global Back Button -->
-    <div 
-        id="back-btn" 
-        v-if="appPage !== 'landing' && !(appPage === 'store' && currentView === 'checkout')"
-        @click="handleBack"
-    >
-        <i data-lucide="arrow-left" size="16"></i>
-        <span>Back</span>
-    </div>
+        <!-- Global Back Button -->
+        <div 
+            id="back-btn" 
+            v-if="appPage !== 'landing' && !(appPage === 'store' && currentView === 'checkout')"
+            @click="handleBack"
+        >
+            <i data-lucide="arrow-left" size="16"></i>
+            <span>Back</span>
+        </div>
 
-    <!-- ========================= -->
-    <!-- INDEX / LANDING HEADER   -->
-    <!-- ========================= -->
-    <div
-        class="header-container"
-        id="main-header"
-        v-show="appPage !== 'store'"
-    >
-        <h1 id="brand-name">NOVA</h1>
-        <div id="tagline">Premium Apple & Samsung Retail Experience</div>
+        <!-- ========================= -->
+        <!-- INDEX / LANDING HEADER   -->
+        <!-- ========================= -->
+        <div
+            class="header-container"
+            id="main-header"
+            v-show="appPage !== 'store'"
+        >
+            <h1 id="brand-name">NOVA</h1>
+            <div id="tagline">Premium Apple & Samsung Retail Experience</div>
 
-        <nav>
-            <div class="nav-brand" @click="showPage('landing')" style="cursor:pointer;">NOVA</div>
+            <nav>
+                <div class="nav-brand" @click="showPage('landing')" style="cursor:pointer;">NOVA</div>
 
-            <div @click="showPage('landing')" id="nav-home" class="nav-item" :class="{ active: appPage === 'landing' }">
-                <i data-lucide="home"></i>
-                <span>Home</span>
-            </div>
+                <div @click="showPage('landing')" id="nav-home" class="nav-item" :class="{ active: appPage === 'landing' }">
+                    <i data-lucide="home"></i>
+                    <span>Home</span>
+                </div>
 
-            <a href="#featured" class="nav-item" v-if="appPage === 'landing'">
-                <i data-lucide="sparkles"></i>
-                <span>Featured</span>
-            </a>
+                <a href="#featured" class="nav-item" v-if="appPage === 'landing'">
+                    <i data-lucide="sparkles"></i>
+                    <span>Featured</span>
+                </a>
 
-            <a href="#products" class="nav-item" v-if="appPage === 'landing'">
-                <i data-lucide="shopping-bag"></i>
-                <span>Products</span>
-            </a>
+                <a href="#products" class="nav-item" v-if="appPage === 'landing'">
+                    <i data-lucide="shopping-bag"></i>
+                    <span>Products</span>
+                </a>
 
-            <div @click="showPage('contact')" id="nav-contact" class="nav-item" :class="{ active: appPage === 'contact' }">
-                <i data-lucide="mail"></i>
-                <span>Contact Us</span>
-            </div>
+                <div @click="showPage('contact')" id="nav-contact" class="nav-item" :class="{ active: appPage === 'contact' }">
+                    <i data-lucide="mail"></i>
+                    <span>Contact Us</span>
+                </div>
 
-            <div @click="handleNavLogin" id="nav-login" class="nav-item" :class="{ active: appPage === 'login' || appPage === 'profile' }">
-                <i data-lucide="user"></i>
-                <span>{{ currentUser ? currentUser.name.split(' ')[0] : 'Login' }}</span>
-            </div>
-        </nav>
-    </div>
+                <div @click="handleNavLogin" id="nav-login" class="nav-item" :class="{ active: appPage === 'login' || appPage === 'profile' }">
+                    <i data-lucide="user"></i>
+                    <span>{{ currentUser ? currentUser.name.split(' ')[0] : 'Login' }}</span>
+                </div>
+            </nav>
+        </div>
 
-    <div id="home-view" v-show="appPage === 'landing'">
+        <div id="home-view" v-show="appPage === 'landing'">
 
-        <!-- Hero Section -->
-        <section class="hero-shell">
-            <div class="hero-content">
-                <div class="hero-card">
-                    <div class="hero-main">
-                        <div class="hero-copy">
-                            <div class="eyebrow">Nova Premium Store</div>
-                            <h2>Latest<br>iPhone 17 PRO.</h2>
-                            <p>
-                                Discover flagship devices in a cinematic storefront built to feel premium, modern, and image-first.
-                            </p>
+            <!-- Hero Section -->
+            <section class="hero-shell">
+                <div class="hero-content">
+                    <div class="hero-card">
+                        <div class="hero-main">
+                            <div class="hero-copy">
+                                <div class="eyebrow">Nova Premium Store</div>
+                                <h2>Latest<br>iPhone 17 PRO.</h2>
+                                <p>
+                                    Discover flagship devices in a cinematic storefront built to feel premium, modern, and image-first.
+                                </p>
 
+                                <div class="hero-actions">
+                                    <a href="#" class="btn-primary" @click.prevent="goToStoreHome">
+                                        <i data-lucide="arrow-right"></i> Shop Collection
+                                    </a>
+                                    <a href="#featured" class="btn-secondary">
+                                        <i data-lucide="star"></i> Explore Highlights
+                                    </a>
+                                </div>
+                            </div>
+
+                            <div class="hero-visual">
+                                <img src="pics/cosmicorangetransparent.png" alt="Featured devices">
+                            </div>
+                        </div>
+
+                        <div class="hero-side">
+                            <div class="image-panel">
+                                <img src="pics/iphonetrans.png" alt="iPhone Pro">
+                                <div class="image-overlay">
+                                    <h3>Flagship Apple Experience</h3>
+                                    <p>Titanium design, clean ecosystem, premium feel.</p>
+                                </div>
+                            </div>
+
+                            <div class="image-panel">
+                                <img src="pics/samsungs26ultra.png" alt="Samsung Ultra">
+                                <div class="mini-label live-now">Available Now</div>
+                                <div class="image-overlay">
+                                    <h3>Next-Level Galaxy Power</h3>
+                                    <p>Bold hardware, advanced camera, futuristic style.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Featured Section -->
+            <section class="content-wrap" id="featured">
+                <div class="section-head">
+                    <div>
+                        <h2>Featured Retail Experience</h2>
+                    </div>
+                </div>
+
+                <div class="promo-grid">
+                    <div class="promo-banner">
+                        <div class="overlay">
+                            <div class="promo-chip"></div>
+                            <h3>Trade in. Upgrade. Go premium.</h3>
+                            <p>Bring the retail landing page to life with bold visuals, flagship devices, and cinematic presentation.</p>
                             <div class="hero-actions">
-                                <a href="#" class="btn-primary" @click.prevent="goToStoreHome">
-                                    <i data-lucide="arrow-right"></i> Shop Collection
+                                <a href="#products" class="btn-primary">View Devices</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="promo-mini">
+                        <div class="overlay">
+                            <div class="promo-chip">In Store Perks</div>
+                            <h3 style="margin:0 0 10px; font-size:1.8rem;">Pickup, setup, support.</h3>
+                            <p>Fast pickup, guided setup, and premium after-sales care.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Visual Grid -->
+                <div class="visual-grid">
+                    <div class="visual-card">
+                        <img src="pics/iphone17procovertrans.png" alt="iPhone showcase">
+                        <div class="visual-info">
+                            <h3>iPhone Collection</h3>
+                            <p>Clean, iconic, premium.</p>
+                        </div>
+                    </div>
+
+                    <div class="visual-card">
+                        <img src="pics/mac.png" alt="MacBook showcase">
+                        <div class="visual-info">
+                            <h3>MacBook Lineup</h3>
+                            <p>Power for work and creativity.</p>
+                        </div>
+                    </div>
+
+                    <div class="visual-card">
+                        <img src="pics/samsungzfold.png" alt="Galaxy showcase">
+                        <div class="visual-info">
+                            <h3>Galaxy Series</h3>
+                            <p>Bold design and display-first tech.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Best Sellers -->
+                <div class="section-head" id="products">
+                    <div>
+                        <h2>Best Sellers</h2>
+                    </div>
+                </div>
+
+                <div class="product-showcase">
+                    <div class="product-card" @click="goToProduct('iPhone 17 Pro')" style="cursor:pointer;">
+                        <div class="product-top">
+                            <img src="pics/3iphone17protrans.png" alt="iPhone Pro Series" />
+                        </div>
+                        <div class="product-tag">Apple Flagship</div>
+                        <h3>iPhone 17 Pro</h3>
+                        <p>Aluminium body, pro cameras, powerful Apple silicon.</p>
+                        <div class="price-line">
+                            <div class="price">From AED 5,099</div>
+                            <a href="#" class="btn-secondary" style="padding:10px 16px;" @click.prevent.stop="goToProduct('iPhone 17 Pro')">View Product</a>
+                        </div>
+                    </div>
+
+                    <div class="product-card" @click="goToProduct('MacBook Pro')" style="cursor:pointer;">
+                        <div class="product-top">
+                            <img src="pics/macbookairtrans.png" alt="MacBook Pro" />
+                        </div>
+                        <div class="product-tag">Apple Productivity</div>
+                        <h3>MacBook Pro</h3>
+                        <p>High performance, long battery life, brilliant display.</p>
+                        <div class="price-line">
+                            <div class="price">From AED 6,999</div>
+                            <a href="#" class="btn-secondary" style="padding:10px 16px;" @click.prevent.stop="goToProduct('MacBook Pro')">View Product</a>
+                        </div>
+                    </div>
+
+                    <div class="product-card" @click="goToProduct('Galaxy S26 Ultra')" style="cursor:pointer;">
+                        <div class="product-top">
+                            <img src="pics/samsungs26ultrablack.webp" alt="Samsung S26 Ultra" />
+                        </div>
+                        <div class="product-tag">Samsung Flagship</div>
+                        <h3>Samsung S26 Ultra</h3>
+                        <p>AI features, elite camera system, powerful everyday performance.</p>
+                        <div class="price-line">
+                            <div class="price">From AED 5,299</div>
+                            <a href="#" class="btn-secondary" style="padding:10px 16px;" @click.prevent.stop="goToProduct('Galaxy S26 Ultra')">View Product</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gallery Strip -->
+                <div class="gallery-strip">
+                    <div class="gallery-item"><img src="pics/airpodspro3trans.png" alt="Gallery 1"></div>
+                    <div class="gallery-item"><img src="pics/applewatchseries11.png" alt="Gallery 2"></div>
+                    <div class="gallery-item"><img src="pics/samsungbuds.avif" alt="Gallery 3"></div>
+                    <div class="gallery-item"><img src="pics/samsungs26ultrablack.webp" alt="Gallery 4"></div>
+                </div>
+            </section>
+
+            <!-- Coming Soon Section -->
+            <section class="content-wrap coming-soon-section" id="coming-soon">
+                <div class="section-head">
+                    <div>
+                        <h2>Coming Soon</h2>
+                        <p>Next launch arriving soon at NOVA.</p>
+                    </div>
+                </div>
+
+                <div class="coming-soon-grid">
+                    <div class="coming-soon-card">
+                        <div class="coming-soon-image-wrap">
+                            <img src="pics/macbookneon.png" alt="MacBook Neon">
+                            <span class="coming-badge">Coming Soon</span>
+                        </div>
+
+                        <div class="coming-soon-info">
+                            <h3>MacBook Neon</h3>
+                            <p>Ultra-modern design with powerful performance and a bold premium finish.</p>
+                            <p class="launch-date">
+                                This product will launch on <strong>20 June 2026</strong>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <footer class="footer">
+                <div class="footer-row">
+                    <div>© 2026 NOVA. Premium tech retail experience.</div>
+                    <div>Apple • Samsung • Accessories • Support</div>
+                </div>
+            </footer>
+        </div>
+
+        
+
+        <!-- ========================= -->
+        <!-- LOGIN VIEW -->
+        <!-- ========================= -->
+        <div id="login-view" v-show="appPage === 'login'">
+            <div class="card" id="sliding-card">
+                <div class="card-bg card-bg-1"></div>
+                <div class="card-bg card-bg-2"></div>
+
+                <!-- Signup Form -->
+                <div class="form signup active">
+                    <h2>Register</h2>
+                    <input type="text" id="reg-name" placeholder="Name" />
+                    <input type="email" id="reg-email" placeholder="Email" />
+                    <input type="tel" id="reg-phone" placeholder="Phone Number" />
+                    <label>Date of Birth</label>
+                    <input type="date" id="reg-dob" />
+                    <input type="password" id="reg-pass" placeholder="Password" />
+                    <button class="main-btn" @click="handleSignup">SIGN UP</button>
+                    <div class="toggle-btn" @click="toggleCard">Already have an account? Sign in</div>
+                </div>
+
+                <!-- Signin Form -->
+                <div class="form signin">
+                    <div id="signin-main" class="signin-content" style="width:100%; display:flex; flex-direction:column; align-items:center;">
+                        <h2>Sign In</h2>
+                        <input type="email" id="login-email" placeholder="Email" />
+                        <input type="password" id="login-pass" placeholder="Password" />
+                        <div id="login-error" class="error-text" style="color:var(--error-red); font-size:0.7rem; display:none;">Invalid credentials</div>
+
+                        <div @click="toggleForgot(true)" style="font-size: 0.75rem; color: #fff; opacity: 0.7; cursor: pointer; margin-top: 10px; text-decoration: underline;">
+                            Forgot Password?
+                        </div>
+
+                        <button class="main-btn" @click="handleSignin">LOG IN</button>
+                        <div class="toggle-btn" @click="toggleCard" style="color:#dce6f7">New here? Register</div>
+                    </div>
+
+                    <!-- Forgot Password Form -->
+                    <div id="forgot-form" class="signin-content" style="width:100%; display:none; flex-direction:column; align-items:center;">
+                        <h2>Reset Password</h2>
+                        <input type="email" id="forgot-email" placeholder="Enter Email ID" />
+                        <input type="password" id="forgot-new-pass" placeholder="New Password" />
+                        <input type="password" id="forgot-confirm-pass" placeholder="Confirm Password" />
+                        <button class="main-btn" @click="handleResetPassword">CHANGE PASSWORD</button>
+
+                        <div @click="toggleForgot(false)" style="font-size: 0.75rem; color: #fff; opacity: 0.7; cursor: pointer; margin-top: 15px; text-decoration: underline;">
+                            Back to Login
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================= -->
+        <!-- PROFILE VIEW -->
+        <!-- ========================= -->
+        <div id="profile-view" v-show="appPage === 'profile'">
+            <div class="profile-card">
+                <h3 id="prof-name">{{ currentUser ? currentUser.name : 'Name' }}</h3>
+                <p id="prof-details" style="font-size: 0.9rem; color: #d8e4f3; line-height: 1.6;">
+                    <template v-if="currentUser">
+                        {{ currentUser.email }}<br>{{ currentUser.phone || '' }}
+                    </template>
+                </p>
+                <button class="logout-btn" @click="handleLogout">Logout</button>
+            </div>
+        </div>
+
+        <!-- ========================= -->
+        <!-- CONTACT VIEW -->
+        <!-- ========================= -->
+        <div id="contact-view" v-show="appPage === 'contact'">
+            <div class="contact-card">
+                <h2>Contact Us</h2>
+                <p class="contact-subtext">Have a question or need help? Send us a message.</p>
+
+                <input type="text" id="contact-name" placeholder="Name" />
+                <input type="tel" id="contact-number" placeholder="Contact Number" />
+                <input type="email" id="contact-email" placeholder="Email" />
+                <label for="contact-message">Message</label>
+                <textarea id="contact-message" placeholder="Write your message here..."></textarea>
+
+                <button class="contact-btn" @click="handleContactSubmit">SUBMIT</button>
+            </div>
+        </div>
+
+        <!-- ========================= -->
+        <!-- STORE PAGE -->
+        <!-- ========================= -->
+        <div v-show="appPage === 'store'">
+
+            <div v-if="showSuccessPopup" class="success-popup-overlay">
+                <div class="success-popup-box">
+                    <div class="success-tick-circle">
+                        <i class="fa-solid fa-check"></i>
+                    </div>
+                    <h2>Order Placed Successfully</h2>
+                    <p>Your order has been confirmed.</p>
+                </div>
+            </div>
+
+            <div v-if="isProcessingOrder" class="processing-overlay">
+                <div class="processing-box">
+                    <div class="processing-ring"></div>
+
+                    <h2 v-if="processingStage === 'processing'">Processing Your Order</h2>
+                    <h2 v-else-if="processingStage === 'payment'">Payment Processed</h2>
+                    <h2 v-else>Finalizing Order</h2>
+
+                    <p v-if="processingStage === 'processing'">
+                        Please wait while we confirm your items and prepare your payment.
+                    </p>
+
+                    <p v-else-if="processingStage === 'payment'">
+                        Your payment has been approved. We are preparing your confirmation.
+                    </p>
+
+                    <p v-else>
+                        Almost done. Your order confirmation is being generated.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Loading Overlay -->
+            <div v-if="isLoading" class="loading-overlay">
+                <div class="loader-content">
+                    <h1 class="nova-loading-text">NOVA</h1>
+                    <div class="novo-bar-container">
+                        <div class="novo-progress"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Store Navbar -->
+            <nav class="navbar">
+                <div class="nav-content">
+                    <div class="nav-left">
+                        <a href="#" class="nova-logo" @click.prevent="goToIndex">NOVA</a>
+
+                        <div v-for="item in menuItems" :key="item.name" class="nav-item">
+                            <span class="nav-link">{{ item.name }}</span>
+
+                            <div v-if="item.dropdown" class="dropdown-menu">
+                                <a
+                                    v-for="subItem in item.dropdown"
+                                    :key="subItem"
+                                    href="#"
+                                    class="dropdown-link"
+                                    @click.prevent="goToProduct(subItem)"
+                                >
+                                    {{ subItem }}
                                 </a>
-                                <a href="#featured" class="btn-secondary">
-                                    <i data-lucide="star"></i> Explore Highlights
-                                </a>
-                            </div>
-                        </div>
-
-                        <div class="hero-visual">
-                            <img src="pics/cosmicorangetransparent.png" alt="Featured devices">
-                        </div>
-                    </div>
-
-                    <div class="hero-side">
-                        <div class="image-panel">
-                            <img src="pics/iphonetrans.png" alt="iPhone Pro">
-                            <div class="image-overlay">
-                                <h3>Flagship Apple Experience</h3>
-                                <p>Titanium design, clean ecosystem, premium feel.</p>
-                            </div>
-                        </div>
-
-                        <div class="image-panel">
-                            <img src="pics/samsungs26ultra.png" alt="Samsung Ultra">
-                            <div class="mini-label live-now">Available Now</div>
-                            <div class="image-overlay">
-                                <h3>Next-Level Galaxy Power</h3>
-                                <p>Bold hardware, advanced camera, futuristic style.</p>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-        </section>
 
-        <!-- Featured Section -->
-        <section class="content-wrap" id="featured">
-            <div class="section-head">
-                <div>
-                    <h2>Featured Retail Experience</h2>
+                    <div
+                        v-if="cart.length > 0"
+                        class="cart-icon-wrapper"
+                        @click="goToCheckout"
+                        :class="{ 'cart-bounce': cartAnimate }"
+                    >
+                        <i class="fa-solid fa-bag-shopping"></i>
+                        <span class="cart-badge">{{ cart.length }}</span>
+                    </div>
                 </div>
+            </nav>
+
+            <div class="cart-toast" v-if="showCartToast">
+                {{ cartToastMessage }}
             </div>
 
-            <div class="promo-grid">
-                <div class="promo-banner">
-                    <div class="overlay">
-                        <div class="promo-chip"></div>
-                        <h3>Trade in. Upgrade. Go premium.</h3>
-                        <p>Bring the retail landing page to life with bold visuals, flagship devices, and cinematic presentation.</p>
-                        <div class="hero-actions">
-                            <a href="#products" class="btn-primary">View Devices</a>
+            <!-- Store Home -->
+            <div v-if="currentView === 'home'">
+                <section
+                    v-if="heroProducts.length"
+                    class="hero-section"
+                    :style="{ backgroundImage: 'url(' + heroProducts[0].img + ')' }"
+                >
+                    <div class="hero-content">
+                        <h2 :style="{ color: heroProducts[0].color }">{{ heroProducts[0].name }}</h2>
+                        <p>{{ heroProducts[0].tag }}</p>
+                        <button class="buy-btn" @click="goToProduct(heroProducts[0].name)">Buy</button>
+                    </div>
+                </section>
+
+                <section class="hero-products-strip" v-if="heroProducts.length > 1">
+                    <div
+                        v-for="p in heroProducts.slice(1)"
+                        :key="p.name"
+                        class="hero-mini-card"
+                        @click="goToProduct(p.name)"
+                        :style="{ backgroundImage: 'url(' + p.img + ')' }"
+                    >
+                        <div class="hero-mini-overlay">
+                            <h3 :style="{ color: p.color }">{{ p.name }}</h3>
+                            <p>{{ p.tag }}</p>
+                            <span class="hero-mini-btn">View Product</span>
                         </div>
                     </div>
-                </div>
+                </section>
 
-                <div class="promo-mini">
-                    <div class="overlay">
-                        <div class="promo-chip">In Store Perks</div>
-                        <h3 style="margin:0 0 10px; font-size:1.8rem;">Pickup, setup, support.</h3>
-                        <p>Fast pickup, guided setup, and premium after-sales care.</p>
+                <section class="all-products-section">
+                    <div class="all-products-header">
+                        <h2>Nova Products</h2>
+                        <p>Browse the full Nova collection.</p>
+                    </div>
+
+                    <div class="products-grid">
+                        <div
+                            v-for="product in allProducts"
+                            :key="product._id"
+                            class="product-card"
+                            @click="goToProduct(product.name)"
+                        >
+                            <img
+                                v-if="product.colors && product.colors.length"
+                                :src="product.colors[0].image"
+                                :alt="product.name"
+                                class="product-card-img"
+                            >
+
+                            <h3>{{ product.name }}</h3>
+                            <p class="product-card-desc">{{ product.longDescription }}</p>
+                            <div class="product-card-price">
+                                From {{ Number(product.basePrice).toLocaleString() }} AED
+                            </div>
+
+                            <button class="buy-btn">View Product</button>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Product Details -->
+            <div v-if="currentView === 'details'" class="details-page" :style="{ backgroundColor: selectedProduct.bgColor, color: selectedProduct.textColor }">
+                <div class="config-wrapper">
+
+                    <div class="sticky-image-container">
+                        <div class="zoom-wrapper">
+                            <img :src="activeColor.image" class="details-img" alt="Product image">
+                        </div>
+
+                        <div v-if="selectedProduct.gallery" class="gallery-container">
+                            <div v-for="(img, index) in selectedProduct.gallery" :key="index" class="gallery-card">
+                                <img :src="img" alt="Gallery image">
+                            </div>
+                        </div>
+
+                        <div class="specs-grid">
+                            <div class="spec-card" v-for="spec in selectedProduct.specs" :key="spec.label">
+                                <h4>{{ spec.label }}</h4>
+                                <p class="spec-item-text" v-html="spec.value"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="config-options">
+                        <p v-if="selectedProduct.isNew" class="product-badge-new">NEW</p>
+
+                        <h1 class="product-title">Buy {{ selectedProduct.name }}</h1>
+                        <p class="product-description">{{ selectedProduct.longDescription }}</p>
+
+                        <hr class="section-divider">
+
+                        <!-- Model -->
+                        <div v-if="selectedProduct.models" class="option-section">
+                            <h3 class="option-title">
+                                Model. <span>Which is right for you?</span>
+                            </h3>
+
+                            <div class="selection-group">
+                                <div
+                                    v-for="m in selectedProduct.models"
+                                    :key="m.name"
+                                    class="model-box"
+                                    :class="{ 'active-highlight': activeModel && activeModel.name === m.name }"
+                                    @click="changeModel(m)"
+                                >
+                                    <div class="tile-content">
+                                        <span class="tile-name">{{ m.name }}</span>
+                                        <span v-if="m.description" class="tile-subtext">{{ m.description }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Connectivity -->
+                        <div v-if="activeModel && activeModel.connectivityOptions" class="option-section">
+                            <h3 class="option-title">
+                                Connectivity. <span>Choose your connection type</span>
+                            </h3>
+
+                            <div class="selection-group">
+                                <div
+                                    v-for="c in activeModel.connectivityOptions"
+                                    :key="c.name"
+                                    class="selection-tile"
+                                    :class="{ active: activeConnectivity && activeConnectivity.name === c.name }"
+                                    @click="activeConnectivity = c"
+                                >
+                                    <div class="tile-content">
+                                        <span class="tile-name">{{ c.name }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Size -->
+                        <div v-if="selectedProduct.sizes" class="option-section">
+                            <h3 class="option-title">
+                                Size. <span>Choose your case size</span>
+                            </h3>
+
+                            <div class="selection-group">
+                                <div
+                                    v-for="size in selectedProduct.sizes"
+                                    :key="size.name"
+                                    class="selection-tile"
+                                    :class="{ active: activeSize && activeSize.name === size.name }"
+                                    @click="activeSize = size"
+                                >
+                                    <span class="tile-name">{{ size.name }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Finish -->
+                        <div class="option-section">
+                            <h3 class="option-title">
+                                Finish. <span>{{ activeColor ? activeColor.name : '' }}</span>
+                            </h3>
+
+                            <div class="color-dot-group">
+                                <div
+                                    v-for="color in availableColors"
+                                    :key="color.name"
+                                    class="color-dot"
+                                    :style="{ backgroundColor: color.hex }"
+                                    :class="{ active: activeColor && activeColor.name === color.name }"
+                                    @click="activeColor = color"
+                                ></div>
+                            </div>
+                        </div>
+
+                        <!-- Storage -->
+                        <div v-if="selectedProduct.storageOptions" class="option-section">
+                            <h3 class="option-title">
+                                Storage. <span>How much space do you need?</span>
+                            </h3>
+
+                            <div class="selection-group">
+                                <div
+                                    v-for="s in selectedProduct.storageOptions"
+                                    :key="s.name"
+                                    class="selection-tile"
+                                    :class="{ active: activeStorage && activeStorage.name === s.name }"
+                                    @click="activeStorage = s"
+                                >
+                                    <span class="tile-name">{{ s.name }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Display -->
+                        <div v-if="selectedProduct.displayOptions" class="option-section">
+                            <h3 class="option-title">Display.</h3>
+
+                            <div class="selection-group">
+                                <div
+                                    v-for="d in selectedProduct.displayOptions"
+                                    :key="d.name"
+                                    class="selection-tile"
+                                    :class="{ active: activeDisplay && activeDisplay.name === d.name }"
+                                    @click="activeDisplay = d"
+                                >
+                                    <span class="tile-name">{{ d.name }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Chip -->
+                        <div v-if="availableChips.length" class="option-section">
+                            <h3 class="option-title">Chip.</h3>
+
+                            <div class="selection-group">
+                                <div
+                                    v-for="chip in availableChips"
+                                    :key="chip.name"
+                                    class="selection-tile"
+                                    :class="{ active: activeChip && activeChip.name === chip.name }"
+                                    @click="activeChip = chip; activeVariant = chip.variants[0]"
+                                >
+                                    <span class="tile-name">{{ chip.name }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Configuration -->
+                        <div v-if="activeChip && activeChip.variants" class="option-section">
+                            <h3 class="option-title">Configuration.</h3>
+
+                            <div class="selection-group">
+                                <div
+                                    v-for="v in activeChip.variants"
+                                    :key="v.name"
+                                    class="selection-tile"
+                                    :class="{ active: activeVariant && activeVariant.name === v.name }"
+                                    @click="activeVariant = v"
+                                >
+                                    <span class="tile-name">{{ v.name }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <p class="stock-status" :class="{ 'out-stock': currentStock === 0 && !isSelectionIncomplete }">
+                            {{
+                                isSelectionIncomplete
+                                    ? selectionMessage
+                                    : currentStock > 0
+                                        ? `Stock Available: ${currentStock}`
+                                        : 'Out Of Stock'
+                            }}
+                        </p>
+
+                        <div class="price-tag">{{ calculatePrice }} AED</div>
+
+                        <button
+                            class="buy-btn"
+                            @click="addToCart"
+                            :disabled="isSelectionIncomplete || currentStock === 0"
+                        >
+                            {{
+                                isSelectionIncomplete
+                                    ? 'Select Options'
+                                    : currentStock === 0
+                                        ? 'Out Of Stock'
+                                        : 'Add to Bag'
+                            }}
+                        </button>
+
+                        <p @click="goBackHome" class="explore-link">Return to Home</p>
                     </div>
                 </div>
             </div>
 
-            <!-- Visual Grid -->
-            <div class="visual-grid">
-                <div class="visual-card">
-                    <img src="pics/iphone17procovertrans.png" alt="iPhone showcase">
-                    <div class="visual-info">
-                        <h3>iPhone Collection</h3>
-                        <p>Clean, iconic, premium.</p>
-                    </div>
-                </div>
+            <!-- Checkout -->
+            <div v-if="currentView === 'checkout'" class="checkout-page">
+                <div class="checkout-container">
 
-                <div class="visual-card">
-                    <img src="pics/mac.png" alt="MacBook showcase">
-                    <div class="visual-info">
-                        <h3>MacBook Lineup</h3>
-                        <p>Power for work and creativity.</p>
-                    </div>
-                </div>
+                    <div class="checkout-form-section">
+                        <button class="back-btn" @click="currentView = prevView">← Back</button>
 
-                <div class="visual-card">
-                    <img src="pics/samsungzfold.png" alt="Galaxy showcase">
-                    <div class="visual-info">
-                        <h3>Galaxy Series</h3>
-                        <p>Bold design and display-first tech.</p>
+                        <h2 class="checkout-title">Checkout</h2>
+                        <p class="checkout-subtitle">Complete your order details below.</p>
+
+                        <div class="checkout-form">
+                            <div class="form-group">
+                                <input type="text" v-model="checkoutForm.name" placeholder="Full Name">
+                                <span class="error-text" v-if="checkoutErrors.name">{{ checkoutErrors.name }}</span>
+                            </div>
+
+                            <div class="form-group">
+                                <input type="email" v-model="checkoutForm.email" placeholder="Email ID">
+                                <span class="error-text" v-if="checkoutErrors.email">{{ checkoutErrors.email }}</span>
+                            </div>
+
+                            <div class="form-group">
+                                <input type="text" v-model="checkoutForm.contact" placeholder="Contact No">
+                                <span class="error-text" v-if="checkoutErrors.contact">{{ checkoutErrors.contact }}</span>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="section-mini-label">Address Label</label>
+                                <div class="address-label-group">
+                                    <button type="button" class="address-label-btn" :class="{ active: checkoutForm.addressLabel === 'Work' }" @click="checkoutForm.addressLabel = 'Work'">Work</button>
+                                    <button type="button" class="address-label-btn" :class="{ active: checkoutForm.addressLabel === 'Home' }" @click="checkoutForm.addressLabel = 'Home'">Home</button>
+                                    <button type="button" class="address-label-btn" :class="{ active: checkoutForm.addressLabel === 'Other' }" @click="checkoutForm.addressLabel = 'Other'">Other</button>
+                                </div>
+                                <span class="error-text" v-if="checkoutErrors.addressLabel">{{ checkoutErrors.addressLabel }}</span>
+                            </div>
+
+                            <div class="form-group">
+                                <input type="text" v-model="checkoutForm.address" placeholder="Address">
+                                <span class="error-text" v-if="checkoutErrors.address">{{ checkoutErrors.address }}</span>
+                            </div>
+
+                            <div class="form-group">
+                                <input type="text" v-model="checkoutForm.floorRoom" placeholder="Floor / Room No">
+                                <span class="error-text" v-if="checkoutErrors.floorRoom">{{ checkoutErrors.floorRoom }}</span>
+                            </div>
+
+                            <div class="form-group">
+                                <input type="text" v-model="checkoutForm.landmark" placeholder="Landmark">
+                                <span class="error-text" v-if="checkoutErrors.landmark">{{ checkoutErrors.landmark }}</span>
+                            </div>
+
+                            <div class="payment-section-title">Payment Details</div>
+
+                            <div class="form-group">
+                                <input type="text" v-model="checkoutForm.cardName" placeholder="Name on Card">
+                                <span class="error-text" v-if="checkoutErrors.cardName">{{ checkoutErrors.cardName }}</span>
+                            </div>
+
+                            <div class="form-group card-input-wrap">
+                                <input 
+                                    type="text" 
+                                    v-model="checkoutForm.cardNumber" 
+                                    placeholder="Card Number" 
+                                    maxlength="19" 
+                                    inputmode="numeric" 
+                                    @input="formatCardNumber"
+                                    class="card-input"
+                                >
+
+                                <div class="card-icons">
+                                    <i class="fa-brands fa-cc-visa"></i>
+                                    <i class="fa-brands fa-cc-mastercard"></i>
+                                </div>
+
+                                <span class="error-text" v-if="checkoutErrors.cardNumber">
+                                    {{ checkoutErrors.cardNumber }}
+                                </span>
+                            </div>
+
+                            <div class="card-row">
+                                <div class="form-group">
+                                    <input type="text" v-model="checkoutForm.expiryDate" placeholder="MM/YY" maxlength="5" inputmode="numeric" @input="formatExpiryDate">
+                                    <span class="error-text" v-if="checkoutErrors.expiryDate">{{ checkoutErrors.expiryDate }}</span>
+                                </div>
+
+                                <div class="form-group">
+                                    <input type="password" v-model="checkoutForm.cvc" placeholder="CVC" maxlength="3" inputmode="numeric" @input="formatCVC">
+                                    <span class="error-text" v-if="checkoutErrors.cvc">{{ checkoutErrors.cvc }}</span>
+                                </div>
+                            </div>
+
+                            <button class="place-order-btn" @click="placeOrder">Place Order</button>
+                            <p @click="goBackHome" class="return-home-link">Return to Home</p>
+                        </div>
                     </div>
+
+                    <div class="checkout-summary-section">
+                        <h3 class="summary-title">Your Bag</h3>
+
+                        <div v-if="cart.length === 0" class="empty-cart">
+                            Your bag is empty.
+                        </div>
+
+                        <div v-else>
+                            <div v-for="(item,index) in cart" :key="index" class="checkout-item">
+                                <div class="checkout-item-left">
+                                    <img :src="item.image" alt="Product Image" class="checkout-item-img">
+                                </div>
+
+                                <div class="checkout-item-center">
+                                    <h4>{{ item.name }}</h4>
+                                    <p v-if="item.model">Model: {{ item.model }}</p>
+                                    <p v-if="item.connectivity">Connectivity: {{ item.connectivity }}</p>
+                                    <p v-if="item.color">Color: {{ item.color }}</p>
+                                    <p v-if="item.storage">Storage: {{ item.storage }}</p>
+                                    <p v-if="item.chip">Chip: {{ item.chip }}</p>
+                                    <p v-if="item.variant">Configuration: {{ item.variant }}</p>
+                                    <p v-if="item.size">Size: {{ item.size }}</p>
+                                </div>
+
+                                <div class="checkout-item-right">
+                                    <div class="checkout-price">{{ item.price }} AED</div>
+                                    <button class="remove-btn" @click.stop="removeFromCart(index)">Remove</button>
+                                </div>
+                            </div>
+
+                            <div class="summary-box">
+                                <div class="summary-row">
+                                    <span>Subtotal</span>
+                                    <span>{{ totalPrice }} AED</span>
+                                </div>
+
+                                <div class="summary-row">
+                                    <span>Delivery</span>
+                                    <span>{{ pickupFromStore ? 'Store Pickup' : 'Free' }}</span>
+                                </div>
+
+                                <div class="summary-row total-row">
+                                    <span>Total</span>
+                                    <span>{{ totalPrice }} AED</span>
+                                </div>
+
+                                <div class="pickup-section">
+                                    <div class="pickup-toggle-row">
+                                        <span class="pickup-label">Pickup From Store</span>
+
+                                        <label class="switch">
+                                            <input type="checkbox" v-model="pickupFromStore">
+                                            <span class="slider"></span>
+                                        </label>
+                                    </div>
+
+                                    <div v-if="pickupFromStore" class="pickup-dropdown-wrap">
+                                        <div class="custom-dropdown" @click="toggleDropdown">
+                                            <div class="dropdown-selected">
+                                                {{ selectedStore || 'Select pickup location' }}
+                                            </div>
+
+                                            <div class="dropdown-options" v-show="dropdownOpen">
+                                                <div class="dropdown-option" @click.stop="selectStore('Nova Uptown Mirdif')">
+                                                    Nova Uptown Mirdif
+                                                </div>
+
+                                                <div class="dropdown-option" @click.stop="selectStore('Nova Mall of The Emirates')">
+                                                    Nova Mall of The Emirates
+                                                </div>
+
+                                                <div class="dropdown-option" @click.stop="selectStore('Nova Al Wahda Mall')">
+                                                    Nova Al Wahda Mall
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div v-else class="delivery-estimate">
+                                        Estimated Delivery: <strong>{{ estimatedDeliveryDate }}</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
-            <!-- Best Sellers -->
-            <div class="section-head" id="products">
-                <div>
-                    <h2>Best Sellers</h2>
-                </div>
-            </div>
-
-            <div class="product-showcase">
-                <div class="product-card" @click="goToProduct('iPhone 17 Pro')" style="cursor:pointer;">
-                    <div class="product-top">
-                        <img src="pics/3iphone17protrans.png" alt="iPhone Pro Series" />
-                    </div>
-                    <div class="product-tag">Apple Flagship</div>
-                    <h3>iPhone 17 Pro</h3>
-                    <p>Aluminium body, pro cameras, powerful Apple silicon.</p>
-                    <div class="price-line">
-                        <div class="price">From AED 5,099</div>
-                        <a href="#" class="btn-secondary" style="padding:10px 16px;" @click.prevent.stop="goToProduct('iPhone 17 Pro')">View Product</a>
-                    </div>
-                </div>
-
-                <div class="product-card" @click="goToProduct('MacBook Pro')" style="cursor:pointer;">
-                    <div class="product-top">
-                        <img src="pics/macbookairtrans.png" alt="MacBook Pro" />
-                    </div>
-                    <div class="product-tag">Apple Productivity</div>
-                    <h3>MacBook Pro</h3>
-                    <p>High performance, long battery life, brilliant display.</p>
-                    <div class="price-line">
-                        <div class="price">From AED 6,999</div>
-                        <a href="#" class="btn-secondary" style="padding:10px 16px;" @click.prevent.stop="goToProduct('MacBook Pro')">View Product</a>
-                    </div>
-                </div>
-
-                <div class="product-card" @click="goToProduct('Galaxy S26 Ultra')" style="cursor:pointer;">
-                    <div class="product-top">
-                        <img src="pics/samsungs26ultrablack.webp" alt="Samsung S26 Ultra" />
-                    </div>
-                    <div class="product-tag">Samsung Flagship</div>
-                    <h3>Samsung S26 Ultra</h3>
-                    <p>AI features, elite camera system, powerful everyday performance.</p>
-                    <div class="price-line">
-                        <div class="price">From AED 5,299</div>
-                        <a href="#" class="btn-secondary" style="padding:10px 16px;" @click.prevent.stop="goToProduct('Galaxy S26 Ultra')">View Product</a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Gallery Strip -->
-            <div class="gallery-strip">
-                <div class="gallery-item"><img src="pics/airpodspro3trans.png" alt="Gallery 1"></div>
-                <div class="gallery-item"><img src="pics/applewatchseries11.png" alt="Gallery 2"></div>
-                <div class="gallery-item"><img src="pics/samsungbuds.avif" alt="Gallery 3"></div>
-                <div class="gallery-item"><img src="pics/samsungs26ultrablack.webp" alt="Gallery 4"></div>
-            </div>
-        </section>
-
-        <!-- Coming Soon Section -->
-        <section class="content-wrap coming-soon-section" id="coming-soon">
-            <div class="section-head">
-                <div>
-                    <h2>Coming Soon</h2>
-                    <p>Next launch arriving soon at NOVA.</p>
-                </div>
-            </div>
-
-            <div class="coming-soon-grid">
-                <div class="coming-soon-card">
-                    <div class="coming-soon-image-wrap">
-                        <img src="pics/macbookneon.png" alt="MacBook Neon">
-                        <span class="coming-badge">Coming Soon</span>
+            <!-- Receipt -->
+            <div v-if="currentView === 'receipt'" class="receipt-page">
+                <div class="bill-receipt">
+                    <div class="bill-header">
+                        <div>
+                            <h1>NOVA</h1>
+                            <p>Premium Tech Retail</p>
+                        </div>
+                        <div class="bill-status">PAID</div>
                     </div>
 
-                    <div class="coming-soon-info">
-                        <h3>MacBook Neon</h3>
-                        <p>Ultra-modern design with powerful performance and a bold premium finish.</p>
-                        <p class="launch-date">
-                            This product will launch on <strong>20 June 2026</strong>
+                    <div class="bill-meta-grid">
+                        <div>
+                            <span>Order No</span>
+                            <strong>{{ receiptData.orderNumber }}</strong>
+                        </div>
+
+                        <div>
+                            <span>Date</span>
+                            <strong>{{ receiptData.purchaseDate }}</strong>
+                        </div>
+
+                        <div>
+                            <span>Time</span>
+                            <strong>{{ receiptData.purchaseTime }}</strong>
+                        </div>
+
+                        <div>
+                            <span>Customer</span>
+                            <strong>{{ receiptData.name }}</strong>
+                        </div>
+
+                        <div>
+                            <span>Contact</span>
+                            <strong>{{ receiptData.contact }}</strong>
+                        </div>
+                    </div>
+
+                    <div class="bill-section">
+                        <h3>Billing Details</h3>
+                        <p><strong>Email:</strong> {{ receiptData.email }}</p>
+                        <p><strong>Address Type:</strong> {{ receiptData.addressLabel }}</p>
+                        <p><strong>Address:</strong> {{ receiptData.address }}</p>
+                        <p><strong>Floor / Room:</strong> {{ receiptData.floorRoom }}</p>
+                        <p><strong>Landmark:</strong> {{ receiptData.landmark }}</p>
+                    </div>
+
+                    <div class="bill-section">
+                        <h3>Order Type</h3>
+                        <p>
+                            <strong>{{ receiptData.pickupFromStore ? 'Pickup from Store' : 'Home Delivery' }}</strong>
+                        </p>
+                        <p v-if="receiptData.pickupFromStore && receiptData.selectedStore">
+                            <strong>Pickup Location:</strong> {{ receiptData.selectedStore }}
+                        </p>
+                        <p v-else>
+                            <strong>Estimated Delivery:</strong> {{ receiptData.estimatedDeliveryDate }}
                         </p>
                     </div>
-                </div>
-            </div>
-        </section>
 
-        <footer class="footer">
-            <div class="footer-row">
-                <div>© 2026 NOVA. Premium tech retail experience.</div>
-                <div>Apple • Samsung • Accessories • Support</div>
-            </div>
-        </footer>
-    </div>
-
-    
-
-    <!-- ========================= -->
-    <!-- LOGIN VIEW -->
-    <!-- ========================= -->
-    <div id="login-view" v-show="appPage === 'login'">
-        <div class="card" id="sliding-card">
-            <div class="card-bg card-bg-1"></div>
-            <div class="card-bg card-bg-2"></div>
-
-            <!-- Signup Form -->
-            <div class="form signup active">
-                <h2>Register</h2>
-                <input type="text" id="reg-name" placeholder="Name" />
-                <input type="email" id="reg-email" placeholder="Email" />
-                <input type="tel" id="reg-phone" placeholder="Phone Number" />
-                <label>Date of Birth</label>
-                <input type="date" id="reg-dob" />
-                <input type="password" id="reg-pass" placeholder="Password" />
-                <button class="main-btn" @click="handleSignup">SIGN UP</button>
-                <div class="toggle-btn" @click="toggleCard">Already have an account? Sign in</div>
-            </div>
-
-            <!-- Signin Form -->
-            <div class="form signin">
-                <div id="signin-main" class="signin-content" style="width:100%; display:flex; flex-direction:column; align-items:center;">
-                    <h2>Sign In</h2>
-                    <input type="email" id="login-email" placeholder="Email" />
-                    <input type="password" id="login-pass" placeholder="Password" />
-                    <div id="login-error" class="error-text" style="color:var(--error-red); font-size:0.7rem; display:none;">Invalid credentials</div>
-
-                    <div @click="toggleForgot(true)" style="font-size: 0.75rem; color: #fff; opacity: 0.7; cursor: pointer; margin-top: 10px; text-decoration: underline;">
-                        Forgot Password?
-                    </div>
-
-                    <button class="main-btn" @click="handleSignin">LOG IN</button>
-                    <div class="toggle-btn" @click="toggleCard" style="color:#dce6f7">New here? Register</div>
-                </div>
-
-                <!-- Forgot Password Form -->
-                <div id="forgot-form" class="signin-content" style="width:100%; display:none; flex-direction:column; align-items:center;">
-                    <h2>Reset Password</h2>
-                    <input type="email" id="forgot-email" placeholder="Enter Email ID" />
-                    <input type="password" id="forgot-new-pass" placeholder="New Password" />
-                    <input type="password" id="forgot-confirm-pass" placeholder="Confirm Password" />
-                    <button class="main-btn" @click="handleResetPassword">CHANGE PASSWORD</button>
-
-                    <div @click="toggleForgot(false)" style="font-size: 0.75rem; color: #fff; opacity: 0.7; cursor: pointer; margin-top: 15px; text-decoration: underline;">
-                        Back to Login
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ========================= -->
-    <!-- PROFILE VIEW -->
-    <!-- ========================= -->
-    <div id="profile-view" v-show="appPage === 'profile'">
-        <div class="profile-card">
-            <h3 id="prof-name">{{ currentUser ? currentUser.name : 'Name' }}</h3>
-            <p id="prof-details" style="font-size: 0.9rem; color: #d8e4f3; line-height: 1.6;">
-                <template v-if="currentUser">
-                    {{ currentUser.email }}<br>{{ currentUser.phone || '' }}
-                </template>
-            </p>
-            <button class="logout-btn" @click="handleLogout">Logout</button>
-        </div>
-    </div>
-
-    <!-- ========================= -->
-    <!-- CONTACT VIEW -->
-    <!-- ========================= -->
-    <div id="contact-view" v-show="appPage === 'contact'">
-        <div class="contact-card">
-            <h2>Contact Us</h2>
-            <p class="contact-subtext">Have a question or need help? Send us a message.</p>
-
-            <input type="text" id="contact-name" placeholder="Name" />
-            <input type="tel" id="contact-number" placeholder="Contact Number" />
-            <input type="email" id="contact-email" placeholder="Email" />
-            <label for="contact-message">Message</label>
-            <textarea id="contact-message" placeholder="Write your message here..."></textarea>
-
-            <button class="contact-btn" @click="handleContactSubmit">SUBMIT</button>
-        </div>
-    </div>
-
-    <!-- ========================= -->
-    <!-- STORE PAGE -->
-    <!-- ========================= -->
-    <div v-show="appPage === 'store'">
-
-        <div v-if="showSuccessPopup" class="success-popup-overlay">
-            <div class="success-popup-box">
-                <div class="success-tick-circle">
-                    <i class="fa-solid fa-check"></i>
-                </div>
-                <h2>Order Placed Successfully</h2>
-                <p>Your order has been confirmed.</p>
-            </div>
-        </div>
-
-        <div v-if="isProcessingOrder" class="processing-overlay">
-            <div class="processing-box">
-                <div class="processing-ring"></div>
-
-                <h2 v-if="processingStage === 'processing'">Processing Your Order</h2>
-                <h2 v-else-if="processingStage === 'payment'">Payment Processed</h2>
-                <h2 v-else>Finalizing Order</h2>
-
-                <p v-if="processingStage === 'processing'">
-                    Please wait while we confirm your items and prepare your payment.
-                </p>
-
-                <p v-else-if="processingStage === 'payment'">
-                    Your payment has been approved. We are preparing your confirmation.
-                </p>
-
-                <p v-else>
-                    Almost done. Your order confirmation is being generated.
-                </p>
-            </div>
-        </div>
-
-        <!-- Loading Overlay -->
-        <div v-if="isLoading" class="loading-overlay">
-            <div class="loader-content">
-                <h1 class="nova-loading-text">NOVA</h1>
-                <div class="novo-bar-container">
-                    <div class="novo-progress"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Store Navbar -->
-        <nav class="navbar">
-            <div class="nav-content">
-                <div class="nav-left">
-                    <a href="#" class="nova-logo" @click.prevent="goToIndex">NOVA</a>
-
-                    <div v-for="item in menuItems" :key="item.name" class="nav-item">
-                        <span class="nav-link">{{ item.name }}</span>
-
-                        <div v-if="item.dropdown" class="dropdown-menu">
-                            <a
-                                v-for="subItem in item.dropdown"
-                                :key="subItem"
-                                href="#"
-                                class="dropdown-link"
-                                @click.prevent="goToProduct(subItem)"
-                            >
-                                {{ subItem }}
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                <div
-                    v-if="cart.length > 0"
-                    class="cart-icon-wrapper"
-                    @click="goToCheckout"
-                    :class="{ 'cart-bounce': cartAnimate }"
-                >
-                    <i class="fa-solid fa-bag-shopping"></i>
-                    <span class="cart-badge">{{ cart.length }}</span>
-                </div>
-            </div>
-        </nav>
-
-        <div class="cart-toast" v-if="showCartToast">
-            {{ cartToastMessage }}
-        </div>
-
-        <!-- Store Home -->
-        <div v-if="currentView === 'home'">
-            <section
-                v-if="heroProducts.length"
-                class="hero-section"
-                :style="{ backgroundImage: 'url(' + heroProducts[0].img + ')' }"
-            >
-                <div class="hero-content">
-                    <h2 :style="{ color: heroProducts[0].color }">{{ heroProducts[0].name }}</h2>
-                    <p>{{ heroProducts[0].tag }}</p>
-                    <button class="buy-btn" @click="goToProduct(heroProducts[0].name)">Buy</button>
-                </div>
-            </section>
-
-            <section class="hero-products-strip" v-if="heroProducts.length > 1">
-                <div
-                    v-for="p in heroProducts.slice(1)"
-                    :key="p.name"
-                    class="hero-mini-card"
-                    @click="goToProduct(p.name)"
-                    :style="{ backgroundImage: 'url(' + p.img + ')' }"
-                >
-                    <div class="hero-mini-overlay">
-                        <h3 :style="{ color: p.color }">{{ p.name }}</h3>
-                        <p>{{ p.tag }}</p>
-                        <span class="hero-mini-btn">View Product</span>
-                    </div>
-                </div>
-            </section>
-
-            <section class="all-products-section">
-                <div class="all-products-header">
-                    <h2>Nova Products</h2>
-                    <p>Browse the full Nova collection.</p>
-                </div>
-
-                <div class="products-grid">
-                    <div
-                        v-for="product in allProducts"
-                        :key="product._id"
-                        class="product-card"
-                        @click="goToProduct(product.name)"
-                    >
-                        <img
-                            v-if="product.colors && product.colors.length"
-                            :src="product.colors[0].image"
-                            :alt="product.name"
-                            class="product-card-img"
-                        >
-
-                        <h3>{{ product.name }}</h3>
-                        <p class="product-card-desc">{{ product.longDescription }}</p>
-                        <div class="product-card-price">
-                            From {{ Number(product.basePrice).toLocaleString() }} AED
-                        </div>
-
-                        <button class="buy-btn">View Product</button>
-                    </div>
-                </div>
-            </section>
-        </div>
-
-        <!-- Product Details -->
-        <div v-if="currentView === 'details'" class="details-page" :style="{ backgroundColor: selectedProduct.bgColor, color: selectedProduct.textColor }">
-            <div class="config-wrapper">
-
-                <div class="sticky-image-container">
-                    <div class="zoom-wrapper">
-                        <img :src="activeColor.image" class="details-img" alt="Product image">
-                    </div>
-
-                    <div v-if="selectedProduct.gallery" class="gallery-container">
-                        <div v-for="(img, index) in selectedProduct.gallery" :key="index" class="gallery-card">
-                            <img :src="img" alt="Gallery image">
-                        </div>
-                    </div>
-
-                    <div class="specs-grid">
-                        <div class="spec-card" v-for="spec in selectedProduct.specs" :key="spec.label">
-                            <h4>{{ spec.label }}</h4>
-                            <p class="spec-item-text" v-html="spec.value"></p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="config-options">
-                    <p v-if="selectedProduct.isNew" class="product-badge-new">NEW</p>
-
-                    <h1 class="product-title">Buy {{ selectedProduct.name }}</h1>
-                    <p class="product-description">{{ selectedProduct.longDescription }}</p>
-
-                    <hr class="section-divider">
-
-                    <!-- Model -->
-                    <div v-if="selectedProduct.models" class="option-section">
-                        <h3 class="option-title">
-                            Model. <span>Which is right for you?</span>
-                        </h3>
-
-                        <div class="selection-group">
-                            <div
-                                v-for="m in selectedProduct.models"
-                                :key="m.name"
-                                class="model-box"
-                                :class="{ 'active-highlight': activeModel && activeModel.name === m.name }"
-                                @click="changeModel(m)"
-                            >
-                                <div class="tile-content">
-                                    <span class="tile-name">{{ m.name }}</span>
-                                    <span v-if="m.description" class="tile-subtext">{{ m.description }}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Connectivity -->
-                    <div v-if="activeModel && activeModel.connectivityOptions" class="option-section">
-                        <h3 class="option-title">
-                            Connectivity. <span>Choose your connection type</span>
-                        </h3>
-
-                        <div class="selection-group">
-                            <div
-                                v-for="c in activeModel.connectivityOptions"
-                                :key="c.name"
-                                class="selection-tile"
-                                :class="{ active: activeConnectivity && activeConnectivity.name === c.name }"
-                                @click="activeConnectivity = c"
-                            >
-                                <div class="tile-content">
-                                    <span class="tile-name">{{ c.name }}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Size -->
-                    <div v-if="selectedProduct.sizes" class="option-section">
-                        <h3 class="option-title">
-                            Size. <span>Choose your case size</span>
-                        </h3>
-
-                        <div class="selection-group">
-                            <div
-                                v-for="size in selectedProduct.sizes"
-                                :key="size.name"
-                                class="selection-tile"
-                                :class="{ active: activeSize && activeSize.name === size.name }"
-                                @click="activeSize = size"
-                            >
-                                <span class="tile-name">{{ size.name }}</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Finish -->
-                    <div class="option-section">
-                        <h3 class="option-title">
-                            Finish. <span>{{ activeColor ? activeColor.name : '' }}</span>
-                        </h3>
-
-                        <div class="color-dot-group">
-                            <div
-                                v-for="color in availableColors"
-                                :key="color.name"
-                                class="color-dot"
-                                :style="{ backgroundColor: color.hex }"
-                                :class="{ active: activeColor && activeColor.name === color.name }"
-                                @click="activeColor = color"
-                            ></div>
-                        </div>
-                    </div>
-
-                    <!-- Storage -->
-                    <div v-if="selectedProduct.storageOptions" class="option-section">
-                        <h3 class="option-title">
-                            Storage. <span>How much space do you need?</span>
-                        </h3>
-
-                        <div class="selection-group">
-                            <div
-                                v-for="s in selectedProduct.storageOptions"
-                                :key="s.name"
-                                class="selection-tile"
-                                :class="{ active: activeStorage && activeStorage.name === s.name }"
-                                @click="activeStorage = s"
-                            >
-                                <span class="tile-name">{{ s.name }}</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Display -->
-                    <div v-if="selectedProduct.displayOptions" class="option-section">
-                        <h3 class="option-title">Display.</h3>
-
-                        <div class="selection-group">
-                            <div
-                                v-for="d in selectedProduct.displayOptions"
-                                :key="d.name"
-                                class="selection-tile"
-                                :class="{ active: activeDisplay && activeDisplay.name === d.name }"
-                                @click="activeDisplay = d"
-                            >
-                                <span class="tile-name">{{ d.name }}</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Chip -->
-                    <div v-if="availableChips.length" class="option-section">
-                        <h3 class="option-title">Chip.</h3>
-
-                        <div class="selection-group">
-                            <div
-                                v-for="chip in availableChips"
-                                :key="chip.name"
-                                class="selection-tile"
-                                :class="{ active: activeChip && activeChip.name === chip.name }"
-                                @click="activeChip = chip; activeVariant = chip.variants[0]"
-                            >
-                                <span class="tile-name">{{ chip.name }}</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Configuration -->
-                    <div v-if="activeChip && activeChip.variants" class="option-section">
-                        <h3 class="option-title">Configuration.</h3>
-
-                        <div class="selection-group">
-                            <div
-                                v-for="v in activeChip.variants"
-                                :key="v.name"
-                                class="selection-tile"
-                                :class="{ active: activeVariant && activeVariant.name === v.name }"
-                                @click="activeVariant = v"
-                            >
-                                <span class="tile-name">{{ v.name }}</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <p class="stock-status" :class="{ 'out-stock': currentStock === 0 && !isSelectionIncomplete }">
-                        {{
-                            isSelectionIncomplete
-                                ? selectionMessage
-                                : currentStock > 0
-                                    ? `Stock Available: ${currentStock}`
-                                    : 'Out Of Stock'
-                        }}
-                    </p>
-
-                    <div class="price-tag">{{ calculatePrice }} AED</div>
-
-                    <button
-                        class="buy-btn"
-                        @click="addToCart"
-                        :disabled="isSelectionIncomplete || currentStock === 0"
-                    >
-                        {{
-                            isSelectionIncomplete
-                                ? 'Select Options'
-                                : currentStock === 0
-                                    ? 'Out Of Stock'
-                                    : 'Add to Bag'
-                        }}
-                    </button>
-
-                    <p @click="goBackHome" class="explore-link">Return to Home</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Checkout -->
-        <div v-if="currentView === 'checkout'" class="checkout-page">
-            <div class="checkout-container">
-
-                <div class="checkout-form-section">
-                    <button class="back-btn" @click="currentView = prevView">← Back</button>
-
-                    <h2 class="checkout-title">Checkout</h2>
-                    <p class="checkout-subtitle">Complete your order details below.</p>
-
-                    <div class="checkout-form">
-                        <div class="form-group">
-                            <input type="text" v-model="checkoutForm.name" placeholder="Full Name">
-                            <span class="error-text" v-if="checkoutErrors.name">{{ checkoutErrors.name }}</span>
-                        </div>
-
-                        <div class="form-group">
-                            <input type="email" v-model="checkoutForm.email" placeholder="Email ID">
-                            <span class="error-text" v-if="checkoutErrors.email">{{ checkoutErrors.email }}</span>
-                        </div>
-
-                        <div class="form-group">
-                            <input type="text" v-model="checkoutForm.contact" placeholder="Contact No">
-                            <span class="error-text" v-if="checkoutErrors.contact">{{ checkoutErrors.contact }}</span>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="section-mini-label">Address Label</label>
-                            <div class="address-label-group">
-                                <button type="button" class="address-label-btn" :class="{ active: checkoutForm.addressLabel === 'Work' }" @click="checkoutForm.addressLabel = 'Work'">Work</button>
-                                <button type="button" class="address-label-btn" :class="{ active: checkoutForm.addressLabel === 'Home' }" @click="checkoutForm.addressLabel = 'Home'">Home</button>
-                                <button type="button" class="address-label-btn" :class="{ active: checkoutForm.addressLabel === 'Other' }" @click="checkoutForm.addressLabel = 'Other'">Other</button>
-                            </div>
-                            <span class="error-text" v-if="checkoutErrors.addressLabel">{{ checkoutErrors.addressLabel }}</span>
-                        </div>
-
-                        <div class="form-group">
-                            <input type="text" v-model="checkoutForm.address" placeholder="Address">
-                            <span class="error-text" v-if="checkoutErrors.address">{{ checkoutErrors.address }}</span>
-                        </div>
-
-                        <div class="form-group">
-                            <input type="text" v-model="checkoutForm.floorRoom" placeholder="Floor / Room No">
-                            <span class="error-text" v-if="checkoutErrors.floorRoom">{{ checkoutErrors.floorRoom }}</span>
-                        </div>
-
-                        <div class="form-group">
-                            <input type="text" v-model="checkoutForm.landmark" placeholder="Landmark">
-                            <span class="error-text" v-if="checkoutErrors.landmark">{{ checkoutErrors.landmark }}</span>
-                        </div>
-
-                        <div class="payment-section-title">Payment Details</div>
-
-                        <div class="form-group">
-                            <input type="text" v-model="checkoutForm.cardName" placeholder="Name on Card">
-                            <span class="error-text" v-if="checkoutErrors.cardName">{{ checkoutErrors.cardName }}</span>
-                        </div>
-
-                        <div class="form-group card-input-wrap">
-                            <input 
-                                type="text" 
-                                v-model="checkoutForm.cardNumber" 
-                                placeholder="Card Number" 
-                                maxlength="19" 
-                                inputmode="numeric" 
-                                @input="formatCardNumber"
-                                class="card-input"
-                            >
-
-                            <div class="card-icons">
-                                <i class="fa-brands fa-cc-visa"></i>
-                                <i class="fa-brands fa-cc-mastercard"></i>
-                            </div>
-
-                            <span class="error-text" v-if="checkoutErrors.cardNumber">
-                                {{ checkoutErrors.cardNumber }}
-                            </span>
-                        </div>
-
-                        <div class="card-row">
-                            <div class="form-group">
-                                <input type="text" v-model="checkoutForm.expiryDate" placeholder="MM/YY" maxlength="5" inputmode="numeric" @input="formatExpiryDate">
-                                <span class="error-text" v-if="checkoutErrors.expiryDate">{{ checkoutErrors.expiryDate }}</span>
-                            </div>
-
-                            <div class="form-group">
-                                <input type="password" v-model="checkoutForm.cvc" placeholder="CVC" maxlength="3" inputmode="numeric" @input="formatCVC">
-                                <span class="error-text" v-if="checkoutErrors.cvc">{{ checkoutErrors.cvc }}</span>
-                            </div>
-                        </div>
-
-                        <button class="place-order-btn" @click="placeOrder">Place Order</button>
-                        <p @click="goBackHome" class="return-home-link">Return to Home</p>
-                    </div>
-                </div>
-
-                <div class="checkout-summary-section">
-                    <h3 class="summary-title">Your Bag</h3>
-
-                    <div v-if="cart.length === 0" class="empty-cart">
-                        Your bag is empty.
-                    </div>
-
-                    <div v-else>
-                        <div v-for="(item,index) in cart" :key="index" class="checkout-item">
-                            <div class="checkout-item-left">
-                                <img :src="item.image" alt="Product Image" class="checkout-item-img">
-                            </div>
-
-                            <div class="checkout-item-center">
-                                <h4>{{ item.name }}</h4>
-                                <p v-if="item.model">Model: {{ item.model }}</p>
-                                <p v-if="item.connectivity">Connectivity: {{ item.connectivity }}</p>
-                                <p v-if="item.color">Color: {{ item.color }}</p>
-                                <p v-if="item.storage">Storage: {{ item.storage }}</p>
-                                <p v-if="item.chip">Chip: {{ item.chip }}</p>
-                                <p v-if="item.variant">Configuration: {{ item.variant }}</p>
-                                <p v-if="item.size">Size: {{ item.size }}</p>
-                            </div>
-
-                            <div class="checkout-item-right">
-                                <div class="checkout-price">{{ item.price }} AED</div>
-                                <button class="remove-btn" @click.stop="removeFromCart(index)">Remove</button>
-                            </div>
-                        </div>
-
-                        <div class="summary-box">
-                            <div class="summary-row">
-                                <span>Subtotal</span>
-                                <span>{{ totalPrice }} AED</span>
-                            </div>
-
-                            <div class="summary-row">
-                                <span>Delivery</span>
-                                <span>{{ pickupFromStore ? 'Store Pickup' : 'Free' }}</span>
-                            </div>
-
-                            <div class="summary-row total-row">
-                                <span>Total</span>
-                                <span>{{ totalPrice }} AED</span>
-                            </div>
-
-                            <div class="pickup-section">
-                                <div class="pickup-toggle-row">
-                                    <span class="pickup-label">Pickup From Store</span>
-
-                                    <label class="switch">
-                                        <input type="checkbox" v-model="pickupFromStore">
-                                        <span class="slider"></span>
-                                    </label>
-                                </div>
-
-                                <div v-if="pickupFromStore" class="pickup-dropdown-wrap">
-                                    <div class="custom-dropdown" @click="toggleDropdown">
-                                        <div class="dropdown-selected">
-                                            {{ selectedStore || 'Select pickup location' }}
+                    <div class="bill-section">
+                        <h3>Items</h3>
+                        <table class="bill-table">
+                            <thead>
+                                <tr>
+                                    <th>Item</th>
+                                    <th>Config</th>
+                                    <th>Price</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="(item, index) in receiptData.items" :key="index">
+                                    <td>{{ item.name }}</td>
+                                    <td>
+                                        <div class="bill-config">
+                                            <span v-if="item.model">{{ item.model }}</span>
+                                            <span v-if="item.storage">{{ item.storage }}</span>
+                                            <span v-if="item.color">{{ item.color }}</span>
+                                            <span v-if="item.connectivity">{{ item.connectivity }}</span>
+                                            <span v-if="item.size">{{ item.size }}</span>
+                                            <span v-if="item.chip">{{ item.chip }}</span>
+                                            <span v-if="item.variant">{{ item.variant }}</span>
                                         </div>
-
-                                        <div class="dropdown-options" v-show="dropdownOpen">
-                                            <div class="dropdown-option" @click.stop="selectStore('Nova Uptown Mirdif')">
-                                                Nova Uptown Mirdif
-                                            </div>
-
-                                            <div class="dropdown-option" @click.stop="selectStore('Nova Mall of The Emirates')">
-                                                Nova Mall of The Emirates
-                                            </div>
-
-                                            <div class="dropdown-option" @click.stop="selectStore('Nova Al Wahda Mall')">
-                                                Nova Al Wahda Mall
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div v-else class="delivery-estimate">
-                                    Estimated Delivery: <strong>{{ estimatedDeliveryDate }}</strong>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-
-        <!-- Receipt -->
-        <div v-if="currentView === 'receipt'" class="receipt-page">
-            <div class="bill-receipt">
-                <div class="bill-header">
-                    <div>
-                        <h1>NOVA</h1>
-                        <p>Premium Tech Retail</p>
-                    </div>
-                    <div class="bill-status">PAID</div>
-                </div>
-
-                <div class="bill-meta-grid">
-                    <div>
-                        <span>Order No</span>
-                        <strong>{{ receiptData.orderNumber }}</strong>
+                                    </td>
+                                    <td>{{ item.price }} AED</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
 
-                    <div>
-                        <span>Date</span>
-                        <strong>{{ receiptData.purchaseDate }}</strong>
+                    <div class="bill-total-row">
+                        <span>Total Paid</span>
+                        <strong>{{ receiptData.totalPrice }} AED</strong>
                     </div>
 
-                    <div>
-                        <span>Time</span>
-                        <strong>{{ receiptData.purchaseTime }}</strong>
+                    <div class="bill-footer">
+                        <p>Thank you for shopping with NOVA.</p>
+                        <button class="bill-home-btn" @click="goBackHome">Back to Home</button>
                     </div>
-
-                    <div>
-                        <span>Customer</span>
-                        <strong>{{ receiptData.name }}</strong>
-                    </div>
-
-                    <div>
-                        <span>Contact</span>
-                        <strong>{{ receiptData.contact }}</strong>
-                    </div>
-                </div>
-
-                <div class="bill-section">
-                    <h3>Billing Details</h3>
-                    <p><strong>Email:</strong> {{ receiptData.email }}</p>
-                    <p><strong>Address Type:</strong> {{ receiptData.addressLabel }}</p>
-                    <p><strong>Address:</strong> {{ receiptData.address }}</p>
-                    <p><strong>Floor / Room:</strong> {{ receiptData.floorRoom }}</p>
-                    <p><strong>Landmark:</strong> {{ receiptData.landmark }}</p>
-                </div>
-
-                <div class="bill-section">
-                    <h3>Order Type</h3>
-                    <p>
-                        <strong>{{ receiptData.pickupFromStore ? 'Pickup from Store' : 'Home Delivery' }}</strong>
-                    </p>
-                    <p v-if="receiptData.pickupFromStore && receiptData.selectedStore">
-                        <strong>Pickup Location:</strong> {{ receiptData.selectedStore }}
-                    </p>
-                    <p v-else>
-                        <strong>Estimated Delivery:</strong> {{ receiptData.estimatedDeliveryDate }}
-                    </p>
-                </div>
-
-                <div class="bill-section">
-                    <h3>Items</h3>
-                    <table class="bill-table">
-                        <thead>
-                            <tr>
-                                <th>Item</th>
-                                <th>Config</th>
-                                <th>Price</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="(item, index) in receiptData.items" :key="index">
-                                <td>{{ item.name }}</td>
-                                <td>
-                                    <div class="bill-config">
-                                        <span v-if="item.model">{{ item.model }}</span>
-                                        <span v-if="item.storage">{{ item.storage }}</span>
-                                        <span v-if="item.color">{{ item.color }}</span>
-                                        <span v-if="item.connectivity">{{ item.connectivity }}</span>
-                                        <span v-if="item.size">{{ item.size }}</span>
-                                        <span v-if="item.chip">{{ item.chip }}</span>
-                                        <span v-if="item.variant">{{ item.variant }}</span>
-                                    </div>
-                                </td>
-                                <td>{{ item.price }} AED</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="bill-total-row">
-                    <span>Total Paid</span>
-                    <strong>{{ receiptData.totalPrice }} AED</strong>
-                </div>
-
-                <div class="bill-footer">
-                    <p>Thank you for shopping with NOVA.</p>
-                    <button class="bill-home-btn" @click="goBackHome">Back to Home</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Nova AI -->
-        <div class="nova-ai-trigger" @click="showAI = !showAI">
-            <i class="fa-solid fa-sparkles" v-if="!showAI"></i>
-            <i class="fa-solid fa-xmark" v-else></i>
-        </div>
-
-        <div class="nova-ai-window" v-if="showAI">
-            <div class="nova-ai-header">
-                <h3>NOVA SPECIALIST</h3>
-                <span class="status-dot"></span>
-            </div>
-
-            <div class="nova-ai-messages" id="ai-messages">
-                <div v-for="m in aiMessages" :key="m.text + m.role" :class="['msg', m.role]">
-                    <span v-html="m.text"></span>
                 </div>
             </div>
 
-            <div class="nova-ai-input-area">
-                <input v-model="userQuery" @keyup.enter="askNova" placeholder="Ask Nova about cameras or gaming...">
-                <button @click="askNova"><i class="fa-solid fa-paper-plane"></i></button>
+            <!-- Nova AI -->
+            <div class="nova-ai-trigger" @click="showAI = !showAI">
+                <i class="fa-solid fa-sparkles" v-if="!showAI"></i>
+                <i class="fa-solid fa-xmark" v-else></i>
+            </div>
+
+            <div class="nova-ai-window" v-if="showAI">
+                <div class="nova-ai-header">
+                    <h3>NOVA SPECIALIST</h3>
+                    <span class="status-dot"></span>
+                </div>
+
+                <div class="nova-ai-messages" id="ai-messages">
+                    <div v-for="m in aiMessages" :key="m.text + m.role" :class="['msg', m.role]">
+                        <span v-html="m.text"></span>
+                    </div>
+                </div>
+
+                <div class="nova-ai-input-area">
+                    <input v-model="userQuery" @keyup.enter="askNova" placeholder="Ask Nova about cameras or gaming...">
+                    <button @click="askNova"><i class="fa-solid fa-paper-plane"></i></button>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<script>
-    const API_URL = "https://cst3990-nova---backend.onrender.com/api";
-new Vue({
-    
-    el: '#app',
-    data: {
-    // Global page state
-    appPage: 'landing',
-    appHistory: ['landing'],
-    currentUser: null,
-
-    // Store state
-    isLoading: false,
-    isProcessingOrder: false,
-    processingStage: 'processing',
-    currentView: 'home',
-    selectedProduct: null,
-    activeColor: null,
-    activeSize: null,
-    activeStorage: null,
-    activeModel: null,
-    activeDisplay: null,
-    showSuccessPopup: false,
-    activeChip: null,
-    activeVariant: null,
-    pickupFromStore: false,
-    selectedStore: '',
-    dropdownOpen: false,
-    cartToastMessage: '',
-    cartAnimate: false,
-    showCartToast: false,
-    activeConnectivity: null,
-    receiptData: null,
-    orderCounter: Number(localStorage.getItem("novaOrderCounter")) || 1,
-    cart: [],
-    showAI: false,
-    prevView: 'home',
-    userQuery: '',
-
-    checkoutForm: {
-        name: '',
-        email: '',
-        contact: '',
-        addressLabel: '',
-        address: '',
-        floorRoom: '',
-        landmark: '',
-        cardName: '',
-        cardNumber: '',
-        expiryDate: '',
-        cvc: ''
-    },
-
-    checkoutErrors: {},
-
-    aiMessages: [
-        { role: 'ai', text: 'Hello! I am <b>Nova AI</b>. How can i help you?' }
-    ],
-
-    heroProducts: [
-        { name: 'iPhone 17 Pro', tag: 'Titanium. Pro Intelligence.', img: 'pics/iphone17.png', color: '#00f2ff' },
-        { name: 'Galaxy S26 Ultra', tag: 'Everyday Samsung power with style.', img: 'pics/galaxys26-ultra.jpg', color: '#8ab4ff' },
-        { name: 'MacBook Pro', tag: 'Mind-blowing. Head-turning.', img: 'pics/mac.png', color: '#fff' },
-        { name: 'Airpods', tag: 'Magic like you’ve never heard.', img: 'pics/airpods.png', color: '#9de5ff' },
-        { name: 'iPad Air', tag: 'Two sizes. Faster chip. All magic.', img: 'pics/ipadair.png', color: '#9de5ff' },
-        { name: 'Galaxy X', tag: 'Next-generation flagship performance.', img: 'pics/galaxyx-black.png', color: '#c7d2ff' },
-        { name: 'Galaxy Z', tag: 'Foldable innovation. Premium experience.', img: 'pics/extraimgzflip7.jpg', color: '#dfe8ff' }
-    ],
-
-    menuItems: [
-        {
-            name: 'iPhone',
-            dropdown: [
-                'iPhone 17 Pro Max',
-                'iPhone 17 Pro',
-                'iPhone 17',
-                'iPhone Air',
-                'iPhone 16 Pro Max',
-                'iPhone 16 Pro',
-                'iPhone 16',
-                'iPhone 15 Pro Max',
-                'iPhone 15 Pro'
-            ]
-        },
-        {
-            name: 'Galaxy S',
-            dropdown: [
-                'Galaxy S25',
-                'Galaxy S25 Ultra',
-                'Galaxy S26',
-                'Galaxy S26 Ultra'
-            ]
-        },
-        {
-            name: 'Galaxy Z',
-            dropdown: [
-                'Galaxy Z Flip7',
-                'Galaxy Z Flip7 FE',
-                'Galaxy Z Flip6',
-                'Galaxy Z Fold7',
-                'Galaxy Z Fold6'
-            ]
-        },
-        {
-            name: 'Galaxy A',
-            dropdown: [
-                'Galaxy A55 5G',
-                'Galaxy A35 5G',
-                'Galaxy A25 5G',
-                'Galaxy A15 5G',
-                'Galaxy A05s'
-            ]
-        },
-        { name: 'Mac', dropdown: ['MacBook Pro', 'MacBook Air'] },
-        { name: 'iPad', dropdown: ['iPad Pro', 'iPad Air'] },
-        { name: 'Watch', dropdown: ['Watch Series 11', 'Watch SE 3'] },
-        {
-            name: 'Galaxy Watch',
-            dropdown: [
-                'Galaxy Watch Ultra',
-                'Galaxy Watch',
-                'Galaxy Watch Classic'
-            ]
-        },
-        { name: 'Airpods', dropdown: ['Airpods Pro 3', 'Airpods 4', 'Airpods Max'] },
-        { name: 'Galaxy Buds', dropdown: ['Galaxy Buds 3', 'Galaxy Buds 2'] }
-    ],
-
-    allProducts: []
-},  
-    async created() {
-        const saved = localStorage.getItem('nova_session');
-        if (saved) {
-            this.currentUser = JSON.parse(saved);
-        }
-
-        try {
-            const response = await fetch(`${API_URL}/products`);
-            const products = await response.json();
-            this.allProducts = products;
-            console.log("Loaded products:", this.allProducts.map(p => p.name));
-        } catch (error) {
-            console.error("Failed to load products:", error);
-        }
-
-        this.loadCart();
-    },
-
-    mounted() {
-        this.$nextTick(() => {
-            this.createIconsSafe();
-            this.applyBodyState();
-            this.initBrandReveal();
-            this.initStarsCanvas();
-            this.initHeaderScroll();
-        });
-    },
-
-    updated() {
-        this.$nextTick(() => {
-            this.createIconsSafe();
-            this.applyBodyState();
-        });
-    },
-
-    watch: {
-        appPage() {
-            this.$nextTick(() => {
-                this.applyBodyState();
-                this.createIconsSafe();
-            });
-        },
-        currentUser() {
-            this.loadCart();
-        }
-    },
-
-    computed: {
-        calculatePrice() {
-            return this.calculatePriceNumber.toLocaleString();
-        },
-
-        calculatePriceNumber() {
-            if (!this.selectedProduct) return 0;
-
-            let p = this.selectedProduct.basePrice || 0;
-
-            if (this.activeModel) {
-                p += this.activeModel.priceMod || this.activeModel.basePrice || this.activeModel.price || 0;
-            }
-
-            if (this.activeConnectivity) {
-                p += this.activeConnectivity.priceMod || this.activeConnectivity.basePrice || this.activeConnectivity.price || 0;
-            }
-
-            if (this.activeSize) {
-                p += this.activeSize.priceMod || this.activeSize.basePrice || this.activeSize.price || 0;
-            }
-
-            if (this.activeDisplay) {
-                p += this.activeDisplay.priceMod || this.activeDisplay.price || 0;
-            }
-
-            if (this.activeChip) {
-                p += this.activeChip.priceMod || this.activeChip.price || 0;
-            }
-
-            if (this.activeVariant) {
-                p += this.activeVariant.priceMod || this.activeVariant.price || 0;
-            }
-
-            if (this.activeStorage) {
-                p += this.activeStorage.priceMod || this.activeStorage.price || 0;
-            }
-
-            return p;
-        },
-
-        currentStock() {
-            if (!this.selectedProduct || !this.selectedProduct.inventory) return 0;
-
-            const hasStorage = this.selectedProduct.storageOptions && this.selectedProduct.storageOptions.length;
-            const hasModel = this.selectedProduct.models && this.selectedProduct.models.length;
-
-            let match = null;
-
-            if (hasStorage) {
-                if (!this.activeColor || !this.activeColor.name || !this.activeStorage) return 0;
-
-                match = this.selectedProduct.inventory.find(item =>
-                    item.color === this.activeColor.name &&
-                    item.storage === this.activeStorage.name
-                );
-            } else if (hasModel) {
-                if (!this.activeColor || !this.activeColor.name || !this.activeModel) return 0;
-
-                match = this.selectedProduct.inventory.find(item =>
-                    item.color === this.activeColor.name &&
-                    item.model === this.activeModel.name
-                );
-            } else {
-                if (!this.activeColor || !this.activeColor.name) return 0;
-
-                match = this.selectedProduct.inventory.find(item =>
-                    item.color === this.activeColor.name
-                );
-            }
-
-            return match ? match.stock : 0;
-        },
-
-        availableChips() {
-            if (!this.selectedProduct || !this.selectedProduct.chips) return [];
-            if (!this.activeModel) return this.selectedProduct.chips;
-
-            return this.selectedProduct.chips.filter(chip => {
-                return !chip.allowedModels || chip.allowedModels.includes(this.activeModel.name);
-            });
-        },
-
-        availableColors() {
-            if (!this.selectedProduct) return [];
-
-            if (this.activeModel && this.activeModel.colors && this.activeModel.colors.length) {
-                return this.activeModel.colors;
-            }
-
-            return this.selectedProduct.colors && this.selectedProduct.colors.length
-                ? this.selectedProduct.colors
-                : [];
-        },
-
-        totalPrice() {
-            return this.cart
-                .reduce((sum, item) => {
-                    const priceCleaned = Number(String(item.price).replace(/,/g, ''));
-                    return sum + (isNaN(priceCleaned) ? 0 : priceCleaned);
-                }, 0)
-                .toLocaleString();
-        },
-
-        estimatedDeliveryDate() {
-            const today = new Date();
-            const deliveryDate = new Date(today);
-            deliveryDate.setDate(today.getDate() + 4);
-
-            const day = deliveryDate.getDate();
-            const month = deliveryDate.toLocaleString('en-US', { month: 'long' });
-
-            function ordinal(n) {
-                if (n > 3 && n < 21) return 'th';
-                switch (n % 10) {
-                    case 1: return 'st';
-                    case 2: return 'nd';
-                    case 3: return 'rd';
-                    default: return 'th';
-                }
-            }
-
-            return `${day}${ordinal(day)} ${month}`;
-        },
-
-        cartStorageKey() {
-            return this.currentUser
-                ? `nova_cart_${this.currentUser.email}`
-                : "nova_cart_guest";
-        },
-
-        selectionMessage() {
-            if (!this.selectedProduct) return 'Select options';
-
-            const hasColor = this.selectedProduct.colors && this.selectedProduct.colors.length;
-            const hasStorage = this.selectedProduct.storageOptions && this.selectedProduct.storageOptions.length;
-            const hasModel = this.selectedProduct.models && this.selectedProduct.models.length;
-
-            if (hasColor && hasStorage) return 'Select color and storage';
-            if (hasColor && hasModel) return 'Select color and model';
-            if (hasColor) return 'Select color';
-
-            return 'Select options';
-        },
-
-        isSelectionIncomplete() {
-            if (!this.selectedProduct) return true;
-
-            const hasColor = this.selectedProduct.colors && this.selectedProduct.colors.length;
-            const hasStorage = this.selectedProduct.storageOptions && this.selectedProduct.storageOptions.length;
-            const hasModel = this.selectedProduct.models && this.selectedProduct.models.length;
-
-            if (hasStorage) {
-                return !this.activeColor || !this.activeColor.name || !this.activeStorage;
-            }
-
-            if (hasModel) {
-                return !this.activeColor || !this.activeColor.name || !this.activeModel;
-            }
-
-            if (hasColor) {
-                return !this.activeColor || !this.activeColor.name;
-            }
-
-            return false;
-        }
-    },
-
-    methods: {
-        createIconsSafe() {
-            if (window.lucide) {
-                lucide.createIcons();
-            }
-        },
-
-        initBrandReveal() {
-            setTimeout(() => {
-                const brand = document.getElementById('brand-name');
-                if (brand) brand.classList.add('reveal-init');
-            }, 300);
-
-            setTimeout(() => {
-                const tagline = document.getElementById('tagline');
-                if (tagline) tagline.classList.add('reveal-init');
-            }, 1200);
-        },
-
-        initHeaderScroll() {
-            let lastScrollY = window.scrollY;
-
-            window.addEventListener('scroll', () => {
-                const h = document.getElementById('main-header');
-                if (!h) return;
-
-                const currentScrollY = window.scrollY;
-
-                if (currentScrollY > 80) {
-                    h.classList.add('scrolled');
-                } else {
-                    h.classList.remove('scrolled');
-                }
-
-                if (currentScrollY > lastScrollY && currentScrollY > 140) {
-                    h.classList.add('nav-hidden');
-                } else {
-                    h.classList.remove('nav-hidden');
-                }
-
-                lastScrollY = currentScrollY;
-            });
-        },
-
-        initStarsCanvas() {
-            const canvas = document.getElementById('star-canvas');
-            if (!canvas) return;
-
-            const ctx = canvas.getContext('2d');
-            let stars = [];
-
-            const resize = () => {
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
-            };
-
-            const initStars = () => {
-                stars = [];
-                for (let i = 0; i < 140; i++) {
-                    stars.push({
-                        x: Math.random() * window.innerWidth,
-                        y: Math.random() * window.innerHeight,
-                        s: Math.random() * 2,
-                        o: Math.random() * 0.5 + 0.2
-                    });
-                }
-            };
-
-            const drawStars = () => {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                ctx.fillStyle = '#fff';
-
-                stars.forEach((s) => {
-                    ctx.globalAlpha = s.o;
-                    ctx.beginPath();
-                    ctx.arc(s.x, s.y, s.s, 0, Math.PI * 2);
-                    ctx.fill();
-                });
-
-                requestAnimationFrame(drawStars);
-            };
-
-            resize();
-            initStars();
-            drawStars();
-
-            window.addEventListener('resize', () => {
-                resize();
-                initStars();
-            });
-        },
-
-        applyBodyState() {
-            const b = document.getElementById('main-body');
-            if (!b) return;
-
-            b.classList.remove('login-active', 'profile-active', 'contact-active', 'no-scroll');
-
-            if (this.appPage === 'login') {
-                b.classList.add('login-active', 'no-scroll');
-            } else if (this.appPage === 'profile') {
-                b.classList.add('profile-active', 'no-scroll');
-            } else if (this.appPage === 'contact') {
-                b.classList.add('contact-active', 'no-scroll');
-            }
-        },
-
-        showToast(message, type = 'info') {
-            const container = document.getElementById('toast-container');
-            if (!container) return;
-
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-
-            let icon = 'info';
-            if (type === 'success') icon = 'check-circle';
-            if (type === 'error') icon = 'alert-circle';
-
-            toast.innerHTML = `<i data-lucide="${icon}"></i> <span>${message}</span>`;
-            container.appendChild(toast);
-            this.createIconsSafe();
-
-            setTimeout(() => toast.classList.add('show'), 100);
-            setTimeout(() => {
-                toast.classList.remove('show');
-                setTimeout(() => toast.remove(), 500);
-            }, 3000);
-        },
-
-        showPage(page) {
-            if (page !== this.appHistory[this.appHistory.length - 1]) {
-                this.appHistory.push(page);
-            }
-            this.appPage = page;
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        },
-
-        handleBack() {
-            if (this.appPage === 'store' && this.currentView !== 'home') {
-                this.currentView = 'home';
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-                return;
-            }
-
-            if (this.appHistory.length > 1) {
-                this.appHistory.pop();
-                this.appPage = this.appHistory[this.appHistory.length - 1];
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            }
-        },
-
-        handleNavLogin() {
-            this.currentUser ? this.showPage('profile') : this.showPage('login');
-        },
-
-        goToIndex() {
-            this.appPage = 'landing';
-
-            if (this.appHistory[this.appHistory.length - 1] !== 'landing') {
-                this.appHistory.push('landing');
-            }
-
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        },
-
-        goToStoreHome() {
-            if (this.appHistory[this.appHistory.length - 1] !== 'store') {
-                this.appHistory.push('store');
-            }
-
-            this.appPage = 'store';
-            this.currentView = 'home';
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        },
-
-        toggleForgot(show) {
-            const signinMain = document.getElementById('signin-main');
-            const forgotForm = document.getElementById('forgot-form');
-
-            if (signinMain) signinMain.style.display = show ? 'none' : 'flex';
-            if (forgotForm) forgotForm.style.display = show ? 'flex' : 'none';
-        },
-
-        toggleCard() {
-            const signin = document.querySelector('.signin');
-            const signup = document.querySelector('.signup');
-            const slidingCard = document.getElementById('sliding-card');
-
-            if (signin) signin.classList.toggle('active');
-            if (signup) signup.classList.toggle('active');
-            if (slidingCard) slidingCard.classList.toggle('signin-mode');
-
-            this.toggleForgot(false);
-        },
-
-        async handleSignup() {
-            const n = document.getElementById('reg-name').value;
-            const e = document.getElementById('reg-email').value;
-            const p = document.getElementById('reg-phone').value;
-            const d = document.getElementById('reg-dob').value;
-            const pass = document.getElementById('reg-pass').value;
-            const res = await fetch(`${API_URL}/signup`);
-
-            if (!n || !e || !p || !d || !pass) {
-                return this.showToast('Please fill all fields', 'error');
-            }
-
-            if (pass.length < 6) {
-                return this.showToast('Password must be at least 6 characters', 'error');
-            }
-
-            try {
-                const res = await fetch(`${API_URL}/signup`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        name: n,
-                        email: e,
-                        phone: p,
-                        dob: d,
-                        pass: pass
-                    })
-                });
-
-                const data = await res.json();
-
-                if (res.ok) {
-                    this.showToast('Account successfully created!', 'success');
-                    this.toggleCard();
-                } else {
-                    this.showToast(data.message || 'Registration failed', 'error');
-                }
-            } catch (err) {
-                this.showToast('Server Offline', 'error');
-            }
-        },
-
-        async handleSignin() {
-            const e = document.getElementById('login-email').value;
-            const p = document.getElementById('login-pass').value;
-           fetch(`${API_URL}/signin`); 
-
-            if (!e || !p) {
-                return this.showToast('Please enter email and password', 'error');
-            }
-
-            try {
-                const res = await fetch(`${API_URL}/signin`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email: e, pass: p })
-                });
-
-                const data = await res.json();
-
-                if (res.ok) {
-                    this.currentUser = data.user;
-                    localStorage.setItem('nova_session', JSON.stringify(data.user));
-                    this.loadCart();
-                    this.showToast('Successfully logged in!', 'success');
-                    this.showPage('landing');
-                } else {
-                    this.showToast('Invalid credentials', 'error');
-                }
-            } catch (err) {
-                this.showToast('Server Error', 'error');
-            }
-        },
-
-        async handleResetPassword() {
-            const email = document.getElementById('forgot-email').value;
-            const newPass = document.getElementById('forgot-new-pass').value;
-            const confirmPass = document.getElementById('forgot-confirm-pass').value;
-            fetch(`${API_URL}/reset-password`);
-
-            if (!email || !newPass || !confirmPass) {
-                return this.showToast('Please fill all fields', 'error');
-            }
-
-            if (newPass !== confirmPass) {
-                return this.showToast('Passwords do not match', 'error');
-            }
-
-            try {
-                const res = await fetch(`${API_URL}/reset-password`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, newPass })
-                });
-
-                const data = await res.json();
-
-                if (res.ok) {
-                    this.showToast('Password updated successfully!', 'success');
-                    document.getElementById('forgot-email').value = '';
-                    document.getElementById('forgot-new-pass').value = '';
-                    document.getElementById('forgot-confirm-pass').value = '';
-                    setTimeout(() => this.toggleForgot(false), 1500);
-                } else {
-                    this.showToast(data.message || 'Update failed', 'error');
-                }
-            } catch (err) {
-                this.showToast('Server Error: Check if server.js is running', 'error');
-            }
-        },
-
-        handleLogout() {
-            this.currentUser = null;
-            localStorage.removeItem('nova_session');
-            this.cart = [];
-            this.showToast('Logged out successfully', 'info');
-            this.showPage('landing');
-        },
-
-        async handleContactSubmit() {
-            const name = document.getElementById('contact-name').value.trim();
-            const number = document.getElementById('contact-number').value.trim();
-            const email = document.getElementById('contact-email').value.trim();
-            const message = document.getElementById('contact-message').value.trim();
-
-            if (!name || !number || !email || !message) {
-                return this.showToast('Please fill all fields', 'error');
-            }
-
-            try {
-                const res = fetch(`${API_URL}/contact`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        name,
-                        email,
-                        phone: number,
-                        message
-                    })
-                });
-
-                const data = await res.json();
-
-                if (res.ok) {
-                    this.showToast('Request submitted. We will contact you soon.', 'success');
-                    document.getElementById('contact-name').value = '';
-                    document.getElementById('contact-number').value = '';
-                    document.getElementById('contact-email').value = '';
-                    document.getElementById('contact-message').value = '';
-                } else {
-                    this.showToast(data.message || 'Failed to submit request', 'error');
-                }
-            } catch (error) {
-                this.showToast('Server error', 'error');
-            }
-        },
-
-        askNova() {
-            const query = this.userQuery.trim();
-            if (!query) return;
-
-            this.aiMessages.push({
-                role: 'user',
-                text: query
-            });
-
-            this.userQuery = '';
-            this.scrollAiToLatest();
-
-            window.setTimeout(() => {
-                this.aiMessages.push({
-                    role: 'ai',
-                    text: this.getNovaReply(query)
-                });
-                this.scrollAiToLatest();
-            }, 250);
-        },
-
-        getNovaReply(query) {
-            const q = query.toLowerCase();
-            const matchingProduct = this.allProducts.find(product =>
-                product.name && q.includes(product.name.toLowerCase())
-            );
-
-            if (matchingProduct) {
-                const basePrice = Number(matchingProduct.basePrice || 0).toLocaleString();
-                return `<b>${matchingProduct.name}</b> starts at AED ${basePrice}. Open the product page to compare colors, storage, and other options.`;
-            }
-
-            if (q.includes('camera')) {
-                return 'For camera-focused shopping, the <b>iPhone 17 Pro</b> and <b>Galaxy S26 Ultra</b> are strong picks in this store.';
-            }
-
-            if (q.includes('gaming') || q.includes('performance')) {
-                return 'For gaming and heavy performance, go for the flagship phones or MacBook models with higher storage and chip options.';
-            }
-
-            if (q.includes('pickup') || q.includes('store')) {
-                return 'You can enable <b>Pickup From Store</b> during checkout and choose from the available Nova pickup locations.';
-            }
-
-            if (q.includes('hello') || q.includes('hi')) {
-                return 'Hello! Ask me about products, pricing, cameras, gaming, or pickup options.';
-            }
-
-            return 'I can help you choose between Apple and Samsung products, explain pricing, and guide you through pickup or checkout.';
-        },
-
-        scrollAiToLatest() {
-            this.$nextTick(() => {
-                const messages = document.getElementById('ai-messages');
-                if (messages) {
-                    messages.scrollTop = messages.scrollHeight;
-                }
-            });
-        },
-
-        loadCart() {
-            const savedCart = localStorage.getItem(this.cartStorageKey);
-            this.cart = savedCart ? JSON.parse(savedCart) : [];
-        },
-
-        goBackHome() {
-            this.currentView = 'home';
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        },
-
-        goToProduct(productName) {
-            this.appPage = 'store';
-
-            if (this.appHistory[this.appHistory.length - 1] !== 'store') {
-                this.appHistory.push('store');
-            }
-
-            this.isLoading = true;
-
-            setTimeout(() => {
-                const searchName = String(productName || "").trim().toLowerCase();
-
-                const product =
-                    this.allProducts.find(
-                        p => p.name && p.name.trim().toLowerCase() === searchName
-                    ) ||
-                    this.allProducts.find(
-                        p => p.name && p.name.trim().toLowerCase().includes(searchName)
-                    );
-
-                if (!product) {
-                    this.isLoading = false;
-                    alert(`Product not found: ${productName}`);
-                    return;
-                }
-
-                this.selectedProduct = product;
-
-                this.activeModel =
-                    product.models && product.models.length
-                        ? product.models[0]
-                        : null;
-
-                this.activeConnectivity =
-                    this.activeModel &&
-                    this.activeModel.connectivityOptions &&
-                    this.activeModel.connectivityOptions.length
-                        ? this.activeModel.connectivityOptions[0]
-                        : null;
-
-                this.activeColor =
-                    this.activeModel &&
-                    this.activeModel.colors &&
-                    this.activeModel.colors.length
-                        ? this.activeModel.colors[0]
-                        : (product.colors && product.colors.length ? product.colors[0] : null);
-
-                this.activeSize =
-                    product.sizes && product.sizes.length
-                        ? product.sizes[0]
-                        : null;
-
-                this.activeStorage =
-                    product.storageOptions && product.storageOptions.length
-                        ? product.storageOptions[0]
-                        : null;
-
-                this.activeDisplay =
-                    product.displayOptions && product.displayOptions.length
-                        ? product.displayOptions[0]
-                        : null;
-
-                const validChips =
-                    product.chips && product.chips.length
-                        ? product.chips.filter(chip => {
-                            return !chip.allowedModels ||
-                                (this.activeModel && chip.allowedModels.includes(this.activeModel.name));
-                        })
-                        : [];
-
-                this.activeChip = validChips.length ? validChips[0] : null;
-
-                this.activeVariant =
-                    this.activeChip &&
-                    this.activeChip.variants &&
-                    this.activeChip.variants.length
-                        ? this.activeChip.variants[0]
-                        : null;
-
-                this.currentView = 'details';
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-
-                this.isLoading = false;
-            }, 800);
-        },
-
-        changeModel(model) {
-            this.activeModel = model;
-
-            this.activeConnectivity =
-                model.connectivityOptions && model.connectivityOptions.length
-                    ? model.connectivityOptions[0]
-                    : null;
-
-            this.activeColor =
-                model.colors && model.colors.length
-                    ? model.colors[0]
-                    : (
-                        this.selectedProduct.colors && this.selectedProduct.colors.length
-                            ? this.selectedProduct.colors[0]
-                            : null
-                    );
-
-            const validChips =
-                this.selectedProduct &&
-                this.selectedProduct.chips &&
-                this.selectedProduct.chips.length
-                    ? this.selectedProduct.chips.filter(chip => {
-                        return !chip.allowedModels || chip.allowedModels.includes(model.name);
-                    })
-                    : [];
-
-            if (!this.activeChip || !validChips.find(c => c.name === this.activeChip.name)) {
-                this.activeChip = validChips.length ? validChips[0] : null;
-
-                this.activeVariant =
-                    this.activeChip &&
-                    this.activeChip.variants &&
-                    this.activeChip.variants.length
-                        ? this.activeChip.variants[0]
-                        : null;
-            }
-        },
-
-        formatCardNumber() {
-            let value = this.checkoutForm.cardNumber.replace(/\D/g, '').slice(0, 16);
-            value = value.replace(/(\d{4})(?=\d)/g, '$1 ');
-            this.checkoutForm.cardNumber = value;
-        },
-
-        formatExpiryDate() {
-            let v = this.checkoutForm.expiryDate.replace(/\D/g, '').slice(0, 4);
-
-            if (v.length >= 3) {
-                v = v.slice(0, 2) + '/' + v.slice(2);
-            }
-
-            this.checkoutForm.expiryDate = v;
-        },
-
-        formatCVC() {
-            this.checkoutForm.cvc = this.checkoutForm.cvc.replace(/\D/g, '').slice(0, 3);
-        },
-
-        goToCheckout() {
-            this.prevView = this.currentView;
-            this.currentView = 'checkout';
-        },
-
-        removeFromCart(index) {
-            const removedItem = this.cart[index];
-            const product = this.allProducts.find(p => p.name === removedItem.name);
-
-            if (product && product.inventory) {
-                let inventoryItem = null;
-
-                if (removedItem.storage) {
-                    inventoryItem = product.inventory.find(item =>
-                        item.color === removedItem.color &&
-                        item.storage === removedItem.storage
-                    );
-                } else if (removedItem.model) {
-                    inventoryItem = product.inventory.find(item =>
-                        item.color === removedItem.color &&
-                        item.model === removedItem.model
-                    );
-                } else if (removedItem.color) {
-                    inventoryItem = product.inventory.find(item =>
-                        item.color === removedItem.color
-                    );
-                } else {
-                    inventoryItem = product.inventory.find(item => true);
-                }
-
-                if (inventoryItem) {
-                    inventoryItem.stock += 1;
-                }
-            }
-
-            this.cart.splice(index, 1);
-            localStorage.setItem(this.cartStorageKey, JSON.stringify(this.cart));
-            localStorage.setItem("novaProducts", JSON.stringify(this.allProducts));
-        },
-
-        toggleDropdown() {
-            this.dropdownOpen = !this.dropdownOpen;
-        },
-
-        selectStore(store) {
-            this.selectedStore = store;
-            this.dropdownOpen = false;
-        },
-
-        addToCart() {
-            if (!this.selectedProduct) return;
-
-            const hasColor = this.selectedProduct.colors && this.selectedProduct.colors.length;
-            const hasStorage = this.selectedProduct.storageOptions && this.selectedProduct.storageOptions.length;
-            const hasModel = this.selectedProduct.models && this.selectedProduct.models.length;
-
-            if (hasStorage) {
-                if ((hasColor && (!this.activeColor || !this.activeColor.name)) || !this.activeStorage) {
-                    this.cartToastMessage = 'Please select color and storage';
-                    this.showCartToast = true;
-                    setTimeout(() => { this.showCartToast = false; }, 2200);
-                    return;
-                }
-            } else if (hasModel) {
-                if ((hasColor && (!this.activeColor || !this.activeColor.name)) || !this.activeModel) {
-                    this.cartToastMessage = 'Please select color and model';
-                    this.showCartToast = true;
-                    setTimeout(() => { this.showCartToast = false; }, 2200);
-                    return;
-                }
-            } else if (hasColor) {
-                if (!this.activeColor || !this.activeColor.name) {
-                    this.cartToastMessage = 'Please select color';
-                    this.showCartToast = true;
-                    setTimeout(() => { this.showCartToast = false; }, 2200);
-                    return;
-                }
-            }
-
-            let inventoryItem = null;
-
-            if (this.selectedProduct.inventory && this.selectedProduct.inventory.length) {
-                if (hasStorage) {
-                    inventoryItem = this.selectedProduct.inventory.find(item =>
-                        (!hasColor || item.color === this.activeColor.name) &&
-                        item.storage === this.activeStorage.name
-                    );
-                } else if (hasModel) {
-                    inventoryItem = this.selectedProduct.inventory.find(item =>
-                        (!hasColor || item.color === this.activeColor.name) &&
-                        item.model === this.activeModel.name
-                    );
-                } else if (hasColor) {
-                    inventoryItem = this.selectedProduct.inventory.find(item =>
-                        item.color === this.activeColor.name
-                    );
-                } else {
-                    inventoryItem = this.selectedProduct.inventory.find(item => item.stock > 0);
-                }
-            }
-
-            if (this.selectedProduct.inventory && this.selectedProduct.inventory.length) {
-                if (!inventoryItem || inventoryItem.stock <= 0) {
-                    this.cartToastMessage = 'This variant is out of stock';
-                    this.showCartToast = true;
-                    setTimeout(() => { this.showCartToast = false; }, 2200);
-                    return;
-                }
-            }
-
-            const item = {
-                productId: this.selectedProduct._id,
-                name: this.selectedProduct.name,
-                model: this.activeModel ? this.activeModel.name : null,
-                connectivity: this.activeConnectivity ? this.activeConnectivity.name : null,
-                color: this.activeColor ? this.activeColor.name : null,
-                storage: this.activeStorage ? this.activeStorage.name : null,
-                variant: this.activeVariant ? this.activeVariant.name : null,
-                chip: this.activeChip ? this.activeChip.name : null,
-                size: this.activeSize ? this.activeSize.name : null,
-                display: this.activeDisplay ? this.activeDisplay.name : null,
-                price: this.calculatePriceNumber,
-                image: this.activeColor ? this.activeColor.image : ''
-            };
-
-            this.cart.push(item);
-
-            if (inventoryItem) {
-                inventoryItem.stock -= 1;
-            }
-
-            localStorage.setItem(this.cartStorageKey, JSON.stringify(this.cart));
-            localStorage.setItem("novaProducts", JSON.stringify(this.allProducts));
-
-            this.cartToastMessage = 'Added to bag successfully';
-            this.showCartToast = true;
-            this.cartAnimate = true;
-
-            setTimeout(() => {
-                this.showCartToast = false;
-                this.cartAnimate = false;
-            }, 2200);
-        },
-async placeOrder() {
-    this.checkoutErrors = {};
-
-    if (!this.checkoutForm.name.trim()) {
-        this.checkoutErrors.name = "Name is required";
-    }
-
-    if (!this.checkoutForm.email.trim()) {
-        this.checkoutErrors.email = "Email ID is required";
-    }
-
-    if (!this.checkoutForm.contact.trim()) {
-        this.checkoutErrors.contact = "Contact number is required";
-    }
-
-    if (!this.checkoutForm.addressLabel.trim()) {
-        this.checkoutErrors.addressLabel = "Please select Work, Home or Other";
-    }
-
-    if (!this.checkoutForm.address.trim()) {
-        this.checkoutErrors.address = "Address is required";
-    }
-
-    if (!this.checkoutForm.floorRoom.trim()) {
-        this.checkoutErrors.floorRoom = "Floor / Room No is required";
-    }
-
-    if (!this.checkoutForm.landmark.trim()) {
-        this.checkoutErrors.landmark = "Landmark is required";
-    }
-
-    if (!this.checkoutForm.cardName.trim()) {
-        this.checkoutErrors.cardName = "Card name is required";
-    }
-
-    if (!this.checkoutForm.cardNumber.trim()) {
-        this.checkoutErrors.cardNumber = "Card number is required";
-    } else if (this.checkoutForm.cardNumber.replace(/\s/g, '').length !== 16) {
-        this.checkoutErrors.cardNumber = "Card number must be 16 digits";
-    }
-
-    if (!this.checkoutForm.expiryDate.trim()) {
-        this.checkoutErrors.expiryDate = "Expiry date is required";
-    } else if (!/^\d{2}\/\d{2}$/.test(this.checkoutForm.expiryDate)) {
-        this.checkoutErrors.expiryDate = "Expiry date must be MM/YY";
-    }
-
-    if (!this.checkoutForm.cvc.trim()) {
-        this.checkoutErrors.cvc = "CVC is required";
-    } else if (this.checkoutForm.cvc.length !== 3) {
-        this.checkoutErrors.cvc = "CVC must be 3 digits";
-    }
-
-    if (this.pickupFromStore && !this.selectedStore) {
-        alert("Please select a pickup location.");
-        return;
-    }
-
-    if (Object.keys(this.checkoutErrors).length > 0) return;
-
-    if (this.cart.length === 0) {
-        alert("Your cart is empty.");
-        return;
-    }
-
-    try {
-        this.isProcessingOrder = true;
-        this.processingStage = 'processing';
-
-        const response = fetch(`${API_URL}/orders`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                checkoutForm: this.checkoutForm,
-                cart: this.cart,
-                pickupFromStore: this.pickupFromStore,
-                selectedStore: this.selectedStore,
-                estimatedDeliveryDate: this.estimatedDeliveryDate,
-                userId: this.currentUser ? this.currentUser._id : null
-            })
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            throw new Error(data.message || "Failed to place order");
-        }
-
-        await new Promise(resolve => setTimeout(resolve, 1200));
-        this.processingStage = 'payment';
-
-        await new Promise(resolve => setTimeout(resolve, 1200));
-        this.processingStage = 'final';
-
-        await new Promise(resolve => setTimeout(resolve, 1200));
-
-        this.receiptData = data.receipt;
-
-        this.cart = [];
-        localStorage.setItem(this.cartStorageKey, JSON.stringify(this.cart));
-
-        this.checkoutForm = {
+    <script>
+    const API_URL = "https://cst3990-nova-backend.onrender.com/api";
+    new Vue({
+        
+        el: '#app',
+        data: {
+        // Global page state
+        appPage: 'landing',
+        appHistory: ['landing'],
+        currentUser: null,
+
+        // Store state
+        isLoading: false,
+        isProcessingOrder: false,
+        processingStage: 'processing',
+        currentView: 'home',
+        selectedProduct: null,
+        activeColor: null,
+        activeSize: null,
+        activeStorage: null,
+        activeModel: null,
+        activeDisplay: null,
+        showSuccessPopup: false,
+        activeChip: null,
+        activeVariant: null,
+        pickupFromStore: false,
+        selectedStore: '',
+        dropdownOpen: false,
+        cartToastMessage: '',
+        cartAnimate: false,
+        showCartToast: false,
+        activeConnectivity: null,
+        receiptData: null,
+        orderCounter: Number(localStorage.getItem("novaOrderCounter")) || 1,
+        cart: [],
+        showAI: false,
+        prevView: 'home',
+        userQuery: '',
+
+        checkoutForm: {
             name: '',
             email: '',
             contact: '',
@@ -2206,28 +1088,1146 @@ async placeOrder() {
             cardNumber: '',
             expiryDate: '',
             cvc: ''
-        };
+        },
 
+        checkoutErrors: {},
+
+        aiMessages: [
+            { role: 'ai', text: 'Hello! I am <b>Nova AI</b>. How can i help you?' }
+        ],
+
+        heroProducts: [
+            { name: 'iPhone 17 Pro', tag: 'Titanium. Pro Intelligence.', img: 'pics/iphone17.png', color: '#00f2ff' },
+            { name: 'Galaxy S26 Ultra', tag: 'Everyday Samsung power with style.', img: 'pics/galaxys26-ultra.jpg', color: '#8ab4ff' },
+            { name: 'MacBook Pro', tag: 'Mind-blowing. Head-turning.', img: 'pics/mac.png', color: '#fff' },
+            { name: 'Airpods', tag: 'Magic like you’ve never heard.', img: 'pics/airpods.png', color: '#9de5ff' },
+            { name: 'iPad Air', tag: 'Two sizes. Faster chip. All magic.', img: 'pics/ipadair.png', color: '#9de5ff' },
+            { name: 'Galaxy X', tag: 'Next-generation flagship performance.', img: 'pics/galaxyx-black.png', color: '#c7d2ff' },
+            { name: 'Galaxy Z', tag: 'Foldable innovation. Premium experience.', img: 'pics/extraimgzflip7.jpg', color: '#dfe8ff' }
+        ],
+
+        menuItems: [
+            {
+                name: 'iPhone',
+                dropdown: [
+                    'iPhone 17 Pro Max',
+                    'iPhone 17 Pro',
+                    'iPhone 17',
+                    'iPhone Air',
+                    'iPhone 16 Pro Max',
+                    'iPhone 16 Pro',
+                    'iPhone 16',
+                    'iPhone 15 Pro Max',
+                    'iPhone 15 Pro'
+                ]
+            },
+            {
+                name: 'Galaxy S',
+                dropdown: [
+                    'Galaxy S25',
+                    'Galaxy S25 Ultra',
+                    'Galaxy S26',
+                    'Galaxy S26 Ultra'
+                ]
+            },
+            {
+                name: 'Galaxy Z',
+                dropdown: [
+                    'Galaxy Z Flip7',
+                    'Galaxy Z Flip7 FE',
+                    'Galaxy Z Flip6',
+                    'Galaxy Z Fold7',
+                    'Galaxy Z Fold6'
+                ]
+            },
+            {
+                name: 'Galaxy A',
+                dropdown: [
+                    'Galaxy A55 5G',
+                    'Galaxy A35 5G',
+                    'Galaxy A25 5G',
+                    'Galaxy A15 5G',
+                    'Galaxy A05s'
+                ]
+            },
+            { name: 'Mac', dropdown: ['MacBook Pro', 'MacBook Air'] },
+            { name: 'iPad', dropdown: ['iPad Pro', 'iPad Air'] },
+            { name: 'Watch', dropdown: ['Watch Series 11', 'Watch SE 3'] },
+            {
+                name: 'Galaxy Watch',
+                dropdown: [
+                    'Galaxy Watch Ultra',
+                    'Galaxy Watch',
+                    'Galaxy Watch Classic'
+                ]
+            },
+            { name: 'Airpods', dropdown: ['Airpods Pro 3', 'Airpods 4', 'Airpods Max'] },
+            { name: 'Galaxy Buds', dropdown: ['Galaxy Buds 3', 'Galaxy Buds 2'] }
+        ],
+
+        allProducts: []
+    },  
+        async created() {
+            const saved = localStorage.getItem('nova_session');
+            if (saved) {
+                this.currentUser = JSON.parse(saved);
+            }
+
+            try {
+                const response = await fetch("https://cst3990-nova-backend.onrender.com/api/products");
+                const products = await response.json();
+                this.allProducts = products;
+                console.log("Loaded products:", this.allProducts.map(p => p.name));
+            } catch (error) {
+                console.error("Failed to load products:", error);
+            }
+
+            this.loadCart();
+        },
+
+        mounted() {
+            this.$nextTick(() => {
+                this.createIconsSafe();
+                this.applyBodyState();
+                this.initBrandReveal();
+                this.initStarsCanvas();
+                this.initHeaderScroll();
+            });
+        },
+
+        updated() {
+            this.$nextTick(() => {
+                this.createIconsSafe();
+                this.applyBodyState();
+            });
+        },
+
+        watch: {
+            appPage() {
+                this.$nextTick(() => {
+                    this.applyBodyState();
+                    this.createIconsSafe();
+                });
+            },
+            currentUser() {
+                this.loadCart();
+            }
+        },
+
+        computed: {
+            calculatePrice() {
+                return this.calculatePriceNumber.toLocaleString();
+            },
+
+            calculatePriceNumber() {
+                if (!this.selectedProduct) return 0;
+
+                let p = this.selectedProduct.basePrice || 0;
+
+                if (this.activeModel) {
+                    p += this.activeModel.priceMod || this.activeModel.basePrice || this.activeModel.price || 0;
+                }
+
+                if (this.activeConnectivity) {
+                    p += this.activeConnectivity.priceMod || this.activeConnectivity.basePrice || this.activeConnectivity.price || 0;
+                }
+
+                if (this.activeSize) {
+                    p += this.activeSize.priceMod || this.activeSize.basePrice || this.activeSize.price || 0;
+                }
+
+                if (this.activeDisplay) {
+                    p += this.activeDisplay.priceMod || this.activeDisplay.price || 0;
+                }
+
+                if (this.activeChip) {
+                    p += this.activeChip.priceMod || this.activeChip.price || 0;
+                }
+
+                if (this.activeVariant) {
+                    p += this.activeVariant.priceMod || this.activeVariant.price || 0;
+                }
+
+                if (this.activeStorage) {
+                    p += this.activeStorage.priceMod || this.activeStorage.price || 0;
+                }
+
+                return p;
+            },
+
+            currentStock() {
+                if (!this.selectedProduct || !this.selectedProduct.inventory) return 0;
+
+                const hasStorage = this.selectedProduct.storageOptions && this.selectedProduct.storageOptions.length;
+                const hasModel = this.selectedProduct.models && this.selectedProduct.models.length;
+
+                let match = null;
+
+                if (hasStorage) {
+                    if (!this.activeColor || !this.activeColor.name || !this.activeStorage) return 0;
+
+                    match = this.selectedProduct.inventory.find(item =>
+                        item.color === this.activeColor.name &&
+                        item.storage === this.activeStorage.name
+                    );
+                } else if (hasModel) {
+                    if (!this.activeColor || !this.activeColor.name || !this.activeModel) return 0;
+
+                    match = this.selectedProduct.inventory.find(item =>
+                        item.color === this.activeColor.name &&
+                        item.model === this.activeModel.name
+                    );
+                } else {
+                    if (!this.activeColor || !this.activeColor.name) return 0;
+
+                    match = this.selectedProduct.inventory.find(item =>
+                        item.color === this.activeColor.name
+                    );
+                }
+
+                return match ? match.stock : 0;
+            },
+
+            availableChips() {
+                if (!this.selectedProduct || !this.selectedProduct.chips) return [];
+                if (!this.activeModel) return this.selectedProduct.chips;
+
+                return this.selectedProduct.chips.filter(chip => {
+                    return !chip.allowedModels || chip.allowedModels.includes(this.activeModel.name);
+                });
+            },
+
+            availableColors() {
+                if (!this.selectedProduct) return [];
+
+                if (this.activeModel && this.activeModel.colors && this.activeModel.colors.length) {
+                    return this.activeModel.colors;
+                }
+
+                return this.selectedProduct.colors && this.selectedProduct.colors.length
+                    ? this.selectedProduct.colors
+                    : [];
+            },
+
+            totalPrice() {
+                return this.cart
+                    .reduce((sum, item) => {
+                        const priceCleaned = Number(String(item.price).replace(/,/g, ''));
+                        return sum + (isNaN(priceCleaned) ? 0 : priceCleaned);
+                    }, 0)
+                    .toLocaleString();
+            },
+
+            estimatedDeliveryDate() {
+                const today = new Date();
+                const deliveryDate = new Date(today);
+                deliveryDate.setDate(today.getDate() + 4);
+
+                const day = deliveryDate.getDate();
+                const month = deliveryDate.toLocaleString('en-US', { month: 'long' });
+
+                function ordinal(n) {
+                    if (n > 3 && n < 21) return 'th';
+                    switch (n % 10) {
+                        case 1: return 'st';
+                        case 2: return 'nd';
+                        case 3: return 'rd';
+                        default: return 'th';
+                    }
+                }
+
+                return `${day}${ordinal(day)} ${month}`;
+            },
+
+            cartStorageKey() {
+                return this.currentUser
+                    ? `nova_cart_${this.currentUser.email}`
+                    : "nova_cart_guest";
+            },
+
+            selectionMessage() {
+                if (!this.selectedProduct) return 'Select options';
+
+                const hasColor = this.selectedProduct.colors && this.selectedProduct.colors.length;
+                const hasStorage = this.selectedProduct.storageOptions && this.selectedProduct.storageOptions.length;
+                const hasModel = this.selectedProduct.models && this.selectedProduct.models.length;
+
+                if (hasColor && hasStorage) return 'Select color and storage';
+                if (hasColor && hasModel) return 'Select color and model';
+                if (hasColor) return 'Select color';
+
+                return 'Select options';
+            },
+
+            isSelectionIncomplete() {
+                if (!this.selectedProduct) return true;
+
+                const hasColor = this.selectedProduct.colors && this.selectedProduct.colors.length;
+                const hasStorage = this.selectedProduct.storageOptions && this.selectedProduct.storageOptions.length;
+                const hasModel = this.selectedProduct.models && this.selectedProduct.models.length;
+
+                if (hasStorage) {
+                    return !this.activeColor || !this.activeColor.name || !this.activeStorage;
+                }
+
+                if (hasModel) {
+                    return !this.activeColor || !this.activeColor.name || !this.activeModel;
+                }
+
+                if (hasColor) {
+                    return !this.activeColor || !this.activeColor.name;
+                }
+
+                return false;
+            }
+        },
+
+        methods: {
+            createIconsSafe() {
+                if (window.lucide) {
+                    lucide.createIcons();
+                }
+            },
+
+            initBrandReveal() {
+                setTimeout(() => {
+                    const brand = document.getElementById('brand-name');
+                    if (brand) brand.classList.add('reveal-init');
+                }, 300);
+
+                setTimeout(() => {
+                    const tagline = document.getElementById('tagline');
+                    if (tagline) tagline.classList.add('reveal-init');
+                }, 1200);
+            },
+
+            initHeaderScroll() {
+                let lastScrollY = window.scrollY;
+
+                window.addEventListener('scroll', () => {
+                    const h = document.getElementById('main-header');
+                    if (!h) return;
+
+                    const currentScrollY = window.scrollY;
+
+                    if (currentScrollY > 80) {
+                        h.classList.add('scrolled');
+                    } else {
+                        h.classList.remove('scrolled');
+                    }
+
+                    if (currentScrollY > lastScrollY && currentScrollY > 140) {
+                        h.classList.add('nav-hidden');
+                    } else {
+                        h.classList.remove('nav-hidden');
+                    }
+
+                    lastScrollY = currentScrollY;
+                });
+            },
+
+            initStarsCanvas() {
+                const canvas = document.getElementById('star-canvas');
+                if (!canvas) return;
+
+                const ctx = canvas.getContext('2d');
+                let stars = [];
+
+                const resize = () => {
+                    canvas.width = window.innerWidth;
+                    canvas.height = window.innerHeight;
+                };
+
+                const initStars = () => {
+                    stars = [];
+                    for (let i = 0; i < 140; i++) {
+                        stars.push({
+                            x: Math.random() * window.innerWidth,
+                            y: Math.random() * window.innerHeight,
+                            s: Math.random() * 2,
+                            o: Math.random() * 0.5 + 0.2
+                        });
+                    }
+                };
+
+                const drawStars = () => {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.fillStyle = '#fff';
+
+                    stars.forEach((s) => {
+                        ctx.globalAlpha = s.o;
+                        ctx.beginPath();
+                        ctx.arc(s.x, s.y, s.s, 0, Math.PI * 2);
+                        ctx.fill();
+                    });
+
+                    requestAnimationFrame(drawStars);
+                };
+
+                resize();
+                initStars();
+                drawStars();
+
+                window.addEventListener('resize', () => {
+                    resize();
+                    initStars();
+                });
+            },
+
+            applyBodyState() {
+                const b = document.getElementById('main-body');
+                if (!b) return;
+
+                b.classList.remove('login-active', 'profile-active', 'contact-active', 'no-scroll');
+
+                if (this.appPage === 'login') {
+                    b.classList.add('login-active', 'no-scroll');
+                } else if (this.appPage === 'profile') {
+                    b.classList.add('profile-active', 'no-scroll');
+                } else if (this.appPage === 'contact') {
+                    b.classList.add('contact-active', 'no-scroll');
+                }
+            },
+
+            showToast(message, type = 'info') {
+                const container = document.getElementById('toast-container');
+                if (!container) return;
+
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+
+                let icon = 'info';
+                if (type === 'success') icon = 'check-circle';
+                if (type === 'error') icon = 'alert-circle';
+
+                toast.innerHTML = `<i data-lucide="${icon}"></i> <span>${message}</span>`;
+                container.appendChild(toast);
+                this.createIconsSafe();
+
+                setTimeout(() => toast.classList.add('show'), 100);
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    setTimeout(() => toast.remove(), 500);
+                }, 3000);
+            },
+
+            showPage(page) {
+                if (page !== this.appHistory[this.appHistory.length - 1]) {
+                    this.appHistory.push(page);
+                }
+                this.appPage = page;
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            },
+
+            handleBack() {
+                if (this.appPage === 'store' && this.currentView !== 'home') {
+                    this.currentView = 'home';
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    return;
+                }
+
+                if (this.appHistory.length > 1) {
+                    this.appHistory.pop();
+                    this.appPage = this.appHistory[this.appHistory.length - 1];
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            },
+
+            handleNavLogin() {
+                this.currentUser ? this.showPage('profile') : this.showPage('login');
+            },
+
+            goToIndex() {
+                this.appPage = 'landing';
+
+                if (this.appHistory[this.appHistory.length - 1] !== 'landing') {
+                    this.appHistory.push('landing');
+                }
+
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            },
+
+            goToStoreHome() {
+                if (this.appHistory[this.appHistory.length - 1] !== 'store') {
+                    this.appHistory.push('store');
+                }
+
+                this.appPage = 'store';
+                this.currentView = 'home';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            },
+
+            toggleForgot(show) {
+                const signinMain = document.getElementById('signin-main');
+                const forgotForm = document.getElementById('forgot-form');
+
+                if (signinMain) signinMain.style.display = show ? 'none' : 'flex';
+                if (forgotForm) forgotForm.style.display = show ? 'flex' : 'none';
+            },
+
+            toggleCard() {
+                const signin = document.querySelector('.signin');
+                const signup = document.querySelector('.signup');
+                const slidingCard = document.getElementById('sliding-card');
+
+                if (signin) signin.classList.toggle('active');
+                if (signup) signup.classList.toggle('active');
+                if (slidingCard) slidingCard.classList.toggle('signin-mode');
+
+                this.toggleForgot(false);
+            },
+
+            async handleSignup() {
+                const n = document.getElementById('reg-name').value;
+                const e = document.getElementById('reg-email').value;
+                const p = document.getElementById('reg-phone').value;
+                const d = document.getElementById('reg-dob').value;
+                const pass = document.getElementById('reg-pass').value;
+                const API_URL = "https://cst3990-nova-backend.onrender.com/api";
+
+                if (!n || !e || !p || !d || !pass) {
+                    return this.showToast('Please fill all fields', 'error');
+                }
+
+                if (pass.length < 6) {
+                    return this.showToast('Password must be at least 6 characters', 'error');
+                }
+
+                try {
+                    const res = await fetch(`${API_URL}/signup`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            name: n,
+                            email: e,
+                            phone: p,
+                            dob: d,
+                            pass: pass
+                        })
+                    });
+
+                    const data = await res.json();
+
+                    if (res.ok) {
+                        this.showToast('Account successfully created!', 'success');
+                        this.toggleCard();
+                    } else {
+                        this.showToast(data.message || 'Registration failed', 'error');
+                    }
+                } catch (err) {
+                    this.showToast('Server Offline', 'error');
+                }
+            },
+
+            async handleSignin() {
+                const e = document.getElementById('login-email').value;
+                const p = document.getElementById('login-pass').value;
+            const API_URL = "https://cst3990-nova-backend.onrender.com/api";
+
+                if (!e || !p) {
+                    return this.showToast('Please enter email and password', 'error');
+                }
+
+                try {
+                    const res = await fetch(`${API_URL}/signin`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email: e, pass: p })
+                    });
+
+                    const data = await res.json();
+
+                    if (res.ok) {
+                        this.currentUser = data.user;
+                        localStorage.setItem('nova_session', JSON.stringify(data.user));
+                        this.loadCart();
+                        this.showToast('Successfully logged in!', 'success');
+                        this.showPage('landing');
+                    } else {
+                        this.showToast('Invalid credentials', 'error');
+                    }
+                } catch (err) {
+                    this.showToast('Server Error', 'error');
+                }
+            },
+
+            async handleResetPassword() {
+                const email = document.getElementById('forgot-email').value;
+                const newPass = document.getElementById('forgot-new-pass').value;
+                const confirmPass = document.getElementById('forgot-confirm-pass').value;
+                const API_URL = "https://cst3990-nova-backend.onrender.com/api";
+
+                if (!email || !newPass || !confirmPass) {
+                    return this.showToast('Please fill all fields', 'error');
+                }
+
+                if (newPass !== confirmPass) {
+                    return this.showToast('Passwords do not match', 'error');
+                }
+
+                try {
+                    const res = await fetch(`${API_URL}/reset-password`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email, newPass })
+                    });
+
+                    const data = await res.json();
+
+                    if (res.ok) {
+                        this.showToast('Password updated successfully!', 'success');
+                        document.getElementById('forgot-email').value = '';
+                        document.getElementById('forgot-new-pass').value = '';
+                        document.getElementById('forgot-confirm-pass').value = '';
+                        setTimeout(() => this.toggleForgot(false), 1500);
+                    } else {
+                        this.showToast(data.message || 'Update failed', 'error');
+                    }
+                } catch (err) {
+                    this.showToast('Server Error: Check if server.js is running', 'error');
+                }
+            },
+
+            handleLogout() {
+                this.currentUser = null;
+                localStorage.removeItem('nova_session');
+                this.cart = [];
+                this.showToast('Logged out successfully', 'info');
+                this.showPage('landing');
+            },
+
+            async handleContactSubmit() {
+                const name = document.getElementById('contact-name').value.trim();
+                const number = document.getElementById('contact-number').value.trim();
+                const email = document.getElementById('contact-email').value.trim();
+                const message = document.getElementById('contact-message').value.trim();
+
+                if (!name || !number || !email || !message) {
+                    return this.showToast('Please fill all fields', 'error');
+                }
+
+            try {
+        const res = await fetch("https://cst3990-nova-backend.onrender.com/api/contact", {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                name,
+                email,
+                phone: number,
+                message
+            })
+        });
+
+                    const data = await res.json();
+
+                    if (res.ok) {
+                        this.showToast('Request submitted. We will contact you soon.', 'success');
+                        document.getElementById('contact-name').value = '';
+                        document.getElementById('contact-number').value = '';
+                        document.getElementById('contact-email').value = '';
+                        document.getElementById('contact-message').value = '';
+                    } else {
+                        this.showToast(data.message || 'Failed to submit request', 'error');
+                    }
+                } catch (error) {
+                    this.showToast('Server error', 'error');
+                }
+            },
+
+            askNova() {
+                const query = this.userQuery.trim();
+                if (!query) return;
+
+                this.aiMessages.push({
+                    role: 'user',
+                    text: query
+                });
+
+                this.userQuery = '';
+                this.scrollAiToLatest();
+
+                window.setTimeout(() => {
+                    this.aiMessages.push({
+                        role: 'ai',
+                        text: this.getNovaReply(query)
+                    });
+                    this.scrollAiToLatest();
+                }, 250);
+            },
+
+            getNovaReply(query) {
+                const q = query.toLowerCase();
+                const matchingProduct = this.allProducts.find(product =>
+                    product.name && q.includes(product.name.toLowerCase())
+                );
+
+                if (matchingProduct) {
+                    const basePrice = Number(matchingProduct.basePrice || 0).toLocaleString();
+                    return `<b>${matchingProduct.name}</b> starts at AED ${basePrice}. Open the product page to compare colors, storage, and other options.`;
+                }
+
+                if (q.includes('camera')) {
+                    return 'For camera-focused shopping, the <b>iPhone 17 Pro</b> and <b>Galaxy S26 Ultra</b> are strong picks in this store.';
+                }
+
+                if (q.includes('gaming') || q.includes('performance')) {
+                    return 'For gaming and heavy performance, go for the flagship phones or MacBook models with higher storage and chip options.';
+                }
+
+                if (q.includes('pickup') || q.includes('store')) {
+                    return 'You can enable <b>Pickup From Store</b> during checkout and choose from the available Nova pickup locations.';
+                }
+
+                if (q.includes('hello') || q.includes('hi')) {
+                    return 'Hello! Ask me about products, pricing, cameras, gaming, or pickup options.';
+                }
+
+                return 'I can help you choose between Apple and Samsung products, explain pricing, and guide you through pickup or checkout.';
+            },
+
+            scrollAiToLatest() {
+                this.$nextTick(() => {
+                    const messages = document.getElementById('ai-messages');
+                    if (messages) {
+                        messages.scrollTop = messages.scrollHeight;
+                    }
+                });
+            },
+
+            loadCart() {
+                const savedCart = localStorage.getItem(this.cartStorageKey);
+                this.cart = savedCart ? JSON.parse(savedCart) : [];
+            },
+
+            goBackHome() {
+                this.currentView = 'home';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            },
+
+            goToProduct(productName) {
+                this.appPage = 'store';
+
+                if (this.appHistory[this.appHistory.length - 1] !== 'store') {
+                    this.appHistory.push('store');
+                }
+
+                this.isLoading = true;
+
+                setTimeout(() => {
+                    const searchName = String(productName || "").trim().toLowerCase();
+
+                    const product =
+                        this.allProducts.find(
+                            p => p.name && p.name.trim().toLowerCase() === searchName
+                        ) ||
+                        this.allProducts.find(
+                            p => p.name && p.name.trim().toLowerCase().includes(searchName)
+                        );
+
+                    if (!product) {
+                        this.isLoading = false;
+                        alert(`Product not found: ${productName}`);
+                        return;
+                    }
+
+                    this.selectedProduct = product;
+
+                    this.activeModel =
+                        product.models && product.models.length
+                            ? product.models[0]
+                            : null;
+
+                    this.activeConnectivity =
+                        this.activeModel &&
+                        this.activeModel.connectivityOptions &&
+                        this.activeModel.connectivityOptions.length
+                            ? this.activeModel.connectivityOptions[0]
+                            : null;
+
+                    this.activeColor =
+                        this.activeModel &&
+                        this.activeModel.colors &&
+                        this.activeModel.colors.length
+                            ? this.activeModel.colors[0]
+                            : (product.colors && product.colors.length ? product.colors[0] : null);
+
+                    this.activeSize =
+                        product.sizes && product.sizes.length
+                            ? product.sizes[0]
+                            : null;
+
+                    this.activeStorage =
+                        product.storageOptions && product.storageOptions.length
+                            ? product.storageOptions[0]
+                            : null;
+
+                    this.activeDisplay =
+                        product.displayOptions && product.displayOptions.length
+                            ? product.displayOptions[0]
+                            : null;
+
+                    const validChips =
+                        product.chips && product.chips.length
+                            ? product.chips.filter(chip => {
+                                return !chip.allowedModels ||
+                                    (this.activeModel && chip.allowedModels.includes(this.activeModel.name));
+                            })
+                            : [];
+
+                    this.activeChip = validChips.length ? validChips[0] : null;
+
+                    this.activeVariant =
+                        this.activeChip &&
+                        this.activeChip.variants &&
+                        this.activeChip.variants.length
+                            ? this.activeChip.variants[0]
+                            : null;
+
+                    this.currentView = 'details';
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+                    this.isLoading = false;
+                }, 800);
+            },
+
+            changeModel(model) {
+                this.activeModel = model;
+
+                this.activeConnectivity =
+                    model.connectivityOptions && model.connectivityOptions.length
+                        ? model.connectivityOptions[0]
+                        : null;
+
+                this.activeColor =
+                    model.colors && model.colors.length
+                        ? model.colors[0]
+                        : (
+                            this.selectedProduct.colors && this.selectedProduct.colors.length
+                                ? this.selectedProduct.colors[0]
+                                : null
+                        );
+
+                const validChips =
+                    this.selectedProduct &&
+                    this.selectedProduct.chips &&
+                    this.selectedProduct.chips.length
+                        ? this.selectedProduct.chips.filter(chip => {
+                            return !chip.allowedModels || chip.allowedModels.includes(model.name);
+                        })
+                        : [];
+
+                if (!this.activeChip || !validChips.find(c => c.name === this.activeChip.name)) {
+                    this.activeChip = validChips.length ? validChips[0] : null;
+
+                    this.activeVariant =
+                        this.activeChip &&
+                        this.activeChip.variants &&
+                        this.activeChip.variants.length
+                            ? this.activeChip.variants[0]
+                            : null;
+                }
+            },
+
+            formatCardNumber() {
+                let value = this.checkoutForm.cardNumber.replace(/\D/g, '').slice(0, 16);
+                value = value.replace(/(\d{4})(?=\d)/g, '$1 ');
+                this.checkoutForm.cardNumber = value;
+            },
+
+            formatExpiryDate() {
+                let v = this.checkoutForm.expiryDate.replace(/\D/g, '').slice(0, 4);
+
+                if (v.length >= 3) {
+                    v = v.slice(0, 2) + '/' + v.slice(2);
+                }
+
+                this.checkoutForm.expiryDate = v;
+            },
+
+            formatCVC() {
+                this.checkoutForm.cvc = this.checkoutForm.cvc.replace(/\D/g, '').slice(0, 3);
+            },
+
+            goToCheckout() {
+                this.prevView = this.currentView;
+                this.currentView = 'checkout';
+            },
+
+            removeFromCart(index) {
+                const removedItem = this.cart[index];
+                const product = this.allProducts.find(p => p.name === removedItem.name);
+
+                if (product && product.inventory) {
+                    let inventoryItem = null;
+
+                    if (removedItem.storage) {
+                        inventoryItem = product.inventory.find(item =>
+                            item.color === removedItem.color &&
+                            item.storage === removedItem.storage
+                        );
+                    } else if (removedItem.model) {
+                        inventoryItem = product.inventory.find(item =>
+                            item.color === removedItem.color &&
+                            item.model === removedItem.model
+                        );
+                    } else if (removedItem.color) {
+                        inventoryItem = product.inventory.find(item =>
+                            item.color === removedItem.color
+                        );
+                    } else {
+                        inventoryItem = product.inventory.find(item => true);
+                    }
+
+                    if (inventoryItem) {
+                        inventoryItem.stock += 1;
+                    }
+                }
+
+                this.cart.splice(index, 1);
+                localStorage.setItem(this.cartStorageKey, JSON.stringify(this.cart));
+                localStorage.setItem("novaProducts", JSON.stringify(this.allProducts));
+            },
+
+            toggleDropdown() {
+                this.dropdownOpen = !this.dropdownOpen;
+            },
+
+            selectStore(store) {
+                this.selectedStore = store;
+                this.dropdownOpen = false;
+            },
+
+            addToCart() {
+                if (!this.selectedProduct) return;
+
+                const hasColor = this.selectedProduct.colors && this.selectedProduct.colors.length;
+                const hasStorage = this.selectedProduct.storageOptions && this.selectedProduct.storageOptions.length;
+                const hasModel = this.selectedProduct.models && this.selectedProduct.models.length;
+
+                if (hasStorage) {
+                    if ((hasColor && (!this.activeColor || !this.activeColor.name)) || !this.activeStorage) {
+                        this.cartToastMessage = 'Please select color and storage';
+                        this.showCartToast = true;
+                        setTimeout(() => { this.showCartToast = false; }, 2200);
+                        return;
+                    }
+                } else if (hasModel) {
+                    if ((hasColor && (!this.activeColor || !this.activeColor.name)) || !this.activeModel) {
+                        this.cartToastMessage = 'Please select color and model';
+                        this.showCartToast = true;
+                        setTimeout(() => { this.showCartToast = false; }, 2200);
+                        return;
+                    }
+                } else if (hasColor) {
+                    if (!this.activeColor || !this.activeColor.name) {
+                        this.cartToastMessage = 'Please select color';
+                        this.showCartToast = true;
+                        setTimeout(() => { this.showCartToast = false; }, 2200);
+                        return;
+                    }
+                }
+
+                let inventoryItem = null;
+
+                if (this.selectedProduct.inventory && this.selectedProduct.inventory.length) {
+                    if (hasStorage) {
+                        inventoryItem = this.selectedProduct.inventory.find(item =>
+                            (!hasColor || item.color === this.activeColor.name) &&
+                            item.storage === this.activeStorage.name
+                        );
+                    } else if (hasModel) {
+                        inventoryItem = this.selectedProduct.inventory.find(item =>
+                            (!hasColor || item.color === this.activeColor.name) &&
+                            item.model === this.activeModel.name
+                        );
+                    } else if (hasColor) {
+                        inventoryItem = this.selectedProduct.inventory.find(item =>
+                            item.color === this.activeColor.name
+                        );
+                    } else {
+                        inventoryItem = this.selectedProduct.inventory.find(item => item.stock > 0);
+                    }
+                }
+
+                if (this.selectedProduct.inventory && this.selectedProduct.inventory.length) {
+                    if (!inventoryItem || inventoryItem.stock <= 0) {
+                        this.cartToastMessage = 'This variant is out of stock';
+                        this.showCartToast = true;
+                        setTimeout(() => { this.showCartToast = false; }, 2200);
+                        return;
+                    }
+                }
+
+                const item = {
+                    productId: this.selectedProduct._id,
+                    name: this.selectedProduct.name,
+                    model: this.activeModel ? this.activeModel.name : null,
+                    connectivity: this.activeConnectivity ? this.activeConnectivity.name : null,
+                    color: this.activeColor ? this.activeColor.name : null,
+                    storage: this.activeStorage ? this.activeStorage.name : null,
+                    variant: this.activeVariant ? this.activeVariant.name : null,
+                    chip: this.activeChip ? this.activeChip.name : null,
+                    size: this.activeSize ? this.activeSize.name : null,
+                    display: this.activeDisplay ? this.activeDisplay.name : null,
+                    price: this.calculatePriceNumber,
+                    image: this.activeColor ? this.activeColor.image : ''
+                };
+
+                this.cart.push(item);
+
+                if (inventoryItem) {
+                    inventoryItem.stock -= 1;
+                }
+
+                localStorage.setItem(this.cartStorageKey, JSON.stringify(this.cart));
+                localStorage.setItem("novaProducts", JSON.stringify(this.allProducts));
+
+                this.cartToastMessage = 'Added to bag successfully';
+                this.showCartToast = true;
+                this.cartAnimate = true;
+
+                setTimeout(() => {
+                    this.showCartToast = false;
+                    this.cartAnimate = false;
+                }, 2200);
+            },
+    async placeOrder() {
         this.checkoutErrors = {};
-        this.selectedStore = '';
-        this.pickupFromStore = false;
 
-        this.isProcessingOrder = false;
-        this.showSuccessPopup = true;
+        if (!this.checkoutForm.name.trim()) {
+            this.checkoutErrors.name = "Name is required";
+        }
 
-        setTimeout(() => {
-            this.showSuccessPopup = false;
-            this.currentView = 'receipt';
-        }, 1800);
+        if (!this.checkoutForm.email.trim()) {
+            this.checkoutErrors.email = "Email ID is required";
+        }
 
-    } catch (error) {
-        console.error("Order error:", error);
-        this.isProcessingOrder = false;
-        alert(error.message);
-    }
-} 
-    }
-});
-</script>
-</body>
-</html>
+        if (!this.checkoutForm.contact.trim()) {
+            this.checkoutErrors.contact = "Contact number is required";
+        }
+
+        if (!this.checkoutForm.addressLabel.trim()) {
+            this.checkoutErrors.addressLabel = "Please select Work, Home or Other";
+        }
+
+        if (!this.checkoutForm.address.trim()) {
+            this.checkoutErrors.address = "Address is required";
+        }
+
+        if (!this.checkoutForm.floorRoom.trim()) {
+            this.checkoutErrors.floorRoom = "Floor / Room No is required";
+        }
+
+        if (!this.checkoutForm.landmark.trim()) {
+            this.checkoutErrors.landmark = "Landmark is required";
+        }
+
+        if (!this.checkoutForm.cardName.trim()) {
+            this.checkoutErrors.cardName = "Card name is required";
+        }
+
+        if (!this.checkoutForm.cardNumber.trim()) {
+            this.checkoutErrors.cardNumber = "Card number is required";
+        } else if (this.checkoutForm.cardNumber.replace(/\s/g, '').length !== 16) {
+            this.checkoutErrors.cardNumber = "Card number must be 16 digits";
+        }
+
+        if (!this.checkoutForm.expiryDate.trim()) {
+            this.checkoutErrors.expiryDate = "Expiry date is required";
+        } else if (!/^\d{2}\/\d{2}$/.test(this.checkoutForm.expiryDate)) {
+            this.checkoutErrors.expiryDate = "Expiry date must be MM/YY";
+        }
+
+        if (!this.checkoutForm.cvc.trim()) {
+            this.checkoutErrors.cvc = "CVC is required";
+        } else if (this.checkoutForm.cvc.length !== 3) {
+            this.checkoutErrors.cvc = "CVC must be 3 digits";
+        }
+
+        if (this.pickupFromStore && !this.selectedStore) {
+            alert("Please select a pickup location.");
+            return;
+        }
+
+        if (Object.keys(this.checkoutErrors).length > 0) return;
+
+        if (this.cart.length === 0) {
+            alert("Your cart is empty.");
+            return;
+        }
+
+        try {
+            this.isProcessingOrder = true;
+            this.processingStage = 'processing';
+
+        const res = await fetch("https://cst3990-nova-backend.onrender.com/api/order", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    checkoutForm: this.checkoutForm,
+                    cart: this.cart,
+                    pickupFromStore: this.pickupFromStore,
+                    selectedStore: this.selectedStore,
+                    estimatedDeliveryDate: this.estimatedDeliveryDate,
+                    userId: this.currentUser ? this.currentUser._id : null
+                })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || "Failed to place order");
+            }
+
+            await new Promise(resolve => setTimeout(resolve, 1200));
+            this.processingStage = 'payment';
+
+            await new Promise(resolve => setTimeout(resolve, 1200));
+            this.processingStage = 'final';
+
+            await new Promise(resolve => setTimeout(resolve, 1200));
+
+            this.receiptData = data.receipt;
+
+            this.cart = [];
+            localStorage.setItem(this.cartStorageKey, JSON.stringify(this.cart));
+
+            this.checkoutForm = {
+                name: '',
+                email: '',
+                contact: '',
+                addressLabel: '',
+                address: '',
+                floorRoom: '',
+                landmark: '',
+                cardName: '',
+                cardNumber: '',
+                expiryDate: '',
+                cvc: ''
+            };
+
+            this.checkoutErrors = {};
+            this.selectedStore = '';
+            this.pickupFromStore = false;
+
+            this.isProcessingOrder = false;
+            this.showSuccessPopup = true;
+
+            setTimeout(() => {
+                this.showSuccessPopup = false;
+                this.currentView = 'receipt';
+            }, 1800);
+
+        } catch (error) {
+            console.error("Order error:", error);
+            this.isProcessingOrder = false;
+            alert(error.message);
+        }
+    } 
+        }
+    });
+    </script>
+    </body>
+    </html>
