@@ -2092,140 +2092,140 @@
                 }, 2200);
             },
     async placeOrder() {
+    this.checkoutErrors = {};
+
+    if (!this.checkoutForm.name.trim()) {
+        this.checkoutErrors.name = "Name is required";
+    }
+
+    if (!this.checkoutForm.email.trim()) {
+        this.checkoutErrors.email = "Email ID is required";
+    }
+
+    if (!this.checkoutForm.contact.trim()) {
+        this.checkoutErrors.contact = "Contact number is required";
+    }
+
+    if (!this.checkoutForm.addressLabel.trim()) {
+        this.checkoutErrors.addressLabel = "Please select Work, Home or Other";
+    }
+
+    if (!this.checkoutForm.address.trim()) {
+        this.checkoutErrors.address = "Address is required";
+    }
+
+    if (!this.checkoutForm.floorRoom.trim()) {
+        this.checkoutErrors.floorRoom = "Floor / Room No is required";
+    }
+
+    if (!this.checkoutForm.landmark.trim()) {
+        this.checkoutErrors.landmark = "Landmark is required";
+    }
+
+    if (!this.checkoutForm.cardName.trim()) {
+        this.checkoutErrors.cardName = "Card name is required";
+    }
+
+    if (!this.checkoutForm.cardNumber.trim()) {
+        this.checkoutErrors.cardNumber = "Card number is required";
+    } else if (this.checkoutForm.cardNumber.replace(/\s/g, '').length !== 16) {
+        this.checkoutErrors.cardNumber = "Card number must be 16 digits";
+    }
+
+    if (!this.checkoutForm.expiryDate.trim()) {
+        this.checkoutErrors.expiryDate = "Expiry date is required";
+    } else if (!/^\d{2}\/\d{2}$/.test(this.checkoutForm.expiryDate)) {
+        this.checkoutErrors.expiryDate = "Expiry date must be MM/YY";
+    }
+
+    if (!this.checkoutForm.cvc.trim()) {
+        this.checkoutErrors.cvc = "CVC is required";
+    } else if (this.checkoutForm.cvc.length !== 3) {
+        this.checkoutErrors.cvc = "CVC must be 3 digits";
+    }
+
+    if (this.pickupFromStore && !this.selectedStore) {
+        alert("Please select a pickup location.");
+        return;
+    }
+
+    if (Object.keys(this.checkoutErrors).length > 0) return;
+
+    if (this.cart.length === 0) {
+        alert("Your cart is empty.");
+        return;
+    }
+
+    try {
+        this.isProcessingOrder = true;
+        this.processingStage = 'processing';
+
+        const res = await fetch("https://cst3990-nova-backend.onrender.com/api/orders", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                checkoutForm: this.checkoutForm,
+                cart: this.cart,
+                pickupFromStore: this.pickupFromStore,
+                selectedStore: this.selectedStore,
+                estimatedDeliveryDate: this.estimatedDeliveryDate,
+                userId: this.currentUser ? this.currentUser._id : null
+            })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            throw new Error(data.message || "Failed to place order");
+        }
+
+        await new Promise(resolve => setTimeout(resolve, 1200));
+        this.processingStage = 'payment';
+
+        await new Promise(resolve => setTimeout(resolve, 1200));
+        this.processingStage = 'final';
+
+        await new Promise(resolve => setTimeout(resolve, 1200));
+
+        this.receiptData = data.receipt;
+
+        this.cart = [];
+        localStorage.setItem(this.cartStorageKey, JSON.stringify(this.cart));
+
+        this.checkoutForm = {
+            name: '',
+            email: '',
+            contact: '',
+            addressLabel: '',
+            address: '',
+            floorRoom: '',
+            landmark: '',
+            cardName: '',
+            cardNumber: '',
+            expiryDate: '',
+            cvc: ''
+        };
+
         this.checkoutErrors = {};
+        this.selectedStore = '';
+        this.pickupFromStore = false;
 
-        if (!this.checkoutForm.name.trim()) {
-            this.checkoutErrors.name = "Name is required";
-        }
+        this.isProcessingOrder = false;
+        this.showSuccessPopup = true;
 
-        if (!this.checkoutForm.email.trim()) {
-            this.checkoutErrors.email = "Email ID is required";
-        }
+        setTimeout(() => {
+            this.showSuccessPopup = false;
+            this.currentView = 'receipt';
+        }, 1800);
 
-        if (!this.checkoutForm.contact.trim()) {
-            this.checkoutErrors.contact = "Contact number is required";
-        }
-
-        if (!this.checkoutForm.addressLabel.trim()) {
-            this.checkoutErrors.addressLabel = "Please select Work, Home or Other";
-        }
-
-        if (!this.checkoutForm.address.trim()) {
-            this.checkoutErrors.address = "Address is required";
-        }
-
-        if (!this.checkoutForm.floorRoom.trim()) {
-            this.checkoutErrors.floorRoom = "Floor / Room No is required";
-        }
-
-        if (!this.checkoutForm.landmark.trim()) {
-            this.checkoutErrors.landmark = "Landmark is required";
-        }
-
-        if (!this.checkoutForm.cardName.trim()) {
-            this.checkoutErrors.cardName = "Card name is required";
-        }
-
-        if (!this.checkoutForm.cardNumber.trim()) {
-            this.checkoutErrors.cardNumber = "Card number is required";
-        } else if (this.checkoutForm.cardNumber.replace(/\s/g, '').length !== 16) {
-            this.checkoutErrors.cardNumber = "Card number must be 16 digits";
-        }
-
-        if (!this.checkoutForm.expiryDate.trim()) {
-            this.checkoutErrors.expiryDate = "Expiry date is required";
-        } else if (!/^\d{2}\/\d{2}$/.test(this.checkoutForm.expiryDate)) {
-            this.checkoutErrors.expiryDate = "Expiry date must be MM/YY";
-        }
-
-        if (!this.checkoutForm.cvc.trim()) {
-            this.checkoutErrors.cvc = "CVC is required";
-        } else if (this.checkoutForm.cvc.length !== 3) {
-            this.checkoutErrors.cvc = "CVC must be 3 digits";
-        }
-
-        if (this.pickupFromStore && !this.selectedStore) {
-            alert("Please select a pickup location.");
-            return;
-        }
-
-        if (Object.keys(this.checkoutErrors).length > 0) return;
-
-        if (this.cart.length === 0) {
-            alert("Your cart is empty.");
-            return;
-        }
-
-        try {
-            this.isProcessingOrder = true;
-            this.processingStage = 'processing';
-
-        const res = await fetch("https://cst3990-nova-backend.onrender.com/api/order", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    checkoutForm: this.checkoutForm,
-                    cart: this.cart,
-                    pickupFromStore: this.pickupFromStore,
-                    selectedStore: this.selectedStore,
-                    estimatedDeliveryDate: this.estimatedDeliveryDate,
-                    userId: this.currentUser ? this.currentUser._id : null
-                })
-            });
-
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.message || "Failed to place order");
-            }
-
-            await new Promise(resolve => setTimeout(resolve, 1200));
-            this.processingStage = 'payment';
-
-            await new Promise(resolve => setTimeout(resolve, 1200));
-            this.processingStage = 'final';
-
-            await new Promise(resolve => setTimeout(resolve, 1200));
-
-            this.receiptData = data.receipt;
-
-            this.cart = [];
-            localStorage.setItem(this.cartStorageKey, JSON.stringify(this.cart));
-
-            this.checkoutForm = {
-                name: '',
-                email: '',
-                contact: '',
-                addressLabel: '',
-                address: '',
-                floorRoom: '',
-                landmark: '',
-                cardName: '',
-                cardNumber: '',
-                expiryDate: '',
-                cvc: ''
-            };
-
-            this.checkoutErrors = {};
-            this.selectedStore = '';
-            this.pickupFromStore = false;
-
-            this.isProcessingOrder = false;
-            this.showSuccessPopup = true;
-
-            setTimeout(() => {
-                this.showSuccessPopup = false;
-                this.currentView = 'receipt';
-            }, 1800);
-
-        } catch (error) {
-            console.error("Order error:", error);
-            this.isProcessingOrder = false;
-            alert(error.message);
-        }
-    } 
+    } catch (error) {
+        console.error("Order error:", error);
+        this.isProcessingOrder = false;
+        alert(error.message);
+    }
+}
         }
     });
     </script>
