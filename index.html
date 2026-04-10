@@ -1,1042 +1,1032 @@
     <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Nova | Premium Tech Retail</title>
-
-        <!-- CSS -->
-        <link rel="stylesheet" href="nova.css">
-
-        <!-- Icons / Libraries -->
-        <script src="https://unpkg.com/lucide@latest"></script>
-        <script src="https://cdn.jsdelivr.net/npm/vue@2.7.16/dist/vue.js"></script>
-        <script src="https://js.stripe.com/v3/"></script>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-    </head>
-    <body id="main-body">
-    <div id="app">
-        <!-- Premium Background Effects -->
-        <canvas id="star-canvas"></canvas>
-
-        <div class="bg-gradient"></div>
-        <div class="bg-grid"></div>
-        <div class="bg-noise"></div>
-
-        <div class="page-glow"></div>
-        <div id="toast-container"></div>
-
-        <!-- Global Back Button -->
-        <div 
-            id="back-btn" 
-            v-if="appPage !== 'landing' && !(appPage === 'store' && currentView === 'checkout')"
-            @click="handleBack"
-        >
-            <i data-lucide="arrow-left" size="16"></i>
-            <span>Back</span>
-        </div>
-
-        <!-- ========================= -->
-        <!-- INDEX / LANDING HEADER   -->
-        <!-- ========================= -->
-        <div
-            class="header-container"
-            id="main-header"
-            v-show="appPage !== 'store'"
-        >
-            <h1 id="brand-name">NOVA</h1>
-            <div id="tagline">Premium Apple & Samsung Retail Experience</div>
-
-            <nav>
-                <div class="nav-brand" @click="showPage('landing')" style="cursor:pointer;">NOVA</div>
-
-                <div @click="showPage('landing')" id="nav-home" class="nav-item" :class="{ active: appPage === 'landing' }">
-                    <i data-lucide="home"></i>
-                    <span>Home</span>
-                </div>
-
-                <a href="#featured" class="nav-item" v-if="appPage === 'landing'">
-                    <i data-lucide="sparkles"></i>
-                    <span>Featured</span>
-                </a>
-
-                <a href="#products" class="nav-item" v-if="appPage === 'landing'">
-                    <i data-lucide="shopping-bag"></i>
-                    <span>Products</span>
-                </a>
-
-                <div @click="showPage('contact')" id="nav-contact" class="nav-item" :class="{ active: appPage === 'contact' }">
-                    <i data-lucide="mail"></i>
-                    <span>Contact Us</span>
-                </div>
-
-                <div @click="handleNavLogin" id="nav-login" class="nav-item" :class="{ active: appPage === 'login' || appPage === 'profile' }">
-                    <i data-lucide="user"></i>
-                    <span>{{ currentUser ? currentUser.name.split(' ')[0] : 'Login' }}</span>
-                </div>
-            </nav>
-        </div>
-
-        <div id="home-view" v-show="appPage === 'landing'">
-
-            <!-- Hero Section -->
-            <section class="hero-shell">
-                <div class="hero-content">
-                    <div class="hero-card">
-                        <div class="hero-main">
-                            <div class="hero-copy">
-                                <div class="eyebrow">Nova Premium Store</div>
-                                <h2>Latest<br>iPhone 17 PRO.</h2>
-                                <p>
-                                    Discover flagship devices in a cinematic storefront built to feel premium, modern, and image-first.
-                                </p>
-
-                                <div class="hero-actions">
-                                    <a href="#" class="btn-primary" @click.prevent="goToStoreHome">
-                                        <i data-lucide="arrow-right"></i> Shop Collection
-                                    </a>
-                                    <a href="#featured" class="btn-secondary">
-                                        <i data-lucide="star"></i> Explore Highlights
-                                    </a>
-                                </div>
-                            </div>
-
-                            <div class="hero-visual">
-                                <img src="pics/cosmicorangetransparent.png" alt="Featured devices">
-                            </div>
-                        </div>
-
-                        <div class="hero-side">
-                            <div class="image-panel">
-                                <img src="pics/iphonetrans.png" alt="iPhone Pro">
-                                <div class="image-overlay">
-                                    <h3>Flagship Apple Experience</h3>
-                                    <p>Titanium design, clean ecosystem, premium feel.</p>
-                                </div>
-                            </div>
-
-                            <div class="image-panel">
-                                <img src="pics/samsungs26ultra.png" alt="Samsung Ultra">
-                                <div class="mini-label live-now">Available Now</div>
-                                <div class="image-overlay">
-                                    <h3>Next-Level Galaxy Power</h3>
-                                    <p>Bold hardware, advanced camera, futuristic style.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Featured Section -->
-            <section class="content-wrap" id="featured">
-                <div class="section-head">
-                    <div>
-                        <h2>Featured Retail Experience</h2>
-                    </div>
-                </div>
-
-                <div class="promo-grid">
-                    <div class="promo-banner">
-                        <div class="overlay">
-                            <div class="promo-chip"></div>
-                            <h3>Trade in. Upgrade. Go premium.</h3>
-                            <p>Bring the retail landing page to life with bold visuals, flagship devices, and cinematic presentation.</p>
-                            <div class="hero-actions">
-                                <a href="#products" class="btn-primary">View Devices</a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="promo-mini">
-                        <div class="overlay">
-                            <div class="promo-chip">In Store Perks</div>
-                            <h3 style="margin:0 0 10px; font-size:1.8rem;">Pickup, setup, support.</h3>
-                            <p>Fast pickup, guided setup, and premium after-sales care.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Visual Grid -->
-                <div class="visual-grid">
-                    <div class="visual-card">
-                        <img src="pics/iphone17procovertrans.png" alt="iPhone showcase">
-                        <div class="visual-info">
-                            <h3>iPhone Collection</h3>
-                            <p>Clean, iconic, premium.</p>
-                        </div>
-                    </div>
-
-                    <div class="visual-card">
-                        <img src="pics/mac.png" alt="MacBook showcase">
-                        <div class="visual-info">
-                            <h3>MacBook Lineup</h3>
-                            <p>Power for work and creativity.</p>
-                        </div>
-                    </div>
-
-                    <div class="visual-card">
-                        <img src="pics/samsungzfold.png" alt="Galaxy showcase">
-                        <div class="visual-info">
-                            <h3>Galaxy Series</h3>
-                            <p>Bold design and display-first tech.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Best Sellers -->
-                <div class="section-head" id="products">
-                    <div>
-                        <h2>Best Sellers</h2>
-                    </div>
-                </div>
-
-                <div class="product-showcase">
-                    <div class="product-card" @click="goToProduct('iPhone 17 Pro')" style="cursor:pointer;">
-                        <div class="product-top">
-                            <img src="pics/3iphone17protrans.png" alt="iPhone Pro Series" />
-                        </div>
-                        <div class="product-tag">Apple Flagship</div>
-                        <h3>iPhone 17 Pro</h3>
-                        <p>Aluminium body, pro cameras, powerful Apple silicon.</p>
-                        <div class="price-line">
-                            <div class="price">From AED 5,099</div>
-                            <a href="#" class="btn-secondary" style="padding:10px 16px;" @click.prevent.stop="goToProduct('iPhone 17 Pro')">View Product</a>
-                        </div>
-                    </div>
-
-                    <div class="product-card" @click="goToProduct('MacBook Pro')" style="cursor:pointer;">
-                        <div class="product-top">
-                            <img src="pics/macbookairtrans.png" alt="MacBook Pro" />
-                        </div>
-                        <div class="product-tag">Apple Productivity</div>
-                        <h3>MacBook Pro</h3>
-                        <p>High performance, long battery life, brilliant display.</p>
-                        <div class="price-line">
-                            <div class="price">From AED 6,999</div>
-                            <a href="#" class="btn-secondary" style="padding:10px 16px;" @click.prevent.stop="goToProduct('MacBook Pro')">View Product</a>
-                        </div>
-                    </div>
-
-                    <div class="product-card" @click="goToProduct('Galaxy S26 Ultra')" style="cursor:pointer;">
-                        <div class="product-top">
-                            <img src="pics/samsungs26ultrablack.webp" alt="Samsung S26 Ultra" />
-                        </div>
-                        <div class="product-tag">Samsung Flagship</div>
-                        <h3>Samsung S26 Ultra</h3>
-                        <p>AI features, elite camera system, powerful everyday performance.</p>
-                        <div class="price-line">
-                            <div class="price">From AED 5,299</div>
-                            <a href="#" class="btn-secondary" style="padding:10px 16px;" @click.prevent.stop="goToProduct('Galaxy S26 Ultra')">View Product</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Gallery Strip -->
-                <div class="gallery-strip">
-                    <div class="gallery-item"><img src="pics/airpodspro3trans.png" alt="Gallery 1"></div>
-                    <div class="gallery-item"><img src="pics/applewatchseries11.png" alt="Gallery 2"></div>
-                    <div class="gallery-item"><img src="pics/samsungbuds.avif" alt="Gallery 3"></div>
-                    <div class="gallery-item"><img src="pics/samsungs26ultrablack.webp" alt="Gallery 4"></div>
-                </div>
-            </section>
-
-            <!-- Coming Soon Section -->
-            <section class="content-wrap coming-soon-section" id="coming-soon">
-                <div class="section-head">
-                    <div>
-                        <h2>Coming Soon</h2>
-                        <p>Next launch arriving soon at NOVA.</p>
-                    </div>
-                </div>
-
-                <div class="coming-soon-grid">
-                    <div class="coming-soon-card">
-                        <div class="coming-soon-image-wrap">
-                            <img src="pics/macbookneon.png" alt="MacBook Neon">
-                            <span class="coming-badge">Coming Soon</span>
-                        </div>
-
-                        <div class="coming-soon-info">
-                            <h3>MacBook Neon</h3>
-                            <p>Ultra-modern design with powerful performance and a bold premium finish.</p>
-                            <p class="launch-date">
-                                This product will launch on <strong>20 June 2026</strong>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <footer class="footer">
-                <div class="footer-row">
-                    <div>© 2026 NOVA. Premium tech retail experience.</div>
-                    <div>Apple • Samsung • Accessories • Support</div>
-                </div>
-            </footer>
-        </div>
-
-        
-
-        <!-- ========================= -->
-        <!-- LOGIN VIEW -->
-        <!-- ========================= -->
-        <div id="login-view" v-show="appPage === 'login'">
-            <div class="card" id="sliding-card">
-                <div class="card-bg card-bg-1"></div>
-                <div class="card-bg card-bg-2"></div>
-
-                <!-- Signup Form -->
-                <div class="form signup active">
-                    <h2>Register</h2>
-                    <input type="text" id="reg-name" placeholder="Name" />
-                    <input type="email" id="reg-email" placeholder="Email" />
-                    <input type="tel" id="reg-phone" placeholder="Phone Number" />
-                    <label>Date of Birth</label>
-                    <input type="date" id="reg-dob" />
-                    <input type="password" id="reg-pass" placeholder="Password" />
-                    <button class="main-btn" @click="handleSignup">SIGN UP</button>
-                    <div class="toggle-btn" @click="toggleCard">Already have an account? Sign in</div>
-                </div>
-
-                <!-- Signin Form -->
-                <div class="form signin">
-                    <div id="signin-main" class="signin-content" style="width:100%; display:flex; flex-direction:column; align-items:center;">
-                        <h2>Sign In</h2>
-                        <input type="email" id="login-email" placeholder="Email" />
-                        <input type="password" id="login-pass" placeholder="Password" />
-                        <div id="login-error" class="error-text" style="color:var(--error-red); font-size:0.7rem; display:none;">Invalid credentials</div>
-
-                        <div @click="toggleForgot(true)" style="font-size: 0.75rem; color: #fff; opacity: 0.7; cursor: pointer; margin-top: 10px; text-decoration: underline;">
-                            Forgot Password?
-                        </div>
-
-                        <button class="main-btn" @click="handleSignin">LOG IN</button>
-                        <div class="toggle-btn" @click="toggleCard" style="color:#dce6f7">New here? Register</div>
-                    </div>
-
-                    <!-- Forgot Password Form -->
-                    <div id="forgot-form" class="signin-content" style="width:100%; display:none; flex-direction:column; align-items:center;">
-                        <h2>Reset Password</h2>
-                        <input type="email" id="forgot-email" placeholder="Enter Email ID" />
-                        <input type="password" id="forgot-new-pass" placeholder="New Password" />
-                        <input type="password" id="forgot-confirm-pass" placeholder="Confirm Password" />
-                        <button class="main-btn" @click="handleResetPassword">CHANGE PASSWORD</button>
-
-                        <div @click="toggleForgot(false)" style="font-size: 0.75rem; color: #fff; opacity: 0.7; cursor: pointer; margin-top: 15px; text-decoration: underline;">
-                            Back to Login
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ========================= -->
-        <!-- PROFILE VIEW -->
-        <!-- ========================= -->
-        <div id="profile-view" v-show="appPage === 'profile'">
-            <div class="profile-card">
-                <h3 id="prof-name">{{ currentUser ? currentUser.name : 'Name' }}</h3>
-                <p id="prof-details" style="font-size: 0.9rem; color: #d8e4f3; line-height: 1.6;">
-                    <template v-if="currentUser">
-                        {{ currentUser.email }}<br>{{ currentUser.phone || '' }}
-                    </template>
-                </p>
-                <button class="logout-btn" @click="handleLogout">Logout</button>
-            </div>
-        </div>
-
-        <!-- ========================= -->
-        <!-- CONTACT VIEW -->
-        <!-- ========================= -->
-        <div id="contact-view" v-show="appPage === 'contact'">
-            <div class="contact-card">
-                <h2>Contact Us</h2>
-                <p class="contact-subtext">Have a question or need help? Send us a message.</p>
-
-                <input type="text" id="contact-name" placeholder="Name" />
-                <input type="tel" id="contact-number" placeholder="Contact Number" />
-                <input type="email" id="contact-email" placeholder="Email" />
-                <label for="contact-message">Message</label>
-                <textarea id="contact-message" placeholder="Write your message here..."></textarea>
-
-                <button class="contact-btn" @click="handleContactSubmit">SUBMIT</button>
-            </div>
-        </div>
-
-        <!-- ========================= -->
-        <!-- STORE PAGE -->
-        <!-- ========================= -->
-        <div v-show="appPage === 'store'">
-
-            <div v-if="showSuccessPopup" class="success-popup-overlay">
-                <div class="success-popup-box">
-                    <div class="success-tick-circle">
-                        <i class="fa-solid fa-check"></i>
-                    </div>
-                    <h2>Order Placed Successfully</h2>
-                    <p>Your order has been confirmed.</p>
-                </div>
-            </div>
-
-            <div v-if="isProcessingOrder" class="processing-overlay">
-                <div class="processing-box">
-                    <div class="processing-ring"></div>
-
-                    <h2 v-if="processingStage === 'processing'">Processing Your Order</h2>
-                    <h2 v-else-if="processingStage === 'payment'">Payment Processed</h2>
-                    <h2 v-else>Finalizing Order</h2>
-
-                    <p v-if="processingStage === 'processing'">
-                        Please wait while we confirm your items and prepare your payment.
-                    </p>
-
-                    <p v-else-if="processingStage === 'payment'">
-                        Your payment has been approved. We are preparing your confirmation.
-                    </p>
-
-                    <p v-else>
-                        Almost done. Your order confirmation is being generated.
-                    </p>
-                </div>
-            </div>
-
-            <!-- Loading Overlay -->
-            <div v-if="isLoading" class="loading-overlay">
-                <div class="loader-content">
-                    <h1 class="nova-loading-text">NOVA</h1>
-                    <div class="novo-bar-container">
-                        <div class="novo-progress"></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Store Navbar -->
-            <nav class="navbar">
-                <div class="nav-content">
-                    <div class="nav-left">
-                        <a href="#" class="nova-logo" @click.prevent="goToIndex">NOVA</a>
-
-                        <div v-for="item in menuItems" :key="item.name" class="nav-item">
-                            <span class="nav-link">{{ item.name }}</span>
-
-                            <div v-if="item.dropdown" class="dropdown-menu">
-                                <a
-                                    v-for="subItem in item.dropdown"
-                                    :key="subItem"
-                                    href="#"
-                                    class="dropdown-link"
-                                    @click.prevent="goToProduct(subItem)"
-                                >
-                                    {{ subItem }}
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div
-                        v-if="cart.length > 0"
-                        class="cart-icon-wrapper"
-                        @click="goToCheckout"
-                        :class="{ 'cart-bounce': cartAnimate }"
-                    >
-                        <i class="fa-solid fa-bag-shopping"></i>
-                        <span class="cart-badge">{{ cart.length }}</span>
-                    </div>
-                </div>
-            </nav>
-
-            <div class="cart-toast" v-if="showCartToast">
-                {{ cartToastMessage }}
-            </div>
-
-            <!-- Store Home -->
-            <div v-if="currentView === 'home'">
-                <section
-                    v-if="heroProducts.length"
-                    class="hero-section"
-                    :style="{ backgroundImage: 'url(' + heroProducts[0].img + ')' }"
-                >
-                    <div class="hero-content">
-                        <h2 :style="{ color: heroProducts[0].color }">{{ heroProducts[0].name }}</h2>
-                        <p>{{ heroProducts[0].tag }}</p>
-                        <button class="buy-btn" @click="goToProduct(heroProducts[0].name)">Buy</button>
-                    </div>
-                </section>
-
-                <section class="hero-products-strip" v-if="heroProducts.length > 1">
-                    <div
-                        v-for="p in heroProducts.slice(1)"
-                        :key="p.name"
-                        class="hero-mini-card"
-                        @click="goToProduct(p.name)"
-                        :style="{ backgroundImage: 'url(' + p.img + ')' }"
-                    >
-                        <div class="hero-mini-overlay">
-                            <h3 :style="{ color: p.color }">{{ p.name }}</h3>
-                            <p>{{ p.tag }}</p>
-                            <span class="hero-mini-btn">View Product</span>
-                        </div>
-                    </div>
-                </section>
-
-                <section class="all-products-section">
-                    <div class="all-products-header">
-                        <h2>Nova Products</h2>
-                        <p>Browse the full Nova collection.</p>
-                    </div>
-
-                    <div class="products-grid">
-                        <div
-                            v-for="product in allProducts"
-                            :key="product._id"
-                            class="product-card"
-                            @click="goToProduct(product.name)"
-                        >
-                            <img
-                                v-if="product.colors && product.colors.length"
-                                :src="product.colors[0].image"
-                                :alt="product.name"
-                                class="product-card-img"
-                            >
-
-                            <h3>{{ product.name }}</h3>
-                            <p class="product-card-desc">{{ product.longDescription }}</p>
-                            <div class="product-card-price">
-                                From {{ Number(product.basePrice).toLocaleString() }} AED
-                            </div>
-
-                            <button class="buy-btn">View Product</button>
-                        </div>
-                    </div>
-                </section>
-            </div>
-
-            <!-- Product Details -->
-            <div v-if="currentView === 'details'" class="details-page" :style="{ backgroundColor: selectedProduct.bgColor, color: selectedProduct.textColor }">
-                <div class="config-wrapper">
-
-                    <div class="sticky-image-container">
-                        <div class="zoom-wrapper">
-                            <img :src="activeColor.image" class="details-img" alt="Product image">
-                        </div>
-
-                        <div v-if="selectedProduct.gallery" class="gallery-container">
-                            <div v-for="(img, index) in selectedProduct.gallery" :key="index" class="gallery-card">
-                                <img :src="img" alt="Gallery image">
-                            </div>
-                        </div>
-
-                        <div class="specs-grid">
-                            <div class="spec-card" v-for="spec in selectedProduct.specs" :key="spec.label">
-                                <h4>{{ spec.label }}</h4>
-                                <p class="spec-item-text" v-html="spec.value"></p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="config-options">
-                        <p v-if="selectedProduct.isNew" class="product-badge-new">NEW</p>
-
-                        <h1 class="product-title">Buy {{ selectedProduct.name }}</h1>
-                        <p class="product-description">{{ selectedProduct.longDescription }}</p>
-
-                        <hr class="section-divider">
-
-                        <!-- Model -->
-                        <div v-if="selectedProduct.models" class="option-section">
-                            <h3 class="option-title">
-                                Model. <span>Which is right for you?</span>
-                            </h3>
-
-                            <div class="selection-group">
-                                <div
-                                    v-for="m in selectedProduct.models"
-                                    :key="m.name"
-                                    class="model-box"
-                                    :class="{ 'active-highlight': activeModel && activeModel.name === m.name }"
-                                    @click="changeModel(m)"
-                                >
-                                    <div class="tile-content">
-                                        <span class="tile-name">{{ m.name }}</span>
-                                        <span v-if="m.description" class="tile-subtext">{{ m.description }}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Connectivity -->
-                        <div v-if="activeModel && activeModel.connectivityOptions" class="option-section">
-                            <h3 class="option-title">
-                                Connectivity. <span>Choose your connection type</span>
-                            </h3>
-
-                            <div class="selection-group">
-                                <div
-                                    v-for="c in activeModel.connectivityOptions"
-                                    :key="c.name"
-                                    class="selection-tile"
-                                    :class="{ active: activeConnectivity && activeConnectivity.name === c.name }"
-                                    @click="activeConnectivity = c"
-                                >
-                                    <div class="tile-content">
-                                        <span class="tile-name">{{ c.name }}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Size -->
-                        <div v-if="selectedProduct.sizes" class="option-section">
-                            <h3 class="option-title">
-                                Size. <span>Choose your case size</span>
-                            </h3>
-
-                            <div class="selection-group">
-                                <div
-                                    v-for="size in selectedProduct.sizes"
-                                    :key="size.name"
-                                    class="selection-tile"
-                                    :class="{ active: activeSize && activeSize.name === size.name }"
-                                    @click="activeSize = size"
-                                >
-                                    <span class="tile-name">{{ size.name }}</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Finish -->
-                        <div class="option-section">
-                            <h3 class="option-title">
-                                Finish. <span>{{ activeColor ? activeColor.name : '' }}</span>
-                            </h3>
-
-                            <div class="color-dot-group">
-                                <div
-                                    v-for="color in availableColors"
-                                    :key="color.name"
-                                    class="color-dot"
-                                    :style="{ backgroundColor: color.hex }"
-                                    :class="{ active: activeColor && activeColor.name === color.name }"
-                                    @click="activeColor = color"
-                                ></div>
-                            </div>
-                        </div>
-
-                        <!-- Storage -->
-                        <div v-if="selectedProduct.storageOptions" class="option-section">
-                            <h3 class="option-title">
-                                Storage. <span>How much space do you need?</span>
-                            </h3>
-
-                            <div class="selection-group">
-                                <div
-                                    v-for="s in selectedProduct.storageOptions"
-                                    :key="s.name"
-                                    class="selection-tile"
-                                    :class="{ active: activeStorage && activeStorage.name === s.name }"
-                                    @click="activeStorage = s"
-                                >
-                                    <span class="tile-name">{{ s.name }}</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Display -->
-                        <div v-if="selectedProduct.displayOptions" class="option-section">
-                            <h3 class="option-title">Display.</h3>
-
-                            <div class="selection-group">
-                                <div
-                                    v-for="d in selectedProduct.displayOptions"
-                                    :key="d.name"
-                                    class="selection-tile"
-                                    :class="{ active: activeDisplay && activeDisplay.name === d.name }"
-                                    @click="activeDisplay = d"
-                                >
-                                    <span class="tile-name">{{ d.name }}</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Chip -->
-                        <div v-if="availableChips.length" class="option-section">
-                            <h3 class="option-title">Chip.</h3>
-
-                            <div class="selection-group">
-                                <div
-                                    v-for="chip in availableChips"
-                                    :key="chip.name"
-                                    class="selection-tile"
-                                    :class="{ active: activeChip && activeChip.name === chip.name }"
-                                    @click="activeChip = chip; activeVariant = chip.variants[0]"
-                                >
-                                    <span class="tile-name">{{ chip.name }}</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Configuration -->
-                        <div v-if="activeChip && activeChip.variants" class="option-section">
-                            <h3 class="option-title">Configuration.</h3>
-
-                            <div class="selection-group">
-                                <div
-                                    v-for="v in activeChip.variants"
-                                    :key="v.name"
-                                    class="selection-tile"
-                                    :class="{ active: activeVariant && activeVariant.name === v.name }"
-                                    @click="activeVariant = v"
-                                >
-                                    <span class="tile-name">{{ v.name }}</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <p class="stock-status" :class="{ 'out-stock': currentStock === 0 && !isSelectionIncomplete }">
-                            {{
-                                isSelectionIncomplete
-                                    ? selectionMessage
-                                    : currentStock > 0
-                                        ? `Stock Available: ${currentStock}`
-                                        : 'Out Of Stock'
-                            }}
-                        </p>
-
-                        <div class="price-tag">{{ calculatePrice }} AED</div>
-
-                        <button
-                            class="buy-btn"
-                            @click="addToCart"
-                            :disabled="isSelectionIncomplete || currentStock === 0"
-                        >
-                            {{
-                                isSelectionIncomplete
-                                    ? 'Select Options'
-                                    : currentStock === 0
-                                        ? 'Out Of Stock'
-                                        : 'Add to Bag'
-                            }}
-                        </button>
-
-                        <p @click="goBackHome" class="explore-link">Return to Home</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Checkout -->
-            <div v-if="currentView === 'checkout'" class="checkout-page">
-                <div class="checkout-container">
-
-                    <div class="checkout-form-section">
-                        <button class="back-btn" @click="currentView = prevView">← Back</button>
-
-                        <h2 class="checkout-title">Checkout</h2>
-                        <p class="checkout-subtitle">Complete your order details below.</p>
-
-                        <div class="checkout-form">
-                            <div class="form-group">
-                                <input type="text" v-model="checkoutForm.name" placeholder="Full Name">
-                                <span class="error-text" v-if="checkoutErrors.name">{{ checkoutErrors.name }}</span>
-                            </div>
-
-                            <div class="form-group">
-                                <input type="email" v-model="checkoutForm.email" placeholder="Email ID">
-                                <span class="error-text" v-if="checkoutErrors.email">{{ checkoutErrors.email }}</span>
-                            </div>
-
-                            <div class="form-group">
-                                <input type="text" v-model="checkoutForm.contact" placeholder="Contact No">
-                                <span class="error-text" v-if="checkoutErrors.contact">{{ checkoutErrors.contact }}</span>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="section-mini-label">Address Label</label>
-                                <div class="address-label-group">
-                                    <button type="button" class="address-label-btn" :class="{ active: checkoutForm.addressLabel === 'Work' }" @click="checkoutForm.addressLabel = 'Work'">Work</button>
-                                    <button type="button" class="address-label-btn" :class="{ active: checkoutForm.addressLabel === 'Home' }" @click="checkoutForm.addressLabel = 'Home'">Home</button>
-                                    <button type="button" class="address-label-btn" :class="{ active: checkoutForm.addressLabel === 'Other' }" @click="checkoutForm.addressLabel = 'Other'">Other</button>
-                                </div>
-                                <span class="error-text" v-if="checkoutErrors.addressLabel">{{ checkoutErrors.addressLabel }}</span>
-                            </div>
-
-                            <div class="form-group">
-                                <input type="text" v-model="checkoutForm.address" placeholder="Address">
-                                <span class="error-text" v-if="checkoutErrors.address">{{ checkoutErrors.address }}</span>
-                            </div>
-
-                            <div class="form-group">
-                                <input type="text" v-model="checkoutForm.floorRoom" placeholder="Floor / Room No">
-                                <span class="error-text" v-if="checkoutErrors.floorRoom">{{ checkoutErrors.floorRoom }}</span>
-                            </div>
-
-                            <div class="form-group">
-                                <input type="text" v-model="checkoutForm.landmark" placeholder="Landmark">
-                                <span class="error-text" v-if="checkoutErrors.landmark">{{ checkoutErrors.landmark }}</span>
-                            </div>
-
-                            <div class="payment-section-title">Payment Details</div>
-
-                            <div class="form-group">
-                                <input type="text" v-model="checkoutForm.cardName" placeholder="Name on Card">
-                                <span class="error-text" v-if="checkoutErrors.cardName">{{ checkoutErrors.cardName }}</span>
-                            </div>
-
-                            <div class="form-group card-input-wrap">
-                                <input 
-                                    type="text" 
-                                    v-model="checkoutForm.cardNumber" 
-                                    placeholder="Card Number" 
-                                    maxlength="19" 
-                                    inputmode="numeric" 
-                                    @input="formatCardNumber"
-                                    class="card-input"
-                                >
-
-                                <div class="card-icons">
-                                    <i class="fa-brands fa-cc-visa"></i>
-                                    <i class="fa-brands fa-cc-mastercard"></i>
-                                </div>
-
-                                <span class="error-text" v-if="checkoutErrors.cardNumber">
-                                    {{ checkoutErrors.cardNumber }}
-                                </span>
-                            </div>
-
-                            <div class="card-row">
-                                <div class="form-group">
-                                    <input type="text" v-model="checkoutForm.expiryDate" placeholder="MM/YY" maxlength="5" inputmode="numeric" @input="formatExpiryDate">
-                                    <span class="error-text" v-if="checkoutErrors.expiryDate">{{ checkoutErrors.expiryDate }}</span>
-                                </div>
-
-                                <div class="form-group">
-                                    <input type="password" v-model="checkoutForm.cvc" placeholder="CVC" maxlength="3" inputmode="numeric" @input="formatCVC">
-                                    <span class="error-text" v-if="checkoutErrors.cvc">{{ checkoutErrors.cvc }}</span>
-                                </div>
-                            </div>
-
-                            <button class="place-order-btn" @click="placeOrder">Place Order</button>
-                            <p @click="goBackHome" class="return-home-link">Return to Home</p>
-                        </div>
-                    </div>
-
-                    <div class="checkout-summary-section">
-                        <h3 class="summary-title">Your Bag</h3>
-
-                        <div v-if="cart.length === 0" class="empty-cart">
-                            Your bag is empty.
-                        </div>
-
-                        <div v-else>
-                            <div v-for="(item,index) in cart" :key="index" class="checkout-item">
-                                <div class="checkout-item-left">
-                                    <img :src="item.image" alt="Product Image" class="checkout-item-img">
-                                </div>
-
-                                <div class="checkout-item-center">
-                                    <h4>{{ item.name }}</h4>
-                                    <p v-if="item.model">Model: {{ item.model }}</p>
-                                    <p v-if="item.connectivity">Connectivity: {{ item.connectivity }}</p>
-                                    <p v-if="item.color">Color: {{ item.color }}</p>
-                                    <p v-if="item.storage">Storage: {{ item.storage }}</p>
-                                    <p v-if="item.chip">Chip: {{ item.chip }}</p>
-                                    <p v-if="item.variant">Configuration: {{ item.variant }}</p>
-                                    <p v-if="item.size">Size: {{ item.size }}</p>
-                                </div>
-
-                                <div class="checkout-item-right">
-                                    <div class="checkout-price">{{ item.price }} AED</div>
-                                    <button class="remove-btn" @click.stop="removeFromCart(index)">Remove</button>
-                                </div>
-                            </div>
-
-                            <div class="summary-box">
-                                <div class="summary-row">
-                                    <span>Subtotal</span>
-                                    <span>{{ totalPrice }} AED</span>
-                                </div>
-
-                                <div class="summary-row">
-                                    <span>Delivery</span>
-                                    <span>{{ pickupFromStore ? 'Store Pickup' : 'Free' }}</span>
-                                </div>
-
-                                <div class="summary-row total-row">
-                                    <span>Total</span>
-                                    <span>{{ totalPrice }} AED</span>
-                                </div>
-
-                                <div class="pickup-section">
-                                    <div class="pickup-toggle-row">
-                                        <span class="pickup-label">Pickup From Store</span>
-
-                                        <label class="switch">
-                                            <input type="checkbox" v-model="pickupFromStore">
-                                            <span class="slider"></span>
-                                        </label>
-                                    </div>
-
-                                    <div v-if="pickupFromStore" class="pickup-dropdown-wrap">
-                                        <div class="custom-dropdown" @click="toggleDropdown">
-                                            <div class="dropdown-selected">
-                                                {{ selectedStore || 'Select pickup location' }}
-                                            </div>
-
-                                            <div class="dropdown-options" v-show="dropdownOpen">
-                                                <div class="dropdown-option" @click.stop="selectStore('Nova Uptown Mirdif')">
-                                                    Nova Uptown Mirdif
-                                                </div>
-
-                                                <div class="dropdown-option" @click.stop="selectStore('Nova Mall of The Emirates')">
-                                                    Nova Mall of The Emirates
-                                                </div>
-
-                                                <div class="dropdown-option" @click.stop="selectStore('Nova Al Wahda Mall')">
-                                                    Nova Al Wahda Mall
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div v-else class="delivery-estimate">
-                                        Estimated Delivery: <strong>{{ estimatedDeliveryDate }}</strong>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-
-            <!-- Receipt -->
-            <div v-if="currentView === 'receipt'" class="receipt-page">
-                <div class="bill-receipt">
-                    <div class="bill-header">
-                        <div>
-                            <h1>NOVA</h1>
-                            <p>Premium Tech Retail</p>
-                        </div>
-                        <div class="bill-status">PAID</div>
-                    </div>
-
-                    <div class="bill-meta-grid">
-                        <div>
-                            <span>Order No</span>
-                            <strong>{{ receiptData.orderNumber }}</strong>
-                        </div>
-
-                        <div>
-                            <span>Date</span>
-                            <strong>{{ receiptData.purchaseDate }}</strong>
-                        </div>
-
-                        <div>
-                            <span>Time</span>
-                            <strong>{{ receiptData.purchaseTime }}</strong>
-                        </div>
-
-                        <div>
-                            <span>Customer</span>
-                            <strong>{{ receiptData.name }}</strong>
-                        </div>
-
-                        <div>
-                            <span>Contact</span>
-                            <strong>{{ receiptData.contact }}</strong>
-                        </div>
-                    </div>
-
-                    <div class="bill-section">
-                        <h3>Billing Details</h3>
-                        <p><strong>Email:</strong> {{ receiptData.email }}</p>
-                        <p><strong>Address Type:</strong> {{ receiptData.addressLabel }}</p>
-                        <p><strong>Address:</strong> {{ receiptData.address }}</p>
-                        <p><strong>Floor / Room:</strong> {{ receiptData.floorRoom }}</p>
-                        <p><strong>Landmark:</strong> {{ receiptData.landmark }}</p>
-                    </div>
-
-                    <div class="bill-section">
-                        <h3>Order Type</h3>
-                        <p>
-                            <strong>{{ receiptData.pickupFromStore ? 'Pickup from Store' : 'Home Delivery' }}</strong>
-                        </p>
-                        <p v-if="receiptData.pickupFromStore && receiptData.selectedStore">
-                            <strong>Pickup Location:</strong> {{ receiptData.selectedStore }}
-                        </p>
-                        <p v-else>
-                            <strong>Estimated Delivery:</strong> {{ receiptData.estimatedDeliveryDate }}
-                        </p>
-                    </div>
-
-                    <div class="bill-section">
-                        <h3>Items</h3>
-                        <table class="bill-table">
-                            <thead>
-                                <tr>
-                                    <th>Item</th>
-                                    <th>Config</th>
-                                    <th>Price</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="(item, index) in receiptData.items" :key="index">
-                                    <td>{{ item.name }}</td>
-                                    <td>
-                                        <div class="bill-config">
-                                            <span v-if="item.model">{{ item.model }}</span>
-                                            <span v-if="item.storage">{{ item.storage }}</span>
-                                            <span v-if="item.color">{{ item.color }}</span>
-                                            <span v-if="item.connectivity">{{ item.connectivity }}</span>
-                                            <span v-if="item.size">{{ item.size }}</span>
-                                            <span v-if="item.chip">{{ item.chip }}</span>
-                                            <span v-if="item.variant">{{ item.variant }}</span>
-                                        </div>
-                                    </td>
-                                    <td>{{ item.price }} AED</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div class="bill-total-row">
-                        <span>Total Paid</span>
-                        <strong>{{ receiptData.totalPrice }} AED</strong>
-                    </div>
-
-                    <div class="bill-footer">
-                        <p>Thank you for shopping with NOVA.</p>
-                        <button class="bill-home-btn" @click="goBackHome">Back to Home</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Nova AI -->
-            <div class="nova-ai-trigger" @click="showAI = !showAI">
-                <i class="fa-solid fa-sparkles" v-if="!showAI"></i>
-                <i class="fa-solid fa-xmark" v-else></i>
-            </div>
-
-            <div class="nova-ai-window" v-if="showAI">
-                <div class="nova-ai-header">
-                    <h3>NOVA SPECIALIST</h3>
-                    <span class="status-dot"></span>
-                </div>
-
-                <div class="nova-ai-messages" id="ai-messages">
-                    <div v-for="m in aiMessages" :key="m.text + m.role" :class="['msg', m.role]">
-                        <span v-html="m.text"></span>
-                    </div>
-                </div>
-
-                <div class="nova-ai-input-area">
-                    <input v-model="userQuery" @keyup.enter="askNova" placeholder="Ask Nova about cameras or gaming...">
-                    <button @click="askNova"><i class="fa-solid fa-paper-plane"></i></button>
-                </div>
-            </div>
-        </div>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nova | Premium Tech Retail</title>
+
+  <link rel="stylesheet" href="nova.css">
+
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.7.16/dist/vue.js"></script>
+  <script src="https://js.stripe.com/v3/"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+</head>
+<body id="main-body">
+  <div id="app">
+    <canvas id="star-canvas"></canvas>
+    <div class="bg-gradient"></div>
+    <div class="bg-grid"></div>
+    <div class="bg-noise"></div>
+    <div class="page-glow"></div>
+    <div id="toast-container"></div>
+
+    <!-- Global Back Button -->
+    <div
+      id="back-btn"
+      v-if="appPage !== 'landing' && !(appPage === 'store' && currentView === 'checkout')"
+      @click="handleBack"
+    >
+      <i data-lucide="arrow-left" size="16"></i>
+      <span>Back</span>
     </div>
 
+    <!-- LANDING HEADER -->
+    <header
+      class="header-container"
+      id="main-header"
+      v-show="appPage !== 'store'"
+    >
+      <h1 id="brand-name">NOVA</h1>
+      <div id="tagline">Premium Apple & Samsung Retail Experience</div>
+
+      <nav class="landing-nav">
+        <div class="nav-brand" @click="showPage('landing')">NOVA</div>
+
+        <div
+          @click="showPage('landing')"
+          id="nav-home"
+          class="nav-item"
+          :class="{ active: appPage === 'landing' }"
+        >
+          <i data-lucide="home"></i>
+          <span>Home</span>
+        </div>
+
+        <a href="#featured" class="nav-item" v-if="appPage === 'landing'">
+          <i data-lucide="sparkles"></i>
+          <span>Featured</span>
+        </a>
+
+        <a href="#products" class="nav-item" v-if="appPage === 'landing'">
+          <i data-lucide="shopping-bag"></i>
+          <span>Products</span>
+        </a>
+
+        <div
+          @click="showPage('contact')"
+          id="nav-contact"
+          class="nav-item"
+          :class="{ active: appPage === 'contact' }"
+        >
+          <i data-lucide="mail"></i>
+          <span>Contact Us</span>
+        </div>
+
+        <div
+          @click="handleNavLogin"
+          id="nav-login"
+          class="nav-item"
+          :class="{ active: appPage === 'login' || appPage === 'profile' }"
+        >
+          <i data-lucide="user"></i>
+          <span>{{ currentUser ? currentUser.name.split(' ')[0] : 'Login' }}</span>
+        </div>
+      </nav>
+    </header>
+
+    <!-- LANDING PAGE -->
+    <main id="home-view" v-show="appPage === 'landing'">
+      <!-- Hero Section -->
+      <section class="hero-shell">
+        <div class="hero-content">
+          <div class="hero-card">
+            <div class="hero-main">
+              <div class="hero-copy">
+                <div class="eyebrow">Nova Premium Store</div>
+                <h2>Latest<br>iPhone 17 PRO.</h2>
+                <p>
+                  Discover flagship devices in a cinematic storefront built to feel premium, modern, and image-first.
+                </p>
+
+                <div class="hero-actions">
+                  <a href="#" class="btn-primary" @click.prevent="goToStoreHome">
+                    <i data-lucide="arrow-right"></i>
+                    <span>Shop Collection</span>
+                  </a>
+
+                  <a href="#featured" class="btn-secondary">
+                    <i data-lucide="star"></i>
+                    <span>Explore Highlights</span>
+                  </a>
+                </div>
+              </div>
+
+              <div class="hero-visual">
+                <img src="pics/cosmicorangetransparent.png" alt="Featured devices">
+              </div>
+            </div>
+
+            <div class="hero-side">
+              <div class="image-panel">
+                <img src="pics/iphonetrans.png" alt="iPhone Pro">
+                <div class="image-overlay">
+                  <h3>Flagship Apple Experience</h3>
+                  <p>Titanium design, clean ecosystem, premium feel.</p>
+                </div>
+              </div>
+
+              <div class="image-panel">
+                <img src="pics/samsungs26ultra.png" alt="Samsung Ultra">
+                <div class="mini-label live-now">Available Now</div>
+                <div class="image-overlay">
+                  <h3>Next-Level Galaxy Power</h3>
+                  <p>Bold hardware, advanced camera, futuristic style.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Featured -->
+      <section class="content-wrap" id="featured">
+        <div class="section-head">
+          <div>
+            <h2>Featured Retail Experience</h2>
+          </div>
+        </div>
+
+        <div class="promo-grid">
+          <div class="promo-banner">
+            <div class="overlay">
+              <div class="promo-chip">Premium Retail</div>
+              <h3>Trade in. Upgrade. Go premium.</h3>
+              <p>
+                Bring the retail landing page to life with bold visuals, flagship devices, and cinematic presentation.
+              </p>
+              <div class="hero-actions">
+                <a href="#products" class="btn-primary">View Devices</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="promo-mini">
+            <div class="overlay">
+              <div class="promo-chip">In Store Perks</div>
+              <h3>Pickup, setup, support.</h3>
+              <p>Fast pickup, guided setup, and premium after-sales care.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Visual Grid -->
+        <div class="visual-grid">
+          <div class="visual-card">
+            <img src="pics/iphone17procovertrans.png" alt="iPhone showcase">
+            <div class="visual-info">
+              <h3>iPhone Collection</h3>
+              <p>Clean, iconic, premium.</p>
+            </div>
+          </div>
+
+          <div class="visual-card">
+            <img src="pics/mac.png" alt="MacBook showcase">
+            <div class="visual-info">
+              <h3>MacBook Lineup</h3>
+              <p>Power for work and creativity.</p>
+            </div>
+          </div>
+
+          <div class="visual-card">
+            <img src="pics/samsungzfold.png" alt="Galaxy showcase">
+            <div class="visual-info">
+              <h3>Galaxy Series</h3>
+              <p>Bold design and display-first tech.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Best Sellers -->
+        <div class="section-head" id="products">
+          <div>
+            <h2>Best Sellers</h2>
+          </div>
+        </div>
+
+        <div class="product-showcase">
+          <div class="product-card" @click="goToProduct('iPhone 17 Pro')">
+            <div class="product-top">
+              <img src="pics/3iphone17protrans.png" alt="iPhone Pro Series" />
+            </div>
+            <div class="product-tag">Apple Flagship</div>
+            <h3>iPhone 17 Pro</h3>
+            <p>Aluminium body, pro cameras, powerful Apple silicon.</p>
+            <div class="price-line">
+              <div class="price">From AED 5,099</div>
+              <a href="#" class="btn-secondary product-inline-btn" @click.prevent.stop="goToProduct('iPhone 17 Pro')">View Product</a>
+            </div>
+          </div>
+
+          <div class="product-card" @click="goToProduct('MacBook Pro')">
+            <div class="product-top">
+              <img src="pics/macbookairtrans.png" alt="MacBook Pro" />
+            </div>
+            <div class="product-tag">Apple Productivity</div>
+            <h3>MacBook Pro</h3>
+            <p>High performance, long battery life, brilliant display.</p>
+            <div class="price-line">
+              <div class="price">From AED 6,999</div>
+              <a href="#" class="btn-secondary product-inline-btn" @click.prevent.stop="goToProduct('MacBook Pro')">View Product</a>
+            </div>
+          </div>
+
+          <div class="product-card" @click="goToProduct('Galaxy S26 Ultra')">
+            <div class="product-top">
+              <img src="pics/samsungs26ultrablack.webp" alt="Samsung S26 Ultra" />
+            </div>
+            <div class="product-tag">Samsung Flagship</div>
+            <h3>Samsung S26 Ultra</h3>
+            <p>AI features, elite camera system, powerful everyday performance.</p>
+            <div class="price-line">
+              <div class="price">From AED 5,299</div>
+              <a href="#" class="btn-secondary product-inline-btn" @click.prevent.stop="goToProduct('Galaxy S26 Ultra')">View Product</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Gallery -->
+        <div class="gallery-strip">
+          <div class="gallery-item"><img src="pics/airpodspro3trans.png" alt="AirPods"></div>
+          <div class="gallery-item"><img src="pics/applewatchseries11.png" alt="Apple Watch"></div>
+          <div class="gallery-item"><img src="pics/samsungbuds.avif" alt="Galaxy Buds"></div>
+          <div class="gallery-item"><img src="pics/samsungs26ultrablack.webp" alt="Samsung Ultra"></div>
+        </div>
+      </section>
+
+      <!-- Coming Soon -->
+      <section class="coming-soon-section">
+        <div class="coming-soon-box">
+          <div class="coming-soon-text">
+            <span class="coming-badge">Upcoming Launch</span>
+            <h2>Coming Soon</h2>
+            <p class="coming-subtitle">Next launch arriving soon at NOVA.</p>
+
+            <h3>MacBook Neon</h3>
+            <p class="coming-description">
+              Ultra-modern design with powerful performance and a bold premium finish.
+            </p>
+
+            <div class="launch-date-box">
+              <span class="launch-label">Launch Date</span>
+              <strong>20 June 2026</strong>
+            </div>
+          </div>
+
+          <div class="coming-soon-image-wrap">
+            <div class="coming-image-card">
+              <img src="pics/macbook-neon.png" alt="MacBook Neon">
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <div class="footer-row">
+          <div>© 2026 NOVA. Premium tech retail experience.</div>
+          <div>Apple • Samsung • Accessories • Support</div>
+        </div>
+      </footer>
+    </main>
+
+    <!-- LOGIN VIEW -->
+    <section id="login-view" v-show="appPage === 'login'">
+      <div class="card" id="sliding-card">
+        <div class="card-bg card-bg-1"></div>
+        <div class="card-bg card-bg-2"></div>
+
+        <div class="form signup active">
+          <h2>Register</h2>
+          <input type="text" id="reg-name" placeholder="Name" />
+          <input type="email" id="reg-email" placeholder="Email" />
+          <input type="tel" id="reg-phone" placeholder="Phone Number" />
+          <label>Date of Birth</label>
+          <input type="date" id="reg-dob" />
+          <input type="password" id="reg-pass" placeholder="Password" />
+          <button class="main-btn" @click="handleSignup">SIGN UP</button>
+          <div class="toggle-btn" @click="toggleCard">Already have an account? Sign in</div>
+        </div>
+
+        <div class="form signin">
+          <div class="signin-content auth-stack">
+            <h2>Sign In</h2>
+            <input type="email" id="login-email" placeholder="Email" />
+            <input type="password" id="login-pass" placeholder="Password" />
+            <div id="login-error" class="error-text auth-error">Invalid credentials</div>
+
+            <div @click="toggleForgot(true)" class="auth-link">
+              Forgot Password?
+            </div>
+
+            <button class="main-btn" @click="handleSignin">LOG IN</button>
+            <div class="toggle-btn">New here? Register</div>
+          </div>
+
+          <div id="forgot-form" class="signin-content auth-stack auth-hidden">
+            <h2>Reset Password</h2>
+            <input type="email" id="forgot-email" placeholder="Enter Email ID" />
+            <input type="password" id="forgot-new-pass" placeholder="New Password" />
+            <input type="password" id="forgot-confirm-pass" placeholder="Confirm Password" />
+            <button class="main-btn" @click="handleResetPassword">CHANGE PASSWORD</button>
+
+            <div @click="toggleForgot(false)" class="auth-link">
+              Back to Login
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROFILE VIEW -->
+    <section id="profile-view" v-show="appPage === 'profile'">
+      <div class="profile-card">
+        <h3 id="prof-name">{{ currentUser ? currentUser.name : 'Name' }}</h3>
+        <p id="prof-details" class="profile-details">
+          <template v-if="currentUser">
+            {{ currentUser.email }}<br>{{ currentUser.phone || '' }}
+          </template>
+        </p>
+        <button class="logout-btn" @click="handleLogout">Logout</button>
+      </div>
+    </section>
+
+    <!-- CONTACT VIEW -->
+    <section id="contact-view" v-show="appPage === 'contact'">
+      <div class="contact-card">
+        <h2>Contact Us</h2>
+        <p class="contact-subtext">Have a question or need help? Send us a message.</p>
+
+        <input type="text" id="contact-name" placeholder="Name" />
+        <input type="tel" id="contact-number" placeholder="Contact Number" />
+        <input type="email" id="contact-email" placeholder="Email" />
+        <label for="contact-message">Message</label>
+        <textarea id="contact-message" placeholder="Write your message here..."></textarea>
+
+        <button class="contact-btn" @click="handleContactSubmit">SUBMIT</button>
+      </div>
+    </section>
+
+    <!-- STORE PAGE -->
+    <section v-show="appPage === 'store'">
+      <div v-if="showSuccessPopup" class="success-popup-overlay">
+        <div class="success-popup-box">
+          <div class="success-tick-circle">
+            <i class="fa-solid fa-check"></i>
+          </div>
+          <h2>Order Placed Successfully</h2>
+          <p>Your order has been confirmed.</p>
+        </div>
+      </div>
+
+      <div v-if="isProcessingOrder" class="processing-overlay">
+        <div class="processing-box">
+          <div class="processing-ring"></div>
+
+          <h2 v-if="processingStage === 'processing'">Processing Your Order</h2>
+          <h2 v-else-if="processingStage === 'payment'">Payment Processed</h2>
+          <h2 v-else>Finalizing Order</h2>
+
+          <p v-if="processingStage === 'processing'">
+            Please wait while we confirm your items and prepare your payment.
+          </p>
+
+          <p v-else-if="processingStage === 'payment'">
+            Your payment has been approved. We are preparing your confirmation.
+          </p>
+
+          <p v-else>
+            Almost done. Your order confirmation is being generated.
+          </p>
+        </div>
+      </div>
+
+      <div v-if="isLoading" class="loading-overlay">
+        <div class="loader-content">
+          <h1 class="nova-loading-text">NOVA</h1>
+          <div class="novo-bar-container">
+            <div class="novo-progress"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Store Navbar -->
+      <nav class="navbar">
+        <div class="nav-content">
+          <div class="nav-left">
+            <a href="#" class="nova-logo" @click.prevent="goToIndex">NOVA</a>
+
+            <div v-for="item in menuItems" :key="item.name" class="nav-item">
+              <span class="nav-link">{{ item.name }}</span>
+
+              <div v-if="item.dropdown" class="dropdown-menu">
+                <a
+                  v-for="subItem in item.dropdown"
+                  :key="subItem"
+                  href="#"
+                  class="dropdown-link"
+                  @click.prevent="goToProduct(subItem)"
+                >
+                  {{ subItem }}
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <div
+            v-if="cart.length > 0"
+            class="cart-icon-wrapper"
+            @click="goToCheckout"
+            :class="{ 'cart-bounce': cartAnimate }"
+          >
+            <i class="fa-solid fa-bag-shopping"></i>
+            <span class="cart-badge">{{ cart.length }}</span>
+          </div>
+        </div>
+      </nav>
+
+      <div class="cart-toast" v-if="showCartToast">
+        {{ cartToastMessage }}
+      </div>
+
+      <!-- Store Home -->
+      <div v-if="currentView === 'home'">
+        <section
+          v-if="heroProducts.length"
+          class="hero-section"
+          :style="{ backgroundImage: 'url(' + heroProducts[0].img + ')' }"
+        >
+          <div class="hero-content">
+            <h2 :style="{ color: heroProducts[0].color }">{{ heroProducts[0].name }}</h2>
+            <p>{{ heroProducts[0].tag }}</p>
+            <button class="buy-btn" @click="goToProduct(heroProducts[0].name)">Buy</button>
+          </div>
+        </section>
+
+        <section class="hero-products-strip" v-if="heroProducts.length > 1">
+          <div
+            v-for="p in heroProducts.slice(1)"
+            :key="p.name"
+            class="hero-mini-card"
+            @click="goToProduct(p.name)"
+            :style="{ backgroundImage: 'url(' + p.img + ')' }"
+          >
+            <div class="hero-mini-overlay">
+              <h3 :style="{ color: p.color }">{{ p.name }}</h3>
+              <p>{{ p.tag }}</p>
+              <span class="hero-mini-btn">View Product</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="all-products-section">
+          <div class="all-products-header">
+            <h2>Nova Products</h2>
+            <p>Browse the full Nova collection.</p>
+          </div>
+
+          <div class="products-grid">
+            <div
+              v-for="product in allProducts"
+              :key="product._id"
+              class="product-card"
+              @click="goToProduct(product.name)"
+            >
+              <img
+                v-if="product.colors && product.colors.length"
+                :src="product.colors[0].image"
+                :alt="product.name"
+                class="product-card-img"
+              >
+
+              <h3>{{ product.name }}</h3>
+              <p class="product-card-desc">{{ product.longDescription }}</p>
+              <div class="product-card-price">
+                From {{ Number(product.basePrice).toLocaleString() }} AED
+              </div>
+
+              <button class="buy-btn">View Product</button>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- Product Details -->
+      <div
+        v-if="currentView === 'details'"
+        class="details-page"
+        :style="{ backgroundColor: selectedProduct.bgColor, color: selectedProduct.textColor }"
+      >
+        <div class="config-wrapper">
+          <div class="sticky-image-container">
+            <div class="zoom-wrapper">
+              <img :src="activeColor.image" class="details-img" alt="Product image">
+            </div>
+
+            <div v-if="selectedProduct.gallery" class="gallery-container">
+              <div v-for="(img, index) in selectedProduct.gallery" :key="index" class="gallery-card">
+                <img :src="img" alt="Gallery image">
+              </div>
+            </div>
+
+            <div class="specs-grid">
+              <div class="spec-card" v-for="spec in selectedProduct.specs" :key="spec.label">
+                <h4>{{ spec.label }}</h4>
+                <p class="spec-item-text" v-html="spec.value"></p>
+              </div>
+            </div>
+          </div>
+
+          <div class="config-options">
+            <p v-if="selectedProduct.isNew" class="product-badge-new">NEW</p>
+
+            <h1 class="product-title">Buy {{ selectedProduct.name }}</h1>
+            <p class="product-description">{{ selectedProduct.longDescription }}</p>
+
+            <hr class="section-divider">
+
+            <div v-if="selectedProduct.models" class="option-section">
+              <h3 class="option-title">
+                Model. <span>Which is right for you?</span>
+              </h3>
+
+              <div class="selection-group">
+                <div
+                  v-for="m in selectedProduct.models"
+                  :key="m.name"
+                  class="model-box"
+                  :class="{ 'active-highlight': activeModel && activeModel.name === m.name }"
+                  @click="changeModel(m)"
+                >
+                  <div class="tile-content">
+                    <span class="tile-name">{{ m.name }}</span>
+                    <span v-if="m.description" class="tile-subtext">{{ m.description }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div v-if="activeModel && activeModel.connectivityOptions" class="option-section">
+              <h3 class="option-title">
+                Connectivity. <span>Choose your connection type</span>
+              </h3>
+
+              <div class="selection-group">
+                <div
+                  v-for="c in activeModel.connectivityOptions"
+                  :key="c.name"
+                  class="selection-tile"
+                  :class="{ active: activeConnectivity && activeConnectivity.name === c.name }"
+                  @click="activeConnectivity = c"
+                >
+                  <div class="tile-content">
+                    <span class="tile-name">{{ c.name }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div v-if="selectedProduct.sizes" class="option-section">
+              <h3 class="option-title">
+                Size. <span>Choose your case size</span>
+              </h3>
+
+              <div class="selection-group">
+                <div
+                  v-for="size in selectedProduct.sizes"
+                  :key="size.name"
+                  class="selection-tile"
+                  :class="{ active: activeSize && activeSize.name === size.name }"
+                  @click="activeSize = size"
+                >
+                  <span class="tile-name">{{ size.name }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="option-section">
+              <h3 class="option-title">
+                Finish. <span>{{ activeColor ? activeColor.name : '' }}</span>
+              </h3>
+
+              <div class="color-dot-group">
+                <div
+                  v-for="color in availableColors"
+                  :key="color.name"
+                  class="color-dot"
+                  :style="{ backgroundColor: color.hex }"
+                  :class="{ active: activeColor && activeColor.name === color.name }"
+                  @click="activeColor = color"
+                ></div>
+              </div>
+            </div>
+
+            <div v-if="selectedProduct.storageOptions" class="option-section">
+              <h3 class="option-title">
+                Storage. <span>How much space do you need?</span>
+              </h3>
+
+              <div class="selection-group">
+                <div
+                  v-for="s in selectedProduct.storageOptions"
+                  :key="s.name"
+                  class="selection-tile"
+                  :class="{ active: activeStorage && activeStorage.name === s.name }"
+                  @click="activeStorage = s"
+                >
+                  <span class="tile-name">{{ s.name }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div v-if="selectedProduct.displayOptions" class="option-section">
+              <h3 class="option-title">Display.</h3>
+
+              <div class="selection-group">
+                <div
+                  v-for="d in selectedProduct.displayOptions"
+                  :key="d.name"
+                  class="selection-tile"
+                  :class="{ active: activeDisplay && activeDisplay.name === d.name }"
+                  @click="activeDisplay = d"
+                >
+                  <span class="tile-name">{{ d.name }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div v-if="availableChips.length" class="option-section">
+              <h3 class="option-title">Chip.</h3>
+
+              <div class="selection-group">
+                <div
+                  v-for="chip in availableChips"
+                  :key="chip.name"
+                  class="selection-tile"
+                  :class="{ active: activeChip && activeChip.name === chip.name }"
+                  @click="activeChip = chip; activeVariant = chip.variants[0]"
+                >
+                  <span class="tile-name">{{ chip.name }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div v-if="activeChip && activeChip.variants" class="option-section">
+              <h3 class="option-title">Configuration.</h3>
+
+              <div class="selection-group">
+                <div
+                  v-for="v in activeChip.variants"
+                  :key="v.name"
+                  class="selection-tile"
+                  :class="{ active: activeVariant && activeVariant.name === v.name }"
+                  @click="activeVariant = v"
+                >
+                  <span class="tile-name">{{ v.name }}</span>
+                </div>
+              </div>
+            </div>
+
+            <p class="stock-status" :class="{ 'out-stock': currentStock === 0 && !isSelectionIncomplete }">
+              {{
+                isSelectionIncomplete
+                  ? selectionMessage
+                  : currentStock > 0
+                    ? `Stock Available: ${currentStock}`
+                    : 'Out Of Stock'
+              }}
+            </p>
+
+            <div class="price-tag">{{ calculatePrice }} AED</div>
+
+            <button
+              class="buy-btn"
+              @click="addToCart"
+              :disabled="isSelectionIncomplete || currentStock === 0"
+            >
+              {{
+                isSelectionIncomplete
+                  ? 'Select Options'
+                  : currentStock === 0
+                    ? 'Out Of Stock'
+                    : 'Add to Bag'
+              }}
+            </button>
+
+            <p @click="goBackHome" class="explore-link">Return to Home</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Checkout -->
+      <div v-if="currentView === 'checkout'" class="checkout-page">
+        <div class="checkout-container">
+          <div class="checkout-form-section">
+            <button class="back-btn" @click="currentView = prevView">← Back</button>
+
+            <h2 class="checkout-title">Checkout</h2>
+            <p class="checkout-subtitle">Complete your order details below.</p>
+
+            <div class="checkout-form">
+              <div class="form-group">
+                <input type="text" v-model="checkoutForm.name" placeholder="Full Name">
+                <span class="error-text" v-if="checkoutErrors.name">{{ checkoutErrors.name }}</span>
+              </div>
+
+              <div class="form-group">
+                <input type="email" v-model="checkoutForm.email" placeholder="Email ID">
+                <span class="error-text" v-if="checkoutErrors.email">{{ checkoutErrors.email }}</span>
+              </div>
+
+              <div class="form-group">
+                <input type="text" v-model="checkoutForm.contact" placeholder="Contact No">
+                <span class="error-text" v-if="checkoutErrors.contact">{{ checkoutErrors.contact }}</span>
+              </div>
+
+              <div class="form-group">
+                <label class="section-mini-label">Address Label</label>
+                <div class="address-label-group">
+                  <button type="button" class="address-label-btn" :class="{ active: checkoutForm.addressLabel === 'Work' }" @click="checkoutForm.addressLabel = 'Work'">Work</button>
+                  <button type="button" class="address-label-btn" :class="{ active: checkoutForm.addressLabel === 'Home' }" @click="checkoutForm.addressLabel = 'Home'">Home</button>
+                  <button type="button" class="address-label-btn" :class="{ active: checkoutForm.addressLabel === 'Other' }" @click="checkoutForm.addressLabel = 'Other'">Other</button>
+                </div>
+                <span class="error-text" v-if="checkoutErrors.addressLabel">{{ checkoutErrors.addressLabel }}</span>
+              </div>
+
+              <div class="form-group">
+                <input type="text" v-model="checkoutForm.address" placeholder="Address">
+                <span class="error-text" v-if="checkoutErrors.address">{{ checkoutErrors.address }}</span>
+              </div>
+
+              <div class="form-group">
+                <input type="text" v-model="checkoutForm.floorRoom" placeholder="Floor / Room No">
+                <span class="error-text" v-if="checkoutErrors.floorRoom">{{ checkoutErrors.floorRoom }}</span>
+              </div>
+
+              <div class="form-group">
+                <input type="text" v-model="checkoutForm.landmark" placeholder="Landmark">
+                <span class="error-text" v-if="checkoutErrors.landmark">{{ checkoutErrors.landmark }}</span>
+              </div>
+
+              <div class="payment-section-title">Payment Details</div>
+
+              <div class="form-group">
+                <input type="text" v-model="checkoutForm.cardName" placeholder="Name on Card">
+                <span class="error-text" v-if="checkoutErrors.cardName">{{ checkoutErrors.cardName }}</span>
+              </div>
+
+              <div class="form-group card-input-wrap">
+                <input
+                  type="text"
+                  v-model="checkoutForm.cardNumber"
+                  placeholder="Card Number"
+                  maxlength="19"
+                  inputmode="numeric"
+                  @input="formatCardNumber"
+                  class="card-input"
+                >
+                <div class="card-icons">
+                  <i class="fa-brands fa-cc-visa"></i>
+                  <i class="fa-brands fa-cc-mastercard"></i>
+                </div>
+                <span class="error-text" v-if="checkoutErrors.cardNumber">
+                  {{ checkoutErrors.cardNumber }}
+                </span>
+              </div>
+
+              <div class="card-row">
+                <div class="form-group">
+                  <input type="text" v-model="checkoutForm.expiryDate" placeholder="MM/YY" maxlength="5" inputmode="numeric" @input="formatExpiryDate">
+                  <span class="error-text" v-if="checkoutErrors.expiryDate">{{ checkoutErrors.expiryDate }}</span>
+                </div>
+
+                <div class="form-group">
+                  <input type="password" v-model="checkoutForm.cvc" placeholder="CVC" maxlength="3" inputmode="numeric" @input="formatCVC">
+                  <span class="error-text" v-if="checkoutErrors.cvc">{{ checkoutErrors.cvc }}</span>
+                </div>
+              </div>
+
+              <button class="place-order-btn" @click="placeOrder">Place Order</button>
+              <p @click="goBackHome" class="return-home-link">Return to Home</p>
+            </div>
+          </div>
+
+          <div class="checkout-summary-section">
+            <h3 class="summary-title">Your Bag</h3>
+
+            <div v-if="cart.length === 0" class="empty-cart">
+              Your bag is empty.
+            </div>
+
+            <div v-else>
+              <div v-for="(item,index) in cart" :key="index" class="checkout-item">
+                <div class="checkout-item-left">
+                  <img :src="item.image" alt="Product Image" class="checkout-item-img">
+                </div>
+
+                <div class="checkout-item-center">
+                  <h4>{{ item.name }}</h4>
+                  <p v-if="item.model">Model: {{ item.model }}</p>
+                  <p v-if="item.connectivity">Connectivity: {{ item.connectivity }}</p>
+                  <p v-if="item.color">Color: {{ item.color }}</p>
+                  <p v-if="item.storage">Storage: {{ item.storage }}</p>
+                  <p v-if="item.chip">Chip: {{ item.chip }}</p>
+                  <p v-if="item.variant">Configuration: {{ item.variant }}</p>
+                  <p v-if="item.size">Size: {{ item.size }}</p>
+                </div>
+
+                <div class="checkout-item-right">
+                  <div class="checkout-price">{{ item.price }} AED</div>
+                  <button class="remove-btn" @click.stop="removeFromCart(index)">Remove</button>
+                </div>
+              </div>
+
+              <div class="summary-box">
+                <div class="summary-row">
+                  <span>Subtotal</span>
+                  <span>{{ totalPrice }} AED</span>
+                </div>
+
+                <div class="summary-row">
+                  <span>Delivery</span>
+                  <span>{{ pickupFromStore ? 'Store Pickup' : 'Free' }}</span>
+                </div>
+
+                <div class="summary-row total-row">
+                  <span>Total</span>
+                  <span>{{ totalPrice }} AED</span>
+                </div>
+
+                <div class="pickup-section">
+                  <div class="pickup-toggle-row">
+                    <span class="pickup-label">Pickup From Store</span>
+
+                    <label class="switch">
+                      <input type="checkbox" v-model="pickupFromStore">
+                      <span class="slider"></span>
+                    </label>
+                  </div>
+
+                  <div v-if="pickupFromStore" class="pickup-dropdown-wrap">
+                    <div class="custom-dropdown" @click="toggleDropdown">
+                      <div class="dropdown-selected">
+                        {{ selectedStore || 'Select pickup location' }}
+                      </div>
+
+                      <div class="dropdown-options" v-show="dropdownOpen">
+                        <div class="dropdown-option" @click.stop="selectStore('Nova Uptown Mirdif')">
+                          Nova Uptown Mirdif
+                        </div>
+
+                        <div class="dropdown-option" @click.stop="selectStore('Nova Mall of The Emirates')">
+                          Nova Mall of The Emirates
+                        </div>
+
+                        <div class="dropdown-option" @click.stop="selectStore('Nova Al Wahda Mall')">
+                          Nova Al Wahda Mall
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div v-else class="delivery-estimate">
+                    Estimated Delivery: <strong>{{ estimatedDeliveryDate }}</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Receipt -->
+      <div v-if="currentView === 'receipt'" class="receipt-page">
+        <div class="bill-receipt">
+          <div class="bill-header">
+            <div>
+              <h1>NOVA</h1>
+              <p>Premium Tech Retail</p>
+            </div>
+            <div class="bill-status">PAID</div>
+          </div>
+
+          <div class="bill-meta-grid">
+            <div>
+              <span>Order No</span>
+              <strong>{{ receiptData.orderNumber }}</strong>
+            </div>
+
+            <div>
+              <span>Date</span>
+              <strong>{{ receiptData.purchaseDate }}</strong>
+            </div>
+
+            <div>
+              <span>Time</span>
+              <strong>{{ receiptData.purchaseTime }}</strong>
+            </div>
+
+            <div>
+              <span>Customer</span>
+              <strong>{{ receiptData.name }}</strong>
+            </div>
+
+            <div>
+              <span>Contact</span>
+              <strong>{{ receiptData.contact }}</strong>
+            </div>
+          </div>
+
+          <div class="bill-section">
+            <h3>Billing Details</h3>
+            <p><strong>Email:</strong> {{ receiptData.email }}</p>
+            <p><strong>Address Type:</strong> {{ receiptData.addressLabel }}</p>
+            <p><strong>Address:</strong> {{ receiptData.address }}</p>
+            <p><strong>Floor / Room:</strong> {{ receiptData.floorRoom }}</p>
+            <p><strong>Landmark:</strong> {{ receiptData.landmark }}</p>
+          </div>
+
+          <div class="bill-section">
+            <h3>Order Type</h3>
+            <p>
+              <strong>{{ receiptData.pickupFromStore ? 'Pickup from Store' : 'Home Delivery' }}</strong>
+            </p>
+            <p v-if="receiptData.pickupFromStore && receiptData.selectedStore">
+              <strong>Pickup Location:</strong> {{ receiptData.selectedStore }}
+            </p>
+            <p v-else>
+              <strong>Estimated Delivery:</strong> {{ receiptData.estimatedDeliveryDate }}
+            </p>
+          </div>
+
+          <div class="bill-section">
+            <h3>Items</h3>
+            <table class="bill-table">
+              <thead>
+                <tr>
+                  <th>Item</th>
+                  <th>Config</th>
+                  <th>Price</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(item, index) in receiptData.items" :key="index">
+                  <td>{{ item.name }}</td>
+                  <td>
+                    <div class="bill-config">
+                      <span v-if="item.model">{{ item.model }}</span>
+                      <span v-if="item.storage">{{ item.storage }}</span>
+                      <span v-if="item.color">{{ item.color }}</span>
+                      <span v-if="item.connectivity">{{ item.connectivity }}</span>
+                      <span v-if="item.size">{{ item.size }}</span>
+                      <span v-if="item.chip">{{ item.chip }}</span>
+                      <span v-if="item.variant">{{ item.variant }}</span>
+                    </div>
+                  </td>
+                  <td>{{ item.price }} AED</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="bill-total-row">
+            <span>Total Paid</span>
+            <strong>{{ receiptData.totalPrice }} AED</strong>
+          </div>
+
+          <div class="bill-footer">
+            <p>Thank you for shopping with NOVA.</p>
+            <button class="bill-home-btn" @click="goBackHome">Back to Home</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Nova AI -->
+      <div class="nova-ai-trigger" @click="showAI = !showAI">
+        <i class="fa-solid fa-sparkles" v-if="!showAI"></i>
+        <i class="fa-solid fa-xmark" v-else></i>
+      </div>
+
+      <div class="nova-ai-window" v-if="showAI">
+        <div class="nova-ai-header">
+          <h3>NOVA SPECIALIST</h3>
+          <span class="status-dot"></span>
+        </div>
+
+        <div class="nova-ai-messages" id="ai-messages">
+          <div v-for="m in aiMessages" :key="m.text + m.role" :class="['msg', m.role]">
+            <span v-html="m.text"></span>
+          </div>
+        </div>
+
+        <div class="nova-ai-input">
+          <input v-model="userQuery" @keyup.enter="askNova" placeholder="Ask Nova about cameras or gaming...">
+          <button @click="askNova"><i class="fa-solid fa-paper-plane"></i></button>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+</html>
     <script>
     const API_URL = "https://cst3990-nova-backend.onrender.com/api";
     new Vue({
@@ -2181,13 +2171,13 @@
             throw new Error(data.message || "Failed to place order");
         }
 
-        await new Promise(resolve => setTimeout(resolve, 1200));
+        await new Promise(resolve => setTimeout(resolve, 2000));
         this.processingStage = 'payment';
 
-        await new Promise(resolve => setTimeout(resolve, 1200));
+        await new Promise(resolve => setTimeout(resolve, 2000));
         this.processingStage = 'final';
 
-        await new Promise(resolve => setTimeout(resolve, 1200));
+        await new Promise(resolve => setTimeout(resolve, 2000));
 
         this.receiptData = data.receipt;
 
