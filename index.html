@@ -13,8 +13,30 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
 </head>
 <body id="main-body">
-  <div id="app">
-    <canvas id="star-canvas"></canvas>
+  <!-- SPLASH SCREEN -->
+<div id="splash-screen" class="splash-screen">
+  <div class="splash-container">
+
+    <div class="splash-logo-frame">
+      <img src="pics/NOVA logo copy.jpg" class="splash-logo-img">
+    </div>
+
+    <div class="splash-brand">
+      <span>N</span>
+      <span>O</span>
+      <span>V</span>
+      <span class="splash-a"></span>
+    </div>
+
+    <div class="splash-subtitle">
+      Premium Tech Retail Experience
+    </div>
+
+  </div>
+</div>
+
+ <div id="app" class="app-hidden">
+ <canvas id="star-canvas"></canvas>
     <div class="bg-gradient"></div>
     <div class="bg-grid"></div>
     <div class="bg-noise"></div>
@@ -30,6 +52,7 @@
       <i data-lucide="arrow-left" size="16"></i>
       <span>Back</span>
     </div>
+    
 
     <!-- LANDING HEADER -->
     <header
@@ -37,11 +60,29 @@
       id="main-header"
       v-show="appPage !== 'store'"
     >
-      <h1 id="brand-name">NOVA</h1>
-      <div id="tagline">Premium Apple & Samsung Retail Experience</div>
+      <div class="nova-brand-hero">
+
+  <div class="nova-brand-text-wrap">
+    <h1 id="brand-name" class="nova-brand-word">
+      <span>N</span>
+      <span>O</span>
+      <span>V</span>
+      <span class="nova-brand-a"></span>
+    </h1>
+    <div id="tagline">Premium Apple & Samsung Retail Experience</div>
+  </div>
+</div>
 
       <nav class="landing-nav">
-        <div class="nav-brand" @click="showPage('landing')">NOVA</div>
+        <div class="nav-brand nav-brand-logo" @click="showPage('landing')">
+
+  <div class="nav-mini-brand-text">
+    <span>N</span>
+    <span>O</span>
+    <span>V</span>
+    <span class="nav-mini-a"></span>
+  </div>
+</div>
 
         <div
           @click="showPage('landing')"
@@ -275,7 +316,7 @@
 
           <div class="coming-soon-image-wrap">
             <div class="coming-image-card">
-              <img src="pics/macbook-neon.png" alt="MacBook Neon">
+              <img src="pics/macbook neon.png" alt="MacBook Neon">
             </div>
           </div>
         </div>
@@ -413,7 +454,15 @@
       <nav class="navbar">
         <div class="nav-content">
           <div class="nav-left">
-            <a href="#" class="nova-logo" @click.prevent="goToIndex">NOVA</a>
+            <a href="#" class="nova-logo nova-logo-wrap" @click.prevent="goToIndex">
+
+  <div class="nav-mini-brand-text">
+    <span>N</span>
+    <span>O</span>
+    <span>V</span>
+    <span class="nav-mini-a"></span>
+  </div>
+</a>
 
             <div v-for="item in menuItems" :key="item.name" class="nav-item">
               <span class="nav-link">{{ item.name }}</span>
@@ -514,7 +563,10 @@
       <div
         v-if="currentView === 'details'"
         class="details-page"
-        :style="{ backgroundColor: selectedProduct.bgColor, color: selectedProduct.textColor }"
+       :style="{ 
+    background: selectedProduct.bgColor, 
+    color: selectedProduct.textColor 
+}"
       >
         <div class="config-wrapper">
           <div class="sticky-image-container">
@@ -1028,6 +1080,26 @@
 </body>
 </html>
     <script>
+      
+window.addEventListener("load", () => {
+  setTimeout(() => {
+
+    // hide splash
+    document.getElementById("splash-screen").classList.add("splash-hide");
+
+    // show app
+    const app = document.getElementById("app");
+    app.classList.remove("app-hidden");
+
+    // smooth fade in
+    setTimeout(() => {
+      app.style.opacity = "1";
+      app.style.visibility = "visible";
+    }, 200);
+
+  }, 2000);
+});
+
     const API_URL = "https://cst3990-nova-backend.onrender.com/api";
     new Vue({
         
@@ -1155,7 +1227,9 @@
             { name: 'Galaxy Buds', dropdown: ['Galaxy Buds 3', 'Galaxy Buds 2'] }
         ],
 
-        allProducts: []
+        allProducts: [
+    
+ ]
     },  
         async created() {
             const saved = localStorage.getItem('nova_session');
