@@ -1206,10 +1206,10 @@ window.addEventListener("load", () => {
                 name: 'Galaxy A',
                 dropdown: [
                     'Galaxy A55 5G',
-                    'Galaxy A35 5G',
-                    'Galaxy A25 5G',
-                    'Galaxy A15 5G',
-                    'Galaxy A05s'
+                    'Galaxy A57 5G',
+                    'Galaxy A36 5G',
+                    'Galaxy A26 5G',
+                    'Galaxy A16 5G',
                 ]
             },
             { name: 'Mac', dropdown: ['MacBook Pro', 'MacBook Air'] },
@@ -1219,17 +1219,20 @@ window.addEventListener("load", () => {
                 name: 'Galaxy Watch',
                 dropdown: [
                     'Galaxy Watch Ultra',
-                    'Galaxy Watch',
-                    'Galaxy Watch Classic'
+                    'Galaxy Watch 8',
+                    'Galaxy Watch 8 Classic'
                 ]
             },
             { name: 'Airpods', dropdown: ['Airpods Pro 3', 'Airpods 4', 'Airpods Max'] },
-            { name: 'Galaxy Buds', dropdown: ['Galaxy Buds 3', 'Galaxy Buds 2'] }
+            { name: 'Galaxy Buds', dropdown: ['Galaxy Buds 4','Galaxy Buds 4 pro','Galaxy Buds core'] }
         ],
 
         allProducts: [
-    
- ]
+         
+         
+             
+         
+        ]
     },  
         async created() {
             const saved = localStorage.getItem('nova_session');
@@ -1250,21 +1253,30 @@ window.addEventListener("load", () => {
         },
 
         mounted() {
-            this.$nextTick(() => {
-                this.createIconsSafe();
-                this.applyBodyState();
-                this.initBrandReveal();
-                this.initStarsCanvas();
-                this.initHeaderScroll();
-            });
-        },
 
-        updated() {
-            this.$nextTick(() => {
-                this.createIconsSafe();
-                this.applyBodyState();
-            });
-        },
+    // ✅ RESTORE PAGE STATE FIRST
+    const savedAppPage = localStorage.getItem("novaAppPage");
+    const savedCurrentView = localStorage.getItem("novaCurrentView");
+
+    if (savedAppPage) {
+        this.appPage = savedAppPage;
+    }
+
+    if (savedCurrentView === "receipt") {
+        this.currentView = "home";
+    } else if (savedCurrentView) {
+        this.currentView = savedCurrentView;
+    }
+
+    // ✅ THEN RUN YOUR EXISTING CODE
+    this.$nextTick(() => {
+        this.createIconsSafe();
+        this.applyBodyState();
+        this.initBrandReveal();
+        this.initStarsCanvas();
+        this.initHeaderScroll();
+    });
+},
 
         watch: {
             appPage() {
@@ -1447,6 +1459,10 @@ window.addEventListener("load", () => {
         },
 
         methods: {
+          savePageState() {
+    localStorage.setItem("novaAppPage", this.appPage);
+    localStorage.setItem("novaCurrentView", this.currentView);
+},
             createIconsSafe() {
                 if (window.lucide) {
                     lucide.createIcons();
@@ -1583,43 +1599,57 @@ window.addEventListener("load", () => {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             },
 
-            handleBack() {
-                if (this.appPage === 'store' && this.currentView !== 'home') {
-                    this.currentView = 'home';
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                    return;
-                }
+           handleBack() {
+    if (this.appPage === 'store' && this.currentView !== 'home') {
+        this.currentView = 'home';
+        this.savePageState();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+    }
 
-                if (this.appHistory.length > 1) {
-                    this.appHistory.pop();
-                    this.appPage = this.appHistory[this.appHistory.length - 1];
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                }
-            },
+    if (this.appHistory.length > 1) {
+        this.appHistory.pop();
+        this.appPage = this.appHistory[this.appHistory.length - 1];
+
+        if (this.appPage === 'landing') {
+            this.currentView = 'home';
+        }
+
+        this.savePageState();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+},
 
             handleNavLogin() {
                 this.currentUser ? this.showPage('profile') : this.showPage('login');
             },
 
-            goToIndex() {
-                this.appPage = 'landing';
+           goToIndex() {
+    this.appPage = 'landing';
+    this.currentView = 'home';
 
-                if (this.appHistory[this.appHistory.length - 1] !== 'landing') {
-                    this.appHistory.push('landing');
-                }
+    if (this.appHistory[this.appHistory.length - 1] !== 'landing') {
+        this.appHistory.push('landing');
+    }
 
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            },
+    this.savePageState();
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+},
 
             goToStoreHome() {
-                if (this.appHistory[this.appHistory.length - 1] !== 'store') {
-                    this.appHistory.push('store');
-                }
+    if (this.appHistory[this.appHistory.length - 1] !== 'store') {
+        this.appHistory.push('store');
+    }
 
-                this.appPage = 'store';
-                this.currentView = 'home';
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            },
+    this.appPage = 'store';
+    this.currentView = 'home';
+
+    // ✅ SAVE STATE
+    this.savePageState();
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+},
 
             toggleForgot(show) {
                 const signinMain = document.getElementById('signin-main');
@@ -1948,6 +1978,8 @@ window.addEventListener("load", () => {
                             : null;
 
                     this.currentView = 'details';
+                    this.savePageState();
+
                     window.scrollTo({ top: 0, behavior: 'smooth' });
 
                     this.isLoading = false;
@@ -2012,10 +2044,13 @@ window.addEventListener("load", () => {
                 this.checkoutForm.cvc = this.checkoutForm.cvc.replace(/\D/g, '').slice(0, 3);
             },
 
-            goToCheckout() {
-                this.prevView = this.currentView;
-                this.currentView = 'checkout';
-            },
+           goToCheckout() {
+    this.prevView = this.currentView;
+    this.currentView = 'checkout';
+
+    // ✅ SAVE STATE
+    this.savePageState();
+},
 
             removeFromCart(index) {
                 const removedItem = this.cart[index];
