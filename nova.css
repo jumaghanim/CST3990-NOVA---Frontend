@@ -3948,174 +3948,192 @@ body {
     bottom: 80px;
   }
 }
+
 /* =========================================================
-   PHONE LANDSCAPE = DESKTOP-LIKE LAYOUT
+   LOGIN / SIGNIN FIX FOR MOBILE + LANDSCAPE
    Put this at the VERY END of nova.css
 ========================================================= */
-@media screen and (max-width: 932px) and (orientation: landscape) {
 
-  html, body {
-    overflow-x: hidden;
-  }
-
-  /* Landing */
-  .hero-main {
-    display: grid !important;
-    grid-template-columns: 1.1fr 0.9fr !important;
-    gap: 20px !important;
+/* General mobile login fix */
+@media screen and (max-width: 932px) {
+  #login-view {
+    padding: 24px 16px !important;
+    min-height: 100vh !important;
+    display: flex !important;
     align-items: center !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
   }
 
-  .hero-side {
-    display: grid !important;
-    grid-template-columns: 1fr 1fr !important;
-    gap: 14px !important;
-  }
-
-  .promo-grid {
-    display: grid !important;
-    grid-template-columns: 1.4fr 0.8fr !important;
-    gap: 16px !important;
-  }
-
-  .visual-grid {
-    display: grid !important;
-    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-    gap: 16px !important;
-  }
-
-  .product-showcase {
-    display: grid !important;
-    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-    gap: 16px !important;
-  }
-
-  .gallery-strip {
-    display: grid !important;
-    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-    gap: 12px !important;
-  }
-
-  .coming-soon-box {
-    display: grid !important;
-    grid-template-columns: 1fr 1fr !important;
-    gap: 20px !important;
-    align-items: center !important;
-  }
-
-  /* Store home */
-  .products-grid {
-    display: grid !important;
-    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-    gap: 16px !important;
-  }
-
-  .hero-products-strip {
-    display: grid !important;
-    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-    gap: 16px !important;
-  }
-
-  /* Product details page */
-  .config-wrapper {
-    display: grid !important;
-    grid-template-columns: 0.95fr 1.05fr !important;
-    gap: 24px !important;
-    align-items: start !important;
-  }
-
-  .sticky-image-container,
-  .config-options {
+  #sliding-card,
+  .card {
     width: 100% !important;
-    min-width: 0 !important;
-  }
-
-  .gallery-container {
-    display: grid !important;
-    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-    gap: 12px !important;
-  }
-
-  .specs-grid {
-    display: grid !important;
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    gap: 12px !important;
-  }
-
-  .selection-group {
-    display: grid !important;
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    gap: 12px !important;
-  }
-
-  .details-img {
-    width: 100% !important;
-    max-width: 320px !important;
-    margin: 0 auto !important;
-    display: block !important;
-  }
-
-  .product-title {
-    font-size: 28px !important;
-    line-height: 1.15 !important;
-  }
-
-  /* Checkout */
-  .checkout-container {
-    display: grid !important;
-    grid-template-columns: 1fr 1fr !important;
-    gap: 20px !important;
-    align-items: start !important;
-  }
-
-  .card-row {
-    display: grid !important;
-    grid-template-columns: 1fr 1fr !important;
-    gap: 12px !important;
-  }
-
-  .checkout-item {
-    display: grid !important;
-    grid-template-columns: 90px 1fr auto !important;
-    gap: 12px !important;
-    align-items: start !important;
-  }
-
-  /* Receipt */
-  .bill-meta-grid {
-    display: grid !important;
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    gap: 12px !important;
-  }
-
-  /* Navbars */
-  .landing-nav,
-  .navbar .nav-content {
-    padding-left: 14px !important;
-    padding-right: 14px !important;
-  }
-
-  /* Keep desktop-like cards */
-  .product-card,
-  .visual-card,
-  .promo-banner,
-  .promo-mini,
-  .hero-mini-card,
-  .gallery-item,
-  .coming-image-card {
-    width: 100% !important;
-    min-width: 0 !important;
-  }
-
-  /* Prevent text/image overflow */
-  img,
-  .product-card-img,
-  .details-img {
-    max-width: 100% !important;
+    max-width: 520px !important;
+    min-height: auto !important;
     height: auto !important;
+    padding: 28px 20px !important;
+    border-radius: 28px !important;
+    display: block !important;
+    overflow: hidden !important;
+    margin: 0 auto !important;
   }
 
-  h1, h2, h3, h4, p, span, a, button {
-    word-break: break-word;
+  .form.signup,
+  .form.signin,
+  .signin-content,
+  .auth-stack {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    justify-content: flex-start !important;
+    gap: 14px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
   }
+
+  .form.signup h2,
+  .form.signin h2,
+  .signin-content h2 {
+    font-size: 42px !important;
+    line-height: 1.05 !important;
+    margin: 0 0 10px 0 !important;
+    text-align: left !important;
+  }
+
+  .form.signup input,
+  .form.signin input,
+  .signin-content input,
+  .auth-stack input,
+  #forgot-form input,
+  #signin-main input {
+    width: 100% !important;
+    min-width: 0 !important;
+    display: block !important;
+    box-sizing: border-box !important;
+    height: 56px !important;
+    padding: 0 18px !important;
+    border-radius: 18px !important;
+    font-size: 16px !important;
+  }
+
+  .main-btn {
+    width: 100% !important;
+    height: 56px !important;
+    border-radius: 999px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 18px !important;
+    margin-top: 8px !important;
+  }
+
+  .toggle-btn,
+  .auth-link,
+  #login-error,
+  .error-text {
+    width: 100% !important;
+    text-align: left !important;
+    margin: 0 !important;
+  }
+}
+
+/* Landscape-specific login fix */
+@media screen and (max-width: 932px) and (orientation: landscape) {
+  #login-view {
+    padding: 16px !important;
+    min-height: 100vh !important;
+  }
+
+  #sliding-card,
+  .card {
+    width: 100% !important;
+    max-width: 760px !important;
+    min-height: auto !important;
+    height: auto !important;
+    padding: 24px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  .form.signup,
+  .form.signin {
+    width: 100% !important;
+    max-width: 420px !important;
+    margin: 0 auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    justify-content: center !important;
+    gap: 12px !important;
+  }
+
+  .signin-content,
+  .auth-stack,
+  #signin-main,
+  #forgot-form {
+    width: 100% !important;
+    max-width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    justify-content: flex-start !important;
+    gap: 12px !important;
+  }
+
+  .form.signup h2,
+  .form.signin h2,
+  .signin-content h2 {
+    font-size: 32px !important;
+    line-height: 1.1 !important;
+    margin-bottom: 6px !important;
+  }
+
+  .form.signup input,
+  .form.signin input,
+  .signin-content input,
+  .auth-stack input,
+  #forgot-form input,
+  #signin-main input {
+    width: 100% !important;
+    height: 50px !important;
+    padding: 0 16px !important;
+    font-size: 15px !important;
+    border-radius: 16px !important;
+  }
+
+  .main-btn {
+    width: 100% !important;
+    height: 50px !important;
+    font-size: 17px !important;
+    border-radius: 999px !important;
+  }
+
+  .toggle-btn,
+  .auth-link {
+    font-size: 14px !important;
+  }
+
+  #login-error,
+  .error-text {
+    font-size: 14px !important;
+  }
+}
+.signin-content,
+.auth-stack {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.signin-content input,
+.signup input {
+  width: 100%;
+}
+
+.form.signin,
+.form.signup {
+  width: 100%;
 }
