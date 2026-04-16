@@ -1,4 +1,4 @@
-    <!DOCTYPE html>
+  <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -14,34 +14,54 @@
 </head>
 <body id="main-body">
   <!-- SPLASH SCREEN -->
-<div id="splash-screen" class="splash-screen">
-  <div class="splash-container">
+  <div id="splash-screen" class="splash-screen">
+    <div class="splash-container">
+      <div class="splash-logo-frame">
+        <img src="pics/NOVA logo copy.jpg" class="splash-logo-img">
+      </div>
 
-    <div class="splash-logo-frame">
-      <img src="pics/NOVA logo copy.jpg" class="splash-logo-img">
+      <div class="splash-brand">
+        <span>N</span>
+        <span>O</span>
+        <span>V</span>
+        <span class="splash-a"></span>
+      </div>
+
+      <div class="splash-subtitle">
+        Premium Tech Retail Experience
+      </div>
     </div>
-
-    <div class="splash-brand">
-      <span>N</span>
-      <span>O</span>
-      <span>V</span>
-      <span class="splash-a"></span>
-    </div>
-
-    <div class="splash-subtitle">
-      Premium Tech Retail Experience
-    </div>
-
   </div>
-</div>
 
- <div id="app" class="app-hidden">
- <canvas id="star-canvas"></canvas>
+  <div id="app" class="app-hidden">
+    <canvas id="star-canvas"></canvas>
     <div class="bg-gradient"></div>
     <div class="bg-grid"></div>
     <div class="bg-noise"></div>
     <div class="page-glow"></div>
     <div id="toast-container"></div>
+
+    <!-- PROMO POPUP -->
+    <div v-if="showPromoPopup" class="promo-popup-overlay">
+      <div class="promo-popup-box">
+        <button class="promo-close-btn" @click="closePromoPopup">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <div class="promo-popup-content">
+          <div class="promo-sale-badge">LIMITED TIME</div>
+          <h2>NOVA Launch Celebration</h2>
+          <p class="promo-main-text">Get <span>25% OFF</span> your total bill.</p>
+          <p class="promo-sub-text">
+            Claim your offer at checkout and enjoy the grand opening sale.
+          </p>
+
+          <button class="promo-claim-btn" @click="closePromoPopup">
+            Claim Offer
+          </button>
+        </div>
+      </div>
+    </div>
 
     <!-- Global Back Button -->
     <div
@@ -52,7 +72,6 @@
       <i data-lucide="arrow-left" size="16"></i>
       <span>Back</span>
     </div>
-    
 
     <!-- LANDING HEADER -->
     <header
@@ -61,69 +80,98 @@
       v-show="appPage !== 'store'"
     >
       <div class="nova-brand-hero">
-
-  <div class="nova-brand-text-wrap">
-    <h1 id="brand-name" class="nova-brand-word">
-      <span>N</span>
-      <span>O</span>
-      <span>V</span>
-      <span class="nova-brand-a"></span>
-    </h1>
-    <div id="tagline">Premium Apple & Samsung Retail Experience</div>
-  </div>
-</div>
+        <div class="nova-brand-text-wrap">
+          <h1 id="brand-name" class="nova-brand-word">
+            <span>N</span>
+            <span>O</span>
+            <span>V</span>
+            <span class="nova-brand-a"></span>
+          </h1>
+          <div id="tagline">Premium Apple & Samsung Retail Experience</div>
+        </div>
+      </div>
 
       <nav class="landing-nav">
         <div class="nav-brand nav-brand-logo" @click="showPage('landing')">
-
-  <div class="nav-mini-brand-text">
-    <span>N</span>
-    <span>O</span>
-    <span>V</span>
-    <span class="nav-mini-a"></span>
-  </div>
-</div>
-
-        <div
-          @click="showPage('landing')"
-          id="nav-home"
-          class="nav-item"
-          :class="{ active: appPage === 'landing' }"
-        >
-          <i data-lucide="home"></i>
-          <span>Home</span>
+          <div class="nav-mini-brand-text">
+            <span>N</span>
+            <span>O</span>
+            <span>V</span>
+            <span class="nav-mini-a"></span>
+          </div>
         </div>
 
-        <a href="#featured" class="nav-item" v-if="appPage === 'landing'">
-          <i data-lucide="sparkles"></i>
-          <span>Featured</span>
-        </a>
+        <!-- Desktop Nav -->
+        <div class="landing-nav-links">
+          <div
+            @click="showPage('landing')"
+            id="nav-home"
+            class="nav-item"
+            :class="{ active: appPage === 'landing' }"
+          >
+            <i data-lucide="home"></i>
+            <span>Home</span>
+          </div>
 
-        <a href="#products" class="nav-item" v-if="appPage === 'landing'">
-          <i data-lucide="shopping-bag"></i>
-          <span>Products</span>
-        </a>
+          <a href="#featured" class="nav-item" v-if="appPage === 'landing'">
+            <i data-lucide="sparkles"></i>
+            <span>Featured</span>
+          </a>
 
-        <div
-          @click="showPage('contact')"
-          id="nav-contact"
-          class="nav-item"
-          :class="{ active: appPage === 'contact' }"
-        >
-          <i data-lucide="mail"></i>
-          <span>Contact Us</span>
+          <a href="#products" class="nav-item" v-if="appPage === 'landing'">
+            <i data-lucide="shopping-bag"></i>
+            <span>Products</span>
+          </a>
+
+          <div
+            @click="showPage('contact')"
+            id="nav-contact"
+            class="nav-item"
+            :class="{ active: appPage === 'contact' }"
+          >
+            <i data-lucide="mail"></i>
+            <span>Contact Us</span>
+          </div>
+
+          <div
+            @click="handleNavLogin"
+            id="nav-login"
+            class="nav-item"
+            :class="{ active: appPage === 'login' || appPage === 'profile' }"
+          >
+            <i data-lucide="user"></i>
+            <span>{{ currentUser ? currentUser.name.split(' ')[0] : 'Login' }}</span>
+          </div>
         </div>
 
-        <div
-          @click="handleNavLogin"
-          id="nav-login"
-          class="nav-item"
-          :class="{ active: appPage === 'login' || appPage === 'profile' }"
-        >
-          <i data-lucide="user"></i>
-          <span>{{ currentUser ? currentUser.name.split(' ')[0] : 'Login' }}</span>
-        </div>
+        <!-- Mobile Hamburger -->
+        <button class="mobile-menu-btn" @click="toggleMobileMenu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
       </nav>
+
+      <!-- Mobile Menu -->
+      <div class="mobile-nav-menu" :class="{ open: mobileMenuOpen }">
+        <div class="mobile-nav-item" @click="showPage('landing')">Home</div>
+        <a
+          href="#featured"
+          class="mobile-nav-item"
+          v-if="appPage === 'landing'"
+          @click="closeMobileMenus()"
+        >Featured</a>
+        <a
+          href="#products"
+          class="mobile-nav-item"
+          v-if="appPage === 'landing'"
+          @click="closeMobileMenus()"
+        >Products</a>
+        <div class="mobile-nav-item" @click="showPage('contact')">Contact Us</div>
+        <div class="mobile-nav-item" @click="handleNavLogin">
+          {{ currentUser ? currentUser.name.split(' ')[0] : 'Login' }}
+        </div>
+      </div>
     </header>
 
     <!-- LANDING PAGE -->
@@ -349,7 +397,7 @@
         </div>
 
         <div class="form signin">
-          <div class="signin-content auth-stack">
+          <div id="signin-main" class="signin-content auth-stack">
             <h2>Sign In</h2>
             <input type="email" id="login-email" placeholder="Email" />
             <input type="password" id="login-pass" placeholder="Password" />
@@ -360,7 +408,7 @@
             </div>
 
             <button class="main-btn" @click="handleSignin">LOG IN</button>
-            <div class="toggle-btn">New here? Register</div>
+            <div class="toggle-btn" @click="toggleCard">New here? Register</div>
           </div>
 
           <div id="forgot-form" class="signin-content auth-stack auth-hidden">
@@ -455,43 +503,80 @@
         <div class="nav-content">
           <div class="nav-left">
             <a href="#" class="nova-logo nova-logo-wrap" @click.prevent="goToIndex">
+              <div class="nav-mini-brand-text">
+                <span>N</span>
+                <span>O</span>
+                <span>V</span>
+                <span class="nav-mini-a"></span>
+              </div>
+            </a>
 
-  <div class="nav-mini-brand-text">
-    <span>N</span>
-    <span>O</span>
-    <span>V</span>
-    <span class="nav-mini-a"></span>
-  </div>
-</a>
+            <!-- Desktop Store Menu -->
+            <div class="store-nav-links">
+              <div v-for="item in menuItems" :key="item.name" class="nav-item">
+                <span class="nav-link">{{ item.name }}</span>
 
-            <div v-for="item in menuItems" :key="item.name" class="nav-item">
-              <span class="nav-link">{{ item.name }}</span>
-
-              <div v-if="item.dropdown" class="dropdown-menu">
-                <a
-                  v-for="subItem in item.dropdown"
-                  :key="subItem"
-                  href="#"
-                  class="dropdown-link"
-                  @click.prevent="goToProduct(subItem)"
-                >
-                  {{ subItem }}
-                </a>
+                <div v-if="item.dropdown" class="dropdown-menu">
+                  <a
+                    v-for="subItem in item.dropdown"
+                    :key="subItem"
+                    href="#"
+                    class="dropdown-link"
+                    @click.prevent="goToProduct(subItem)"
+                  >
+                    {{ subItem }}
+                  </a>
+                </div>
               </div>
             </div>
           </div>
 
-          <div
-            v-if="cart.length > 0"
-            class="cart-icon-wrapper"
-            @click="goToCheckout"
-            :class="{ 'cart-bounce': cartAnimate }"
-          >
-            <i class="fa-solid fa-bag-shopping"></i>
-            <span class="cart-badge">{{ cart.length }}</span>
+          <div class="nav-right">
+            <div class="search-box">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input
+                type="text"
+                v-model="searchQuery"
+                placeholder="Search products..."
+                @keyup.enter="searchProduct"
+              >
+            </div>
+
+            <button class="mobile-menu-btn" @click="toggleStoreMobileMenu">
+              <span></span>
+              <span></span>
+              <span></span>
+            </button>
+
+            <div
+              v-if="cart.length > 0"
+              class="cart-icon-wrapper"
+              @click="goToCheckout"
+              :class="{ 'cart-bounce': cartAnimate }"
+            >
+              <i class="fa-solid fa-bag-shopping"></i>
+              <span class="cart-badge">{{ cart.length }}</span>
+            </div>
           </div>
         </div>
       </nav>
+
+      <!-- Mobile Store Menu -->
+      <div class="mobile-store-menu" :class="{ open: storeMobileMenuOpen }">
+        <div v-for="item in menuItems" :key="item.name" class="mobile-store-group">
+          <div class="mobile-store-title">{{ item.name }}</div>
+
+          <a
+            v-for="subItem in item.dropdown"
+            :key="subItem"
+            href="#"
+            class="mobile-store-link"
+            @click.prevent="goToProduct(subItem)"
+          >
+            {{ subItem }}
+          </a>
+        </div>
+      </div>
 
       <div class="cart-toast" v-if="showCartToast">
         {{ cartToastMessage }}
@@ -561,12 +646,12 @@
 
       <!-- Product Details -->
       <div
-        v-if="currentView === 'details'"
+        v-if="currentView === 'details' && selectedProduct"
         class="details-page"
-       :style="{ 
-    background: selectedProduct.bgColor, 
-    color: selectedProduct.textColor 
-}"
+        :style="{ 
+          background: selectedProduct.bgColor || '#000',
+          color: selectedProduct.textColor || '#fff'
+        }"
       >
         <div class="config-wrapper">
           <div class="sticky-image-container">
@@ -897,16 +982,34 @@
                   <span>Subtotal</span>
                   <span>{{ totalPrice }} AED</span>
                 </div>
+                <div class="promo-section">
+  <label class="promo-label">Promo Code</label>
+  <select v-model="selectedPromoCode" class="promo-dropdown">
+    <option
+      v-for="promo in promoOptions"
+      :key="promo.code"
+      :value="promo.code"
+    >
+      {{ promo.label }}
+    </option>
+  </select>
+</div>
+
+<div v-if="promoDiscountAmount > 0" class="summary-row discount-row">
+  <span>Discount</span>
+  <span>- {{ promoDiscountAmount.toLocaleString(undefined, { maximumFractionDigits: 2 }) }} AED</span>
+</div>
+
 
                 <div class="summary-row">
                   <span>Delivery</span>
                   <span>{{ pickupFromStore ? 'Store Pickup' : 'Free' }}</span>
                 </div>
 
-                <div class="summary-row total-row">
-                  <span>Total</span>
-                  <span>{{ totalPrice }} AED</span>
-                </div>
+               <div class="summary-row total-row">
+  <span>Total</span>
+  <span>{{ finalTotalPrice.toLocaleString(undefined, { maximumFractionDigits: 2 }) }} AED</span>
+</div>
 
                 <div class="pickup-section">
                   <div class="pickup-toggle-row">
@@ -1040,10 +1143,31 @@
             </table>
           </div>
 
-          <div class="bill-total-row">
-            <span>Total Paid</span>
-            <strong>{{ receiptData.totalPrice }} AED</strong>
-          </div>
+          <div v-if="receiptData.promoCode && receiptData.promoDiscountAmount" class="bill-total-row bill-discount-row">
+  <strong>- {{ Number(receiptData.promoDiscountAmount).toLocaleString(undefined, { maximumFractionDigits: 2 }) }} AED</strong>
+</div>
+
+<!-- Subtotal -->
+<div class="bill-total-row">
+  <span>Subtotal</span>
+  <strong>
+    {{ Number(receiptData.subtotal).toLocaleString(undefined, { maximumFractionDigits: 2 }) }} AED
+  </strong>
+</div>
+
+<!-- Discount -->
+<div v-if="receiptData.promoDiscountAmount" class="bill-total-row bill-discount-row">
+  <span>Promo ({{ receiptData.promoCode }})</span>
+  <strong>
+    - {{ Number(receiptData.promoDiscountAmount).toLocaleString(undefined, { maximumFractionDigits: 2 }) }} AED
+  </strong>
+</div>
+
+<!-- Total -->
+<div class="bill-total-row final-total">
+  <span>Total Paid</span>
+  <strong>{{ receiptData.totalPrice }} AED</strong>
+</div>
 
           <div class="bill-footer">
             <p>Thank you for shopping with NOVA.</p>
@@ -1077,8 +1201,7 @@
       </div>
     </section>
   </div>
-</body>
-</html>
+
     <script>
       
 window.addEventListener("load", () => {
@@ -1101,7 +1224,7 @@ window.addEventListener("load", () => {
 });
 
     const API_URL = "https://cst3990-nova-backend.onrender.com/api";
-    new Vue({
+    window.novaApp = new Vue({
         
         el: '#app',
         data: {
@@ -1122,11 +1245,19 @@ window.addEventListener("load", () => {
         activeModel: null,
         activeDisplay: null,
         showSuccessPopup: false,
+        showPromoPopup: false,
+        mobileMenuOpen: false,
+storeMobileMenuOpen: false,
         activeChip: null,
         activeVariant: null,
         pickupFromStore: false,
         selectedStore: '',
         dropdownOpen: false,
+     selectedPromoCode: '',
+       promoOptions: [
+      { code: '', label: 'Select promo code', discountPercent: 0 },
+      { code: 'NOVA26', label: 'NOVA26 (25% OFF)', discountPercent: 25 }
+],
         cartToastMessage: '',
         cartAnimate: false,
         showCartToast: false,
@@ -1137,6 +1268,7 @@ window.addEventListener("load", () => {
         showAI: false,
         prevView: 'home',
         userQuery: '',
+        searchQuery: '',
 
         checkoutForm: {
             name: '',
@@ -1224,7 +1356,7 @@ window.addEventListener("load", () => {
                 ]
             },
             { name: 'Airpods', dropdown: ['Airpods Pro 3', 'Airpods 4', 'Airpods Max'] },
-            { name: 'Galaxy Buds', dropdown: ['Galaxy Buds 4','Galaxy Buds 4 pro','Galaxy Buds core'] }
+            { name: 'Galaxy Buds', dropdown: ['Galaxy Buds 4','Galaxy Buds 4 pro','Galaxy Buds '] }
         ],
 
         allProducts: [
@@ -1455,10 +1587,69 @@ window.addEventListener("load", () => {
                 }
 
                 return false;
-            }
-        },
+            },
+            promoDiscountAmount() {
+    const subtotal = this.cart.reduce((sum, item) => {
+        const priceCleaned = Number(String(item.price).replace(/,/g, ''));
+        return sum + (isNaN(priceCleaned) ? 0 : priceCleaned);
+    }, 0);
 
+    const selectedPromo = this.promoOptions.find(
+        promo => promo.code === this.selectedPromoCode
+    );
+
+    if (!selectedPromo || !selectedPromo.discountPercent) return 0;
+
+    return subtotal * (selectedPromo.discountPercent / 100);
+},
+
+finalTotalPrice() {
+    const subtotal = this.cart.reduce((sum, item) => {
+        const priceCleaned = Number(String(item.price).replace(/,/g, ''));
+        return sum + (isNaN(priceCleaned) ? 0 : priceCleaned);
+    }, 0);
+
+    return subtotal - this.promoDiscountAmount;
+},
+
+        },
+ 
         methods: {
+          toggleMobileMenu() {
+    this.mobileMenuOpen = !this.mobileMenuOpen;
+},
+
+toggleStoreMobileMenu() {
+    this.storeMobileMenuOpen = !this.storeMobileMenuOpen;
+},
+
+closeMobileMenus() {
+    this.mobileMenuOpen = false;
+    this.storeMobileMenuOpen = false;
+},
+          searchProduct() {
+    const query = this.searchQuery.trim().toLowerCase();
+
+    if (!query) {
+        this.showToast('Please enter a product name', 'error');
+        return;
+    }
+
+    const foundProduct = this.allProducts.find(product =>
+        product.name && product.name.toLowerCase().includes(query)
+    );
+
+    if (foundProduct) {
+        this.goToProduct(foundProduct.name);
+        this.searchQuery = '';
+    } else {
+        this.showToast('Product not found', 'error');
+    }
+},
+
+closePromoPopup() {
+      this.showPromoPopup = false;
+  },
           savePageState() {
     localStorage.setItem("novaAppPage", this.appPage);
     localStorage.setItem("novaCurrentView", this.currentView);
@@ -1481,30 +1672,30 @@ window.addEventListener("load", () => {
                 }, 1200);
             },
 
-            initHeaderScroll() {
-                let lastScrollY = window.scrollY;
+           initHeaderScroll() {
+    let lastScrollY = window.scrollY;
 
-                window.addEventListener('scroll', () => {
-                    const h = document.getElementById('main-header');
-                    if (!h) return;
+   window.addEventListener("load", () => {
+  setTimeout(() => {
+    document.getElementById("splash-screen").classList.add("splash-hide");
 
-                    const currentScrollY = window.scrollY;
+    const app = document.getElementById("app");
+    app.classList.remove("app-hidden");
 
-                    if (currentScrollY > 80) {
-                        h.classList.add('scrolled');
-                    } else {
-                        h.classList.remove('scrolled');
-                    }
+    setTimeout(() => {
+      app.style.opacity = "1";
+      app.style.visibility = "visible";
+    }, 200);
 
-                    if (currentScrollY > lastScrollY && currentScrollY > 140) {
-                        h.classList.add('nav-hidden');
-                    } else {
-                        h.classList.remove('nav-hidden');
-                    }
+    setTimeout(() => {
+      if (window.novaApp) {
+        window.novaApp.showPromoPopup = true;
+      }
+    }, 1200);
 
-                    lastScrollY = currentScrollY;
-                });
-            },
+  }, 2000);
+});
+},
 
             initStarsCanvas() {
                 const canvas = document.getElementById('star-canvas');
@@ -1591,13 +1782,15 @@ window.addEventListener("load", () => {
                 }, 3000);
             },
 
-            showPage(page) {
-                if (page !== this.appHistory[this.appHistory.length - 1]) {
-                    this.appHistory.push(page);
-                }
-                this.appPage = page;
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            },
+           showPage(page) {
+    this.closeMobileMenus();
+
+    if (page !== this.appHistory[this.appHistory.length - 1]) {
+        this.appHistory.push(page);
+    }
+    this.appPage = page;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+},
 
            handleBack() {
     if (this.appPage === 'store' && this.currentView !== 'home') {
@@ -1624,7 +1817,9 @@ window.addEventListener("load", () => {
                 this.currentUser ? this.showPage('profile') : this.showPage('login');
             },
 
-           goToIndex() {
+          goToIndex() {
+    this.closeMobileMenus();
+
     this.appPage = 'landing';
     this.currentView = 'home';
 
@@ -1633,21 +1828,19 @@ window.addEventListener("load", () => {
     }
 
     this.savePageState();
-
     window.scrollTo({ top: 0, behavior: 'smooth' });
 },
 
-            goToStoreHome() {
+         goToStoreHome() {
+    this.closeMobileMenus();
+
     if (this.appHistory[this.appHistory.length - 1] !== 'store') {
         this.appHistory.push('store');
     }
 
     this.appPage = 'store';
     this.currentView = 'home';
-
-    // ✅ SAVE STATE
     this.savePageState();
-
     window.scrollTo({ top: 0, behavior: 'smooth' });
 },
 
@@ -1893,12 +2086,13 @@ window.addEventListener("load", () => {
                 this.cart = savedCart ? JSON.parse(savedCart) : [];
             },
 
-            goBackHome() {
-                this.currentView = 'home';
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            },
-
+           goBackHome() {
+    this.currentView = 'home';
+    this.savePageState();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+},
             goToProduct(productName) {
+              this.closeMobileMenus();
                 this.appPage = 'store';
 
                 if (this.appHistory[this.appHistory.length - 1] !== 'store') {
@@ -2270,6 +2464,9 @@ window.addEventListener("load", () => {
                 pickupFromStore: this.pickupFromStore,
                 selectedStore: this.selectedStore,
                 estimatedDeliveryDate: this.estimatedDeliveryDate,
+                promoCode: this.selectedPromoCode,
+                promoDiscountAmount: this.promoDiscountAmount,
+                finalTotalPrice: this.finalTotalPrice,
                 userId: this.currentUser ? this.currentUser._id : null
             })
         });
@@ -2288,7 +2485,16 @@ window.addEventListener("load", () => {
 
         await new Promise(resolve => setTimeout(resolve, 2000));
 
-        this.receiptData = data.receipt;
+        this.receiptData = {
+    ...data.receipt,
+    promoCode: this.selectedPromoCode,
+    promoDiscountAmount: this.promoDiscountAmount,
+    subtotal: this.cart.reduce((sum, item) => {
+        const priceCleaned = Number(String(item.price).replace(/,/g, ''));
+        return sum + (isNaN(priceCleaned) ? 0 : priceCleaned);
+    }, 0),
+    totalPrice: this.finalTotalPrice.toLocaleString(undefined, { maximumFractionDigits: 2 })
+};
 
         this.cart = [];
         localStorage.setItem(this.cartStorageKey, JSON.stringify(this.cart));
@@ -2310,6 +2516,7 @@ window.addEventListener("load", () => {
         this.checkoutErrors = {};
         this.selectedStore = '';
         this.pickupFromStore = false;
+        this.selectedPromoCode = '';
 
         this.isProcessingOrder = false;
         this.showSuccessPopup = true;
@@ -2317,6 +2524,7 @@ window.addEventListener("load", () => {
         setTimeout(() => {
             this.showSuccessPopup = false;
             this.currentView = 'receipt';
+            this.savePageState();
         }, 1800);
 
     } catch (error) {
@@ -2324,8 +2532,7 @@ window.addEventListener("load", () => {
         this.isProcessingOrder = false;
         alert(error.message);
     }
-}
-        }
+}}
     });
     </script>
     </body>
