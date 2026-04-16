@@ -3948,3 +3948,98 @@ body {
     bottom: 80px;
   }
 }
+/* =========================================
+   PHONE LANDSCAPE FIX
+========================================= */
+@media (max-width: 932px) and (orientation: landscape) {
+
+  .hero-main,
+  .coming-soon-box,
+  .checkout-container,
+  .config-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    align-items: start;
+  }
+
+  .hero-side,
+  .visual-grid,
+  .promo-grid,
+  .products-grid,
+  .product-showcase {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .gallery-strip {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .sticky-image-container,
+  .config-options,
+  .checkout-form-section,
+  .checkout-summary-section,
+  .coming-soon-text,
+  .coming-soon-image-wrap {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .details-page {
+    padding: 18px;
+  }
+
+  .details-img {
+    width: 100%;
+    max-width: 280px;
+    margin: 0 auto;
+    display: block;
+  }
+
+  .gallery-container,
+  .specs-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .selection-group {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .product-title {
+    font-size: 24px;
+    line-height: 1.15;
+  }
+
+  .product-description,
+  .spec-item-text,
+  .tile-name,
+  .tile-subtext {
+    word-break: break-word;
+  }
+
+  .navbar .nav-content,
+  .landing-nav {
+    padding: 10px 14px;
+  }
+
+  .mobile-store-menu {
+    max-height: 55vh;
+    overflow-y: auto;
+  }
+
+  .bill-meta-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .card-row {
+    grid-template-columns: 1fr 1fr;
+  }
+}
