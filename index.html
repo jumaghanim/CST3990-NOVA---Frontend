@@ -1256,7 +1256,8 @@ storeMobileMenuOpen: false,
      selectedPromoCode: '',
        promoOptions: [
       { code: '', label: 'Select promo code', discountPercent: 0 },
-      { code: 'NOVA26', label: 'NOVA26 (25% OFF)', discountPercent: 25 }
+      { code: 'NOVA26', label: 'NOVA26 (25% OFF)', discountPercent: 25 },
+
 ],
         cartToastMessage: '',
         cartAnimate: false,
@@ -1356,14 +1357,11 @@ storeMobileMenuOpen: false,
                 ]
             },
             { name: 'Airpods', dropdown: ['Airpods Pro 3', 'Airpods 4', 'Airpods Max'] },
-            { name: 'Galaxy Buds', dropdown: ['Galaxy Buds 4','Galaxy Buds 4 pro','Galaxy Buds '] }
+            { name: 'Galaxy Buds', dropdown: ['Galaxy Buds 4','Galaxy Buds4 Pro','Galaxy Buds Core'] }
         ],
 
         allProducts: [
-         
-         
-             
-         
+       
         ]
     },  
         async created() {
@@ -2038,56 +2036,553 @@ closePromoPopup() {
                 }
             },
 
-            askNova() {
-                const query = this.userQuery.trim();
-                if (!query) return;
+    askNova() {
+    if (!this.userQuery.trim()) return;
 
-                this.aiMessages.push({
-                    role: 'user',
-                    text: query
+    const originalQuery = this.userQuery.trim();
+    const q = originalQuery.toLowerCase().trim();
+
+    this.aiMessages.push({ role: "user", text: originalQuery });
+    this.userQuery = "";
+
+    if (!this.novaState) {
+        this.novaState = {
+            mode: "normal",
+            step: 0,
+            answers: {}
+        };
+    }
+
+    const allProducts = this.allProducts || this.products || products || [];
+
+    const estimateAvailableStorage = (storage) => {
+        const map = {
+            "128GB": "111GB usable approx",
+            "256GB": "235GB usable approx",
+            "512GB": "472GB usable approx",
+            "1TB": "930GB usable approx",
+            "2TB": "1.86TB usable approx",
+            "4TB": "3.72TB usable approx",
+            "8TB": "7.44TB usable approx"
+        };
+        return map[storage] || "Varies after system setup";
+    };
+
+    const formatAED = (amount) => {
+        if (typeof amount !== "number" || isNaN(amount)) return "AED price unavailable";
+        return `AED ${amount.toLocaleString()}`;
+    };
+
+    const cleanText = (text) => {
+        return String(text || "").replace(/<[^>]*>/g, "").trim();
+    };
+
+    const niceChoiceLine = (value) => {
+        const lines = [
+            `Great choice — ${value} is a very nice pick.`,
+            `${value} is a solid choice.`,
+            `Excellent choice! ${value} is a popular option.`,
+            `Nice pick — ${value} looks great.`
+        ];
+        return lines[Math.floor(Math.random() * lines.length)];
+    };
+
+    const launchOfferLine = () => {
+        return `🎉 <b>Nova Launch Celebration Offer:</b> Special launch offers are now available on selected products as we get ready for our official launch on <b>24 April 2026</b>.`;
+    };
+
+    const introNovaLine = () => {
+        return `<b>Nova</b> is a retail website for <b>Apple and Samsung products</b>, and we will be launched on <b>24 April 2026</b>.`;
+    };
+
+    const getProductDisplayName = (product) => product?.name || "This device";
+
+    const getProductBasePrice = (product) => {
+        return typeof product.basePrice === "number" ? product.basePrice : null;
+    };
+
+    const getStorageOptions = (product) => {
+        return Array.isArray(product.storageOptions) ? product.storageOptions : [];
+    };
+
+    const getModelOptions = (product) => {
+        return Array.isArray(product.models) ? product.models : [];
+    };
+
+    const getColorOptions = (product, selectedModel = null) => {
+        if (selectedModel && Array.isArray(selectedModel.colors) && selectedModel.colors.length) {
+            return selectedModel.colors;
+        }
+        return Array.isArray(product.colors) ? product.colors : [];
+    };
+
+    const getChipOptions = (product) => {
+        return Array.isArray(product.chips) ? product.chips : [];
+    };
+
+    const getSpecsText = (product) => {
+        if (!Array.isArray(product.specs) || !product.specs.length) return "Specs are available on the product page.";
+        return product.specs
+            .slice(0, 6)
+            .map(s => `• <b>${cleanText(s.label)}:</b> ${cleanText(s.value)}`)
+            .join("<br>");
+    };
+
+    const normalize = (str) => String(str || "").toLowerCase().trim();
+
+    const matchProductFromQuery = (query) => {
+        const sorted = [...allProducts].sort((a, b) => b.name.length - a.name.length);
+        return sorted.find(p => query.includes(normalize(p.name))) || null;
+    };
+
+    const matchModelFromQuery = (product, query) => {
+        const models = getModelOptions(product);
+        if (!models.length) return null;
+        return models.find(m => query.includes(normalize(m.name))) || null;
+    };
+
+    const matchColorFromQuery = (product, query, selectedModel = null) => {
+        const colors = getColorOptions(product, selectedModel);
+        if (!colors.length) return null;
+        return colors.find(c => query.includes(normalize(c.name))) || null;
+    };
+
+    const matchStorageFromQuery = (product, query) => {
+        const storages = getStorageOptions(product);
+        if (!storages.length) return null;
+        return storages.find(s => query.includes(normalize(s.name))) || null;
+    };
+
+    const matchChipFromQuery = (product, query) => {
+        const chips = getChipOptions(product);
+        if (!chips.length) return null;
+        return chips.find(c => query.includes(normalize(c.name))) || null;
+    };
+
+    const matchVariantFromQuery = (chip, query) => {
+        if (!chip || !Array.isArray(chip.variants)) return null;
+        return chip.variants.find(v => query.includes(normalize(v.name))) || null;
+    };
+
+    const calculatePrice = ({
+        product,
+        selectedModel = null,
+        selectedStorage = null,
+        selectedConnectivity = null,
+        selectedDisplay = null,
+        selectedChip = null,
+        selectedVariant = null,
+        selectedSize = null
+    }) => {
+        let total = getProductBasePrice(product) || 0;
+
+        if (selectedModel) {
+            total += Number(selectedModel.price || selectedModel.priceMod || 0);
+        }
+
+        if (selectedStorage) {
+            total += Number(selectedStorage.priceMod || 0);
+        }
+
+        if (selectedConnectivity) {
+            total += Number(selectedConnectivity.price || selectedConnectivity.priceMod || 0);
+        }
+
+        if (selectedDisplay) {
+            total += Number(selectedDisplay.price || selectedDisplay.priceMod || 0);
+        }
+
+        if (selectedChip) {
+            total += Number(selectedChip.price || selectedChip.priceMod || 0);
+        }
+
+        if (selectedVariant) {
+            total += Number(selectedVariant.price || selectedVariant.priceMod || 0);
+        }
+
+        if (selectedSize) {
+            total += Number(selectedSize.price || selectedSize.basePrice || selectedSize.priceMod || 0);
+        }
+
+        return total;
+    };
+
+    const findStock = ({
+        product,
+        colorName = null,
+        storageName = null,
+        modelName = null,
+        chipName = null,
+        variantName = null
+    }) => {
+        const inventory = Array.isArray(product.inventory) ? product.inventory : [];
+        if (!inventory.length) {
+            if (typeof product.stock === "number") return product.stock;
+            return null;
+        }
+
+        let matches = inventory.filter(item => {
+            if (colorName && normalize(item.color) !== normalize(colorName)) return false;
+            if (storageName && normalize(item.storage) !== normalize(storageName)) return false;
+            if (modelName && normalize(item.model) !== normalize(modelName)) return false;
+            if (chipName && normalize(item.chip) !== normalize(chipName)) return false;
+            if (variantName && normalize(item.variant) !== normalize(variantName)) return false;
+            return true;
+        });
+
+        if (!matches.length) return null;
+
+        return matches.reduce((sum, item) => sum + Number(item.stock || 0), 0);
+    };
+
+    const buildStoragePriceList = (product, selectedModel = null) => {
+        const storages = getStorageOptions(product);
+        if (!storages.length) return "Storage options are not listed for this product.";
+
+        return storages.map(storage => {
+            const total = calculatePrice({ product, selectedModel, selectedStorage: storage });
+            const stock = findStock({
+                product,
+                modelName: selectedModel?.name || null,
+                storageName: storage.name
+            });
+
+            const stockText = stock === null
+                ? "Stock varies"
+                : stock > 0
+                    ? `${stock} in stock`
+                    : "Out of stock";
+
+            return `• <b>${storage.name}</b> — ${formatAED(total)}<br>&nbsp;&nbsp;Usable storage: ${estimateAvailableStorage(storage.name)}<br>&nbsp;&nbsp;Stock: ${stockText}`;
+        }).join("<br><br>");
+    };
+
+    const buildColorList = (product, selectedModel = null) => {
+        const colors = getColorOptions(product, selectedModel);
+        if (!colors.length) return "Color options are not listed for this product.";
+
+        return colors.map(color => {
+            const stock = findStock({
+                product,
+                modelName: selectedModel?.name || null,
+                colorName: color.name
+            });
+
+            const stockText = stock === null
+                ? "Stock varies"
+                : stock > 0
+                    ? `${stock} in stock`
+                    : "Out of stock";
+
+            return `• <b>${color.name}</b> — ${stockText}`;
+        }).join("<br>");
+    };
+
+    const buildProductSummary = (product) => {
+        const models = getModelOptions(product);
+        const colors = getColorOptions(product);
+        const storages = getStorageOptions(product);
+
+        let html = `<b>${getProductDisplayName(product)}</b><br><br>`;
+        html += `<b>Starting price:</b> ${formatAED(getProductBasePrice(product))}<br>`;
+
+        if (models.length) {
+            html += `<b>Models:</b> ${models.map(m => m.name).join(", ")}<br>`;
+        }
+
+        if (storages.length) {
+            html += `<b>Storage options:</b> ${storages.map(s => s.name).join(", ")}<br>`;
+        }
+
+        if (colors.length) {
+            html += `<b>Colors:</b> ${colors.map(c => c.name).join(", ")}<br>`;
+        }
+
+        html += `<br><b>Key highlights:</b><br>${getSpecsText(product)}<br><br>`;
+        html += `${launchOfferLine()}`;
+
+        return html;
+    };
+
+    const compareProducts = (a, b) => {
+        const aModels = getModelOptions(a);
+        const bModels = getModelOptions(b);
+        const aStorages = getStorageOptions(a);
+        const bStorages = getStorageOptions(b);
+        const aColors = getColorOptions(a);
+        const bColors = getColorOptions(b);
+
+        let response = `<b>Nova Comparison</b><br><br>`;
+        response += `<b>${a.name}</b> vs <b>${b.name}</b><br><br>`;
+        response += `• <b>Starting Price:</b> ${formatAED(getProductBasePrice(a))} vs ${formatAED(getProductBasePrice(b))}<br>`;
+        response += `• <b>Models:</b> ${aModels.length ? aModels.map(m => m.name).join(", ") : "Standard"} vs ${bModels.length ? bModels.map(m => m.name).join(", ") : "Standard"}<br>`;
+        response += `• <b>Storage:</b> ${aStorages.length ? aStorages.map(s => s.name).join(", ") : "Not listed"} vs ${bStorages.length ? bStorages.map(s => s.name).join(", ") : "Not listed"}<br>`;
+        response += `• <b>Colors:</b> ${aColors.length ? aColors.map(c => c.name).join(", ") : "Not listed"} vs ${bColors.length ? bColors.map(c => c.name).join(", ") : "Not listed"}<br><br>`;
+
+        response += `<b>${a.name} highlights:</b><br>${getSpecsText(a)}<br><br>`;
+        response += `<b>${b.name} highlights:</b><br>${getSpecsText(b)}<br><br>`;
+        response += `Both are great choices — it depends on whether you want the better fit for your budget, preferred design, and storage needs.`;
+
+        return response;
+    };
+
+    setTimeout(() => {
+        let response = `I'm Nova, your Apple and Samsung product specialist.`;
+
+        // Recommendation flow
+        if (this.novaState.mode === "recommend") {
+            if (this.novaState.step === 1) {
+                this.novaState.answers.category = q;
+                this.novaState.step = 2;
+                response = `Nice! Are you looking for an <b>Apple</b> or <b>Samsung</b> device?`;
+            } else if (this.novaState.step === 2) {
+                this.novaState.answers.brand = q;
+                this.novaState.step = 3;
+                response = `Great choice. What is your approximate budget in <b>AED</b>?`;
+            } else if (this.novaState.step === 3) {
+                const budget = parseInt(q.replace(/[^\d]/g, "")) || 3000;
+                this.novaState.answers.budget = budget;
+                this.novaState.step = 4;
+                response = `Perfect — what matters most to you: <b>camera</b>, <b>battery</b>, <b>performance</b>, or <b>design</b>?`;
+            } else if (this.novaState.step === 4) {
+                this.novaState.answers.feature = q;
+
+                const brandWanted = this.novaState.answers.brand || "";
+                const categoryWanted = this.novaState.answers.category || "";
+                const budget = this.novaState.answers.budget || 3000;
+
+                let candidates = allProducts.filter(p => {
+                    const name = normalize(p.name);
+                    const brandMatch =
+                        brandWanted.includes("apple") ? !name.includes("galaxy") :
+                        brandWanted.includes("samsung") ? name.includes("galaxy") :
+                        true;
+
+                    const categoryMatch =
+                        categoryWanted.includes("phone") || categoryWanted.includes("mobile")
+                            ? (
+                                name.includes("iphone") ||
+                                name.includes("galaxy s") ||
+                                name.includes("galaxy z")
+                              )
+                            : true;
+
+                    return brandMatch && categoryMatch && (getProductBasePrice(p) || 0) <= budget;
                 });
 
-                this.userQuery = '';
-                this.scrollAiToLatest();
+                if (!candidates.length) {
+                    candidates = allProducts
+                        .filter(p => (getProductBasePrice(p) || 0) <= budget + 1000)
+                        .slice(0, 4);
+                }
 
-                window.setTimeout(() => {
-                    this.aiMessages.push({
-                        role: 'ai',
-                        text: this.getNovaReply(query)
+                if (!candidates.length) {
+                    response = `I couldn't find a perfect match right now, but I can still help you compare our current Apple and Samsung devices in AED.`;
+                } else {
+                    const best = candidates.sort((a, b) => (getProductBasePrice(a) || 0) - (getProductBasePrice(b) || 0))[0];
+
+                    response = `✅ <b>Nova Recommendation</b><br><br>`;
+                    response += `Based on your answers, a great option for you is <b>${best.name}</b>.<br>`;
+                    response += `<b>Starting price:</b> ${formatAED(getProductBasePrice(best))}<br><br>`;
+                    response += `<b>Why it suits you:</b><br>${getSpecsText(best)}<br><br>`;
+                    response += `${launchOfferLine()}`;
+                }
+
+                this.novaState.mode = "normal";
+                this.novaState.step = 0;
+                this.novaState.answers = {};
+            }
+        }
+
+        // What is Nova
+        else if (
+            q.includes("what is nova") ||
+            q === "nova" ||
+            q.includes("about nova") ||
+            q.includes("who are you")
+        ) {
+            response = `${introNovaLine()}<br><br>I can help customers with:<br>• Product recommendations<br>• Prices in AED<br>• Color and storage availability<br>• Stock information<br>• Comparisons between Apple and Samsung devices<br><br>${launchOfferLine()}`;
+        }
+
+        // Greeting
+        else if (q.match(/\b(hi|hello|hey|good morning|good afternoon|good evening)\b/)) {
+            response = `<b>Welcome to Nova AI</b><br><br>Hello! I'm <b>Nova</b>, your Apple and Samsung product specialist.<br><br>${introNovaLine()}<br><br>I can help with:<br>• Product prices in AED<br>• Available colors and storage options<br>• Stock availability<br>• Comparisons<br>• Device recommendations<br><br>${launchOfferLine()}`;
+        }
+
+        // Compare
+        else if (q.includes("compare") || q.includes("vs")) {
+            const sortedNames = allProducts.map(p => p.name).sort((a, b) => b.length - a.length);
+
+            let firstName = null;
+            let secondName = null;
+
+            if (q.includes("vs")) {
+                const parts = q.split("vs");
+                const firstPart = parts[0];
+                const secondPart = parts[1];
+
+                firstName = sortedNames.find(name => normalize(firstPart).includes(normalize(name)));
+                secondName = sortedNames.find(name => normalize(secondPart).includes(normalize(name)));
+            } else {
+                const matched = sortedNames.filter(name => q.includes(normalize(name)));
+                firstName = matched[0] || null;
+                secondName = matched[1] || null;
+            }
+
+            const first = allProducts.find(p => p.name === firstName);
+            const second = allProducts.find(p => p.name === secondName);
+
+            if (first && second) {
+                response = compareProducts(first, second);
+            } else {
+                response = `Please mention two product names clearly, for example:<br><b>Compare iPhone 17 Pro Max vs Galaxy S26 Ultra</b>`;
+            }
+        }
+
+        // Buying / recommendation
+        else if (q.includes("buy") || q.includes("recommend") || q.includes("which phone")) {
+            this.novaState.mode = "recommend";
+            this.novaState.step = 1;
+            this.novaState.answers = {};
+            response = `Sure — I'd love to help you choose the perfect device.<br><br>Are you mainly looking for a <b>phone</b>, <b>tablet</b>, <b>laptop</b>, <b>watch</b>, or <b>audio product</b>?`;
+        }
+
+        // Product-specific handling
+        else {
+            const product = matchProductFromQuery(q);
+
+            if (product) {
+                const selectedModel = matchModelFromQuery(product, q);
+                const selectedColor = matchColorFromQuery(product, q, selectedModel);
+                const selectedStorage = matchStorageFromQuery(product, q);
+                const selectedChip = matchChipFromQuery(product, q);
+                const selectedVariant = matchVariantFromQuery(selectedChip, q);
+
+                const selectedConnectivity =
+                    selectedModel?.connectivityOptions?.find(opt => q.includes(normalize(opt.name))) || null;
+
+                const selectedDisplay =
+                    Array.isArray(product.displayOptions)
+                        ? product.displayOptions.find(opt => q.includes(normalize(opt.name)))
+                        : null;
+
+                const selectedSize =
+                    Array.isArray(product.sizes)
+                        ? product.sizes.find(size => q.includes(normalize(size.name)))
+                        : null;
+
+                // Exact chosen configuration
+                if (selectedColor || selectedStorage || selectedModel || selectedChip || selectedVariant || selectedConnectivity || selectedDisplay || selectedSize) {
+                    const total = calculatePrice({
+                        product,
+                        selectedModel,
+                        selectedStorage,
+                        selectedConnectivity,
+                        selectedDisplay,
+                        selectedChip,
+                        selectedVariant,
+                        selectedSize
                     });
-                    this.scrollAiToLatest();
-                }, 250);
-            },
 
-            getNovaReply(query) {
-                const q = query.toLowerCase();
-                const matchingProduct = this.allProducts.find(product =>
-                    product.name && q.includes(product.name.toLowerCase())
-                );
+                    const stock = findStock({
+                        product,
+                        colorName: selectedColor?.name || null,
+                        storageName: selectedStorage?.name || null,
+                        modelName: selectedModel?.name || null,
+                        chipName: selectedChip?.name || null,
+                        variantName: selectedVariant?.name || null
+                    });
 
-                if (matchingProduct) {
-                    const basePrice = Number(matchingProduct.basePrice || 0).toLocaleString();
-                    return `<b>${matchingProduct.name}</b> starts at AED ${basePrice}. Open the product page to compare colors, storage, and other options.`;
+                    let picked = [];
+                    if (selectedModel) picked.push(selectedModel.name);
+                    if (selectedSize) picked.push(selectedSize.name);
+                    if (selectedChip) picked.push(selectedChip.name);
+                    if (selectedVariant) picked.push(selectedVariant.name);
+                    if (selectedConnectivity) picked.push(selectedConnectivity.name);
+                    if (selectedDisplay) picked.push(selectedDisplay.name);
+                    if (selectedStorage) picked.push(selectedStorage.name);
+                    if (selectedColor) picked.push(selectedColor.name);
+
+                    response = `<b>${product.name}</b><br><br>`;
+                    response += `${niceChoiceLine(picked.join(" / ") || product.name)}<br><br>`;
+                    response += `<b>Selected configuration:</b> ${picked.join(" • ")}<br>`;
+                    response += `<b>Price:</b> ${formatAED(total)}<br>`;
+
+                    if (selectedStorage) {
+                        response += `<b>Usable storage:</b> ${estimateAvailableStorage(selectedStorage.name)}<br>`;
+                    }
+
+                    if (stock !== null) {
+                        response += `<b>Stock:</b> ${stock > 0 ? `${stock} available` : `Currently out of stock`}<br>`;
+                    } else {
+                        response += `<b>Stock:</b> Please check selected combination on the product page<br>`;
+                    }
+
+                    response += `<br>${launchOfferLine()}`;
                 }
 
-                if (q.includes('camera')) {
-                    return 'For camera-focused shopping, the <b>iPhone 17 Pro</b> and <b>Galaxy S26 Ultra</b> are strong picks in this store.';
+                // Asking for price
+                else if (q.includes("price") || q.includes("how much") || q.includes("cost")) {
+                    response = `<b>${product.name} Price</b><br><br>`;
+                    response += `<b>Starting price:</b> ${formatAED(getProductBasePrice(product))}<br><br>`;
+
+                    if (getModelOptions(product).length) {
+                        response += `<b>Available models:</b><br>`;
+                        response += getModelOptions(product)
+                            .map(m => `• ${m.name} — from ${formatAED(calculatePrice({ product, selectedModel: m }))}`)
+                            .join("<br>");
+                        response += `<br><br>`;
+                    }
+
+                    if (getStorageOptions(product).length) {
+                        response += `<b>Storage pricing:</b><br>${buildStoragePriceList(product)}<br><br>`;
+                    }
+
+                    response += `${launchOfferLine()}`;
                 }
 
-                if (q.includes('gaming') || q.includes('performance')) {
-                    return 'For gaming and heavy performance, go for the flagship phones or MacBook models with higher storage and chip options.';
+                // Asking for color
+                else if (q.includes("color") || q.includes("colour")) {
+                    response = `<b>${product.name} Colors</b><br><br>${buildColorList(product, selectedModel)}<br><br>${launchOfferLine()}`;
                 }
 
-                if (q.includes('pickup') || q.includes('store')) {
-                    return 'You can enable <b>Pickup From Store</b> during checkout and choose from the available Nova pickup locations.';
+                // Asking for storage
+                else if (q.includes("storage") || q.includes("available storage")) {
+                    response = `<b>${product.name} Storage Options</b><br><br>${buildStoragePriceList(product, selectedModel)}<br><br>${launchOfferLine()}`;
                 }
 
-                if (q.includes('hello') || q.includes('hi')) {
-                    return 'Hello! Ask me about products, pricing, cameras, gaming, or pickup options.';
+                // Asking for stock
+                else if (q.includes("stock") || q.includes("available") || q.includes("in stock") || q.includes("out of stock")) {
+                    response = `<b>${product.name} Availability</b><br><br>`;
+
+                    if (getColorOptions(product, selectedModel).length) {
+                        response += `<b>By color:</b><br>${buildColorList(product, selectedModel)}<br><br>`;
+                    }
+
+                    if (getStorageOptions(product).length) {
+                        response += `<b>By storage:</b><br>${buildStoragePriceList(product, selectedModel)}<br><br>`;
+                    }
+
+                    response += `${launchOfferLine()}`;
                 }
 
-                return 'I can help you choose between Apple and Samsung products, explain pricing, and guide you through pickup or checkout.';
-            },
+                // General product info
+                else {
+                    response = buildProductSummary(product);
+                }
+            } else {
+                response = `I’m sorry, I couldn’t find that exact product in Nova right now.<br><br>${introNovaLine()}<br><br>You can ask me things like:<br>• <b>iPhone 17 Pro price</b><br>• <b>Galaxy Z Flip7 colors</b><br>• <b>Galaxy Watch Ultra stock</b><br>• <b>Compare iPhone 16 Pro vs Galaxy S26 Ultra</b><br>• <b>MacBook Air 15 inch price</b>`;
+            }
+        }
+
+        this.aiMessages.push({ role: "ai", text: response });
+
+        this.$nextTick(() => {
+            const box = document.getElementById("ai-messages");
+            if (box) box.scrollTop = box.scrollHeight;
+        });
+    }, 400);
+ },
 
             scrollAiToLatest() {
                 this.$nextTick(() => {
